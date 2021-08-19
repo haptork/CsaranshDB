@@ -132,5 +132,23 @@ TODO:
 - Implement statistics on client side / on server side by passing the filter string somehow.
 - Experiment with new cascade plots. Plotly save as svg.
 
+18th Aug:
 
+WIP:
+
+- Removed warnings and errors on loading the webpage due to react updates.
+
+19th Aug:
+
+WIP:
+
+- Added css for table.
+
+TODO:
+
+- fix: logo moving on table open/close.
+- fix: filter fields are not updating in table.
+- multi-Select size.
+- Adding summary data on server side.
+- fetching row data on click for table.
 
