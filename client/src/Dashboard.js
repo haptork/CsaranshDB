@@ -1,9 +1,9 @@
 import React from "react";
-import withStyles from "@material-ui/core/styles/withStyles";
+import {withStyles} from "@material-ui/core/styles";
 //import PropTypes from "prop-types";
 // core components
 import Grid from "@material-ui/core/Grid";
-import GridItem from "./components/Grid/GridItem.js";
+import GridItem from "./components/Grid/GridItem";
 import Footer from "./components/Footer/Footer.js";
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
@@ -37,6 +37,7 @@ import MainTable from "./Maintable.js"
 const getCids = (row) => [];
 const getInitialSelection = (row) => '';
 
+/*
 const styles = theme => ({
   heading: {
     fontSize: theme.typography.pxToRem(15),
@@ -62,16 +63,18 @@ const styles = theme => ({
     //padding: `${theme.spacing.unit}px ${theme.spacing.unit * 2}px`,
   },
 });
+*/
 
 export class DashboardSimple extends React.Component {
   constructor(props) {
       super(props);
-      this.data = this.props.data;
+      const data = [];
       this.allCols = getAllCol();
-      const initialPick = this.data.length == 0 ? -1 : 0;
-      const initialRow = (initialPick >= 0) ? this.data[initialPick] : {};
+      const initialPick = data.length == 0 ? -1 : 0;
+      const initialRow = (initialPick >= 0) ? data[initialPick] : {};
       this.state = {
-          curRows: this.data,
+          data: [],
+          curRows: [],
           compareRows: new Set(),
           except: new Set(),
           look: "",
@@ -81,6 +84,30 @@ export class DashboardSimple extends React.Component {
           allCids: getCids(initialRow),
           showCol: this.allCols.filter(x => x['isShow'])
       };
+  }
+
+  componentDidMount(prevProps) {
+    //if (prevProps === undefined) return;
+    if (prevProps !== undefined && (prevProps.queryString === this.props.queryString)) return;
+    fetch('/cascades'+this.props.queryString)
+      .then(res=>res.json())
+      .then(cascades => {
+        const data = cascades;
+        const initialPick = data.length == 0 ? -1 : 0;
+        const initialRow = (initialPick >= 0) ? data[initialPick] : {};
+        this.setState({
+          data: data,
+          curRows: data,
+          compareRows: new Set(),
+          except: new Set(),
+          look: "",
+          mobileOpen: false,
+          lookrow: initialRow,
+          cidCmp: getInitialSelection(initialRow),
+          allCids: getCids(initialRow),
+          showCol: this.allCols.filter(x => x['isShow'])
+        })
+      });
   }
 
   shortName = (row) => {
@@ -155,63 +182,113 @@ export class DashboardSimple extends React.Component {
     
     render() {
     let classes = this.props.classes;
-    let open = false;
-    console.log(this.data);
+    let openly = this.state.mobileOpen;
+    const data =this.state.data;
+    console.log("rendering dashboard.")
+    console.log(data.length);
+    console.log(this.state.curRows.length);
     return (
       <div className="main-panel">
     <AppBar>
-            <Toolbar disableGutters={!open}>
-             <Typography variant="title" color="inherit" noWrap>
+            <Toolbar disableGutters={!openly}>
+             <Typography variant="h5" color="inherit" noWrap>
                 <a id="logoTitle" href="https://github.com/haptork/csaransh">CSaransh</a>
               </Typography>
-  
               <IconButton
                 color="inherit"
                 aria-label="open drawer"
-                className={classNames(classes.menuButton, open && classes.hide)}
+                className={classNames(classes.menuButton, openly && classes.hide)}
               >
               </IconButton>
 
            </Toolbar>
     </AppBar>
 
+        <ClickAwayListener onClickAway={this.handleHideDrawer}>
         <Grid id="mainTableC" /*justify="flex-end"*/ container> 
-          <ClickAwayListener onClickAway={this.handleHideDrawer}>
           <GridItem id="mainTable" xs={12}>
 <Accordion id="mainTablePanel" expanded={this.state.mobileOpen} onChange={this.handleToggleDrawer}>
           <AccordionSummary /*onMouseEnter={this.handleShowDrawer}*/ expandIcon={<ExpandMoreIcon />}>
-            <Typography className={classes.heading}>Cascades List - {this.state.curRows.length} cascades {(this.state.curRows.length < this.data.length) ? " filtered out of total " + this.data.length : " - Filter, View, Plot Using Action Buttons"} 
+            <Typography className={classes.heading}>Cascades List - {this.state.curRows.length} cascades {(this.state.curRows.length < data.length) ? " filtered out of total " + data.length : " - Filter, View, Plot Using Action Buttons"} 
            </Typography>
           </AccordionSummary>
           <AccordionDetails>
             <div style={{display:"block", width:"100%"}}>
               <Select
-                value={this.state.showCol}
+                defaultValue={this.state.showCol}
+                name="Table columns"
                 closeOnSelect={false}
-                multi
+                isMulti
+                isClearable={false}
                 options={this.allCols}
                 onChange={this.handleShowCols}
               />
-            </div>
-          </AccordionDetails>
-       </Accordion>
-          </GridItem>
-        </ClickAwayListener>
-          </Grid>
-          </div>
-        );
-    }
-}
-export default withStyles(styles)(withStyles(dashboardStyle)(DashboardSimple));
-/*
-                <MainTable
-                  data={this.data}
+              <MainTable
+                  data={data}
                   except={this.state.except}
                   look={this.state.look}
                   setRows={(rows) => this.setRows(rows)}
                   onLookCur={o => this.lookCurRowHandler(o)}
                   onExceptCur={o => this.exceptCurRowHandler(o)}
                   showCol={this.state.showCol}
-                />
+              />
+            </div>
+          </AccordionDetails>
+       </Accordion>
+          </GridItem>
+          </Grid>
+          </ClickAwayListener>
+      </div>
+    );
+//    return (
+//      <div className="main-panel">
+//    <AppBar>
+//            <Toolbar disableGutters={!openly}>
+//             <Typography variant="title" color="inherit" noWrap>
+//                <a id="logoTitle" href="https://github.com/haptork/csaransh">CSaransh</a>
+//              </Typography>
+//  
+//              <IconButton
+//                color="inherit"
+//                aria-label="open drawer"
+//                className={classNames(classes.menuButton, openly && classes.hide)}
+//              >
+//              </IconButton>
+//
+//           </Toolbar>
+//    </AppBar>
+//
+//        <Grid id="mainTableC" justify="flex-end"*/ container> 
+//          <ClickAwayListener onClickAway={this.handleHideDrawer}>
+//          <GridItem id="mainTable" xs={12}>
+//<Accordion id="mainTablePanel" expanded={this.state.mobileOpen} onChange={this.handleToggleDrawer}>
+//          <AccordionSummary /*onMouseEnter={this.handleShowDrawer}*/ expandIcon={<ExpandMoreIcon />}>
+//            <Typography className={classes.heading}>Cascades List - {this.state.curRows.length} cascades {(this.state.curRows.length < data.length) ? " filtered out of total " + data.length : " - Filter, View, Plot Using Action Buttons"} 
+//           </Typography>
+//          </AccordionSummary>
+//          <AccordionDetails>
+//            <div style={{display:"block", width:"100%"}}>
+//              <Select
+//                value={this.state.showCol}
+//                closeOnSelect={false}
+//                multi
+//                options={this.allCols}
+//                onChange={this.handleShowCols}
+//              />
+//            </div>
+//          </AccordionDetails>
+//       </Accordion>
+//          </GridItem>
+//        </ClickAwayListener>
+//          </Grid>
+//          </div>
+//        );
+    }
+}
+export default withStyles(dashboardStyle)(DashboardSimple);
+//export default DashboardSimple;
+//export default withStyles(styles)(withStyles(dashboardStyle)(DashboardSimple));
+//export default withStyles(dashboardStyle)(withStyles(styles)(DashboardSimple));
+/*
 
 */

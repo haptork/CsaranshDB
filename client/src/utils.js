@@ -76,7 +76,7 @@ export const getData = () => window.cascades.data;
 
 export const getClassData = (curMode) => window.cluster_classes[curMode];
 
-export const uniqueKey = (row) => row.id + row.xyzFilePath;
+export const uniqueKey = (row) => row.id + row.infile + row.xyzFilePath;
 
 export const uniqueName = (row) => row.id + "-" + row.substrate + "-" + row.energy;
 
@@ -236,3 +236,18 @@ export const getPairColorOrient = x => {
 }
 
 //export const getColorGrad = (i, max) => "#" + Palette("tol-dv", max)[(i - 1)];
+
+function combineStyles(...styles) {
+  return function CombineStyles(theme) {
+    const outStyles = styles.map((arg) => {
+      // Apply the "theme" object for style functions.
+      if (typeof arg === 'function') {
+        return arg(theme);
+      }
+      // Objects need no change.
+      return arg;
+    });
+
+    return outStyles.reduce((acc, val) => Object.assign(acc, val));
+  };
+}
