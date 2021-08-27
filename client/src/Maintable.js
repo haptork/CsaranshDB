@@ -15,22 +15,17 @@ import { uniqueKey, getAllCol } from "./utils";
 
 //import basename from 'path';
 
-class ActionButton extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-  render() {
-    const isLook = this.props.look === uniqueKey(this.props.cellInfo);
-    const isExcept = this.props.except.has(uniqueKey(this.props.cellInfo));
+const ActionButton = (props) => {
+    const isLook = props.look === uniqueKey(props.cellInfo);
+    const isExcept = props.except.has(uniqueKey(props.cellInfo));
     const lookButColor = isLook ? 'primary' : 'default';
     const exButColor = isExcept ? 'secondary' : 'default';
-
     return (
      <div>
 
       <Tooltip title="View this cascade" placement="left" id="tooltipLook">
       <IconButton className="tableButton" size="small" color={lookButColor} onClick={() => {
-        return this.props.onLookCur(this.props.cellInfo);
+        return props.onLookCur(props.cellInfo);
       }
       }
       >
@@ -40,16 +35,15 @@ class ActionButton extends React.Component {
  
     <Tooltip id="tooltipExcept" title="Remove from statistics" placement="top">
       <IconButton className="tableButton" size="small" color={exButColor} onClick={() => {
-        return this.props.onBan(this.props.cellInfo, isExcept);
+        return props.onBan(props.cellInfo, isExcept);
       }
       }>
         {(isExcept) ? <Gpsoff /> : <Gpsfix/>}
       </IconButton>
       </Tooltip>
-      {this.props.cellInfo.id}
+      {props.cellInfo.id}
      </div>
     );
-  }
 }
 
 const RangeFilter = props => {
@@ -133,13 +127,42 @@ export class MainTable extends React.Component {
       filtered : []
     };
   }
+
+  componentWillReceiveProps(nextProps) {
+    /*
+    console.log("In maintable comp did mount");
+    console.log(this.props.data);
+    console.log(this.rows);
+    console.log(nextProps.data);
+    */
+    if (this.rows.length !== 0) return;
+    this.rows = nextProps.data;
+    /*
+    console.log("After");
+    console.log(this.rows);
+    console.log(nextProps.data);
+    */
+    this.filters = this.defaultFilterBounds();
+    this.setState({
+      vfilters : this.defaultFilterBounds(),
+      isFilter : this.defaultIsFilter(),
+      filterSelectAr: this.defulatFilterSelectAr(),
+      filtered : []
+    });
+  }
   
   defulatFilterSelectAr() {
     let res = {};
     for (const field of this.fields) {
       if (field.filterType !== 'select') continue;
-      res[field['value']] = uniqueAr(this.props.data, field['accessor'])
+      res[field['value']] = uniqueAr(this.rows, field['accessor'])
     }
+    /*
+    console.log("In filterSelect");
+    console.log(this.rows);
+    console.log(this.fields);
+    console.log("res", res);
+    */
     return res;
   }
 
@@ -147,7 +170,7 @@ export class MainTable extends React.Component {
     let res = {};
     for (const field of this.fields) {
       if (field.filterType !== 'range') continue;
-      res[field['value']] = minMaxPropsMaker(this.props.data, field['accessor']);
+      res[field['value']] = minMaxPropsMaker(this.rows, field['accessor']);
     }
     return res;
   }
@@ -250,6 +273,7 @@ export class MainTable extends React.Component {
         //this.rows = rows;
         return rows;
       }
+      //console.log(filter);
       const ans = rows.filter(row => {
         for (const x of filter.value) {
           if (x.value === row[filter.id]) return true;
@@ -281,7 +305,7 @@ export class MainTable extends React.Component {
                         name={id}
                         value={filter ? filter.value : ""}
                         closeOnSelect={false}
-                        multi
+                        isMulti
                         onChange={val => {
                           return onChange(val);
                         }}
@@ -397,7 +421,7 @@ export class MainTable extends React.Component {
             }
           ]}
           style={{
-            height: "350px"
+            height: "360px"
           }}
           filtered={this.state.filtered}
           onFilteredChange={(filtered, column) => {

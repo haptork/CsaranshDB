@@ -88,6 +88,7 @@ export class DashboardSimple extends React.Component {
 
   componentDidMount(prevProps) {
     //if (prevProps === undefined) return;
+    console.log("In dashboard comp did mount");
     if (prevProps !== undefined && (prevProps.queryString === this.props.queryString)) return;
     fetch('/cascades'+this.props.queryString)
       .then(res=>res.json())
@@ -184,9 +185,11 @@ export class DashboardSimple extends React.Component {
     let classes = this.props.classes;
     let openly = this.state.mobileOpen;
     const data =this.state.data;
+    /*
     console.log("rendering dashboard.")
     console.log(data.length);
     console.log(this.state.curRows.length);
+    */
     return (
       <div className="main-panel">
     <AppBar>
