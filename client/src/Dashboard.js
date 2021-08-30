@@ -76,7 +76,7 @@ export class DashboardSimple extends React.Component {
       const data = [];
       this.allCols = getAllCol();
       const initialPick = -1;
-      const initialRow = {};
+      const initialRow = {'viewfields':{}};
       const initialLook = '';
       this.state = {
           data: [],
@@ -274,7 +274,7 @@ export class DashboardSimple extends React.Component {
           </Grid>
           </ClickAwayListener>
 
-       <CascadesAndClusterCmp classes={classes} row={this.state.lookrow} cid={this.state.cidCmp} allCids={this.state.allCids} handleClusterCmp={(cid)=>this.handleClusterCmp(cid)} data={this.data} shortName={this.shortName}/>
+       <CascadesAndClusterCmp classes={classes} row={this.state.lookrow} cid={this.state.cidCmp} allCids={this.state.allCids} handleClusterCmp={(cid)=>this.handleClusterCmp(cid)} data={this.state.data} shortName={this.shortName}/>
       </div>
     );
 //    return (

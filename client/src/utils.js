@@ -114,8 +114,16 @@ function loadJSON(callback) {
 */
 
 export const toXyzArSplit = (data, onlySurviving = true) => {
-  const coords = data.coords;
-  const eigen_coords = data.eigen_coords;
+  let coords = [];
+  let eigen_coords = [];
+  if (data && data.coords) {
+    coords = data.coords;
+    eigen_coords = data.coords;
+    // eigen_coords = data.eigen_coords; TODO
+  }
+  console.log(data);
+  console.log(data.coords);
+  console.log(coords);
   let inter = [[],[], []];
   let vac = [[],[], []];
   for (const i in  coords) {

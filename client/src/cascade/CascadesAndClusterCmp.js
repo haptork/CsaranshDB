@@ -16,14 +16,14 @@ import ListIcon from '@material-ui/icons/List';
 import ViewIcon from '@material-ui/icons/BubbleChart';
 import Typography from '@material-ui/core/Typography';
 
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 // charts import
 import { HeatMapC } from "./HeatMap";
-import { ScatterPlot, ClusterPlot } from "../cascade/3d-plots.js";
+//import { ScatterPlot, ClusterPlot } from "../cascade/3d-plots.js";
 //import {ClusterCmpPlot} from "../cascade/ClusterCmpPlot";
 
 import { toXyzArSplit, uniqueKey } from "../utils";
@@ -34,7 +34,7 @@ import {
   //removeCurrentCascade
 } from "../cascade/CascadeVisualizer3D";
 */
- 
+/* 
 class CascadeViews1 extends React.Component {
   constructor(props) {
     super(props);
@@ -101,7 +101,7 @@ class CascadeViews1 extends React.Component {
    );
   }
 }
-
+*/
 class CascadeViews2 extends React.Component {
   constructor(props) {
     super(props);
@@ -113,8 +113,10 @@ class CascadeViews2 extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const row = this.props.row;
+    const row = JSON.parse(this.props.row.viewfields);
     const curXyzCoords = toXyzArSplit(row);
+    console.log(row);
+    console.log(curXyzCoords);
     return (
           <GridItem xs={12} sm={12} md={6}>
        <CustomTabs
@@ -187,29 +189,37 @@ export class CascadesAndClusterCmp extends React.Component {
    
   render() {
     const { classes, row, allCids, cid, data} = this.props;
+    console.log("rendering CascadesAndCmp");
     return (
-      <ExpansionPanel>
-        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+      <div>
+      <div>
+        CascadesAndCmp
+      </div>
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <div className={classes.column}>
             <Typography className={classes.heading}>Visualize and Find Patterns</Typography>
           </div>
           <div className={classes.column}>
             <Typography className={classes.secondaryHeading}>Currently Viewing - {this.props.shortName(row)}</Typography>
           </div>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails className={classes.details}>
+        </AccordionSummary>
+        <AccordionDetails className={classes.details}>
         <Grid container>
-          <CascadeViews1 classes={classes} row = {row} handleClusterCmp={this.props.handleClusterCmp}/>
           <CascadeViews2 classes={classes} row = {row} />
           <GridItem xs={12} sm={12} md={12}>
           </GridItem>
        </Grid>
-        </ExpansionPanelDetails>
-        </ExpansionPanel>
+        </AccordionDetails>
+        </Accordion>
+        </div>
     );
   }
 }
 /*
+
+          <CascadeViews2 classes={classes} row = {row} />
+          <CascadeViews1 classes={classes} row = {row} handleClusterCmp={this.props.handleClusterCmp}/>
 
           <ClusterCmpPlot classes={classes} row={row} cid={cid} data={data} handleClusterCmp={this.props.handleClusterCmp} shortName={this.props.shortName} allCids={allCids}/>
           */

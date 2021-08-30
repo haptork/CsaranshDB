@@ -1,6 +1,9 @@
 import React from 'react'; 
 import { toXyArSplit, getColor } from "../utils";
-import Plot from 'react-plotly.js';
+import createPlotlyComponent from 'react-plotly.js/factory';
+const Plotly = window.Plotly;
+const Plot = createPlotlyComponent(Plotly);
+
 
 const cookData = (new_coords, type) => {
 
