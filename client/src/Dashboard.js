@@ -25,7 +25,7 @@ import { uniqueKey, getAllCol} from "./utils";
 //import { getCurrentCascade } from "../cascades/CascadeVisualizer3D";
 //import { Statistics } from "../statistics/Statistics";
 //import { Comparison } from "../Comparison/Comparison";
-//import {CascadesAndClusterCmp} from "../cascades/CascadesAndClusterCmp";
+import {CascadesAndClusterCmp} from "./cascade/CascadesAndClusterCmp";
 //other components
 import Select from 'react-select';
 import Paper from '@material-ui/core/Paper';
@@ -64,20 +64,26 @@ const styles = theme => ({
   },
 });
 */
+const  fetchCascadeInfo = async (id) => {
+  const cascadeJson = await fetch('/cascade/' + id);
+  const rowData =  await cascadeJson.json();
+  return rowData;
+}
 
 export class DashboardSimple extends React.Component {
   constructor(props) {
       super(props);
       const data = [];
       this.allCols = getAllCol();
-      const initialPick = data.length == 0 ? -1 : 0;
-      const initialRow = (initialPick >= 0) ? data[initialPick] : {};
+      const initialPick = -1;
+      const initialRow = {};
+      const initialLook = '';
       this.state = {
           data: [],
           curRows: [],
-          compareRows: new Set(),
+          //compareRows: new Set(),
           except: new Set(),
-          look: "",
+          look: initialLook,
           mobileOpen: false,
           lookrow: initialRow,
           cidCmp: getInitialSelection(initialRow),
@@ -88,26 +94,32 @@ export class DashboardSimple extends React.Component {
 
   componentDidMount(prevProps) {
     //if (prevProps === undefined) return;
-    console.log("In dashboard comp did mount");
+    //console.log("In dashboard comp did mount");
     if (prevProps !== undefined && (prevProps.queryString === this.props.queryString)) return;
     fetch('/cascades'+this.props.queryString)
       .then(res=>res.json())
       .then(cascades => {
         const data = cascades;
-        const initialPick = data.length == 0 ? -1 : 0;
-        const initialRow = (initialPick >= 0) ? data[initialPick] : {};
-        this.setState({
-          data: data,
-          curRows: data,
-          compareRows: new Set(),
-          except: new Set(),
-          look: "",
-          mobileOpen: false,
-          lookrow: initialRow,
-          cidCmp: getInitialSelection(initialRow),
-          allCids: getCids(initialRow),
-          showCol: this.allCols.filter(x => x['isShow'])
-        })
+        if (data.length === 0) return;
+        const initialPick = 0;
+        const initialRow = data[initialPick];
+        const initialLook = uniqueKey(initialRow);
+        fetchCascadeInfo(initialRow.id).then(rowData => {
+          console.log(initialRow.id);
+          console.log(rowData);
+          this.setState({
+            data : data,
+            curRows : data,
+            lookrow : rowData,
+            // compareRows: new Set(),
+            except : new Set(),
+            look : initialLook,
+            mobileOpen : false,
+            cidCmp : getInitialSelection(initialRow),
+            allCids : getCids(initialRow),
+            showCol : this.allCols.filter(x => x['isShow'])
+          });
+        });
       });
   }
 
@@ -168,17 +180,37 @@ export class DashboardSimple extends React.Component {
   }
 
   lookCurRowHandler(row) {
-    const isLooking = (this.state.look === row.name)
+    const newRowId = uniqueKey(row);
+    const isLooking = (this.state.look === newRowId)
     if (isLooking) return;
-    const compareRows = new Set(this.state.compareRows);
-    compareRows.add(uniqueKey(row));
-   this.setState({
-      look: uniqueKey(row),
-      lookrow: row,
-      compareRows,
-      cidCmp: getInitialSelection(row),
-      allCids: getCids(row)
+    //const compareRows = new Set(this.state.compareRows);
+    //compareRows.add(uniqueKey(row));
+    fetchCascadeInfo(newRowId).then(rowData => {
+      console.log(newRowId);
+      console.log(rowData);
+      this.setState({
+        look : newRowId,
+        lookrow : rowData,
+        cidCmp : getInitialSelection(row),
+        allCids : getCids(row),
+      });
     });
+/*
+    fetch('/cascades'+this.props.queryString)
+      .then(res=>res.json())
+      .then(cascades => {
+        const data = cascades;
+        const initialPick = data.length == 0 ? -1 : 0;
+        const initialRow = (initialPick >= 0) ? data[initialPick] : {};
+       this.setState({
+          look: newRowId,
+          lookrow: row,
+          //compareRows,
+          cidCmp: getInitialSelection(row),
+          allCids: getCids(row)
+        });
+      });
+      */
   }
     
     render() {
@@ -241,6 +273,8 @@ export class DashboardSimple extends React.Component {
           </GridItem>
           </Grid>
           </ClickAwayListener>
+
+       <CascadesAndClusterCmp classes={classes} row={this.state.lookrow} cid={this.state.cidCmp} allCids={this.state.allCids} handleClusterCmp={(cid)=>this.handleClusterCmp(cid)} data={this.data} shortName={this.shortName}/>
       </div>
     );
 //    return (

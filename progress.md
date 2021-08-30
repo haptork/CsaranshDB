@@ -149,6 +149,28 @@ TODO:
 - fix: logo moving on table open/close.
 - fix: filter fields are not updating in table.
 - multi-Select size.
-- Adding summary data on server side.
 - fetching row data on click for table.
+- Adding outline summary data on server side.
 
+27th Aug:
+
+WIP:
+
+- fix: logo moving on table open/close.
+    -found the reason. will do later once the logo is finalised.
+- ~~fix: filter fields are not updating in table.~~
+
+28th Aug:
+
+WIP:
+
+- ~~fetching row data on click for table.~~
+- think about colors of the main page and logo.
+  - Flag colors: #ff9933, #138808, #000080, #ef9b50
+
+29th Aug:
+
+WIP:
+
+- Adding cascade visualizations.
+  - Adding dependencies from Cascade3DViewer for now fscreen, three...

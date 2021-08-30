@@ -1,5 +1,6 @@
+/*jshint esversion: 6 */
 import React from 'react';
-import ReactTable from "react-table-v6";
+import ReactTable from "react-table";
 import InputRange from 'react-input-range';
 import Select from 'react-select';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -9,23 +10,28 @@ import HighlightOff from '@material-ui/icons/HighlightOff';
 
 import Gpsoff from '@material-ui/icons/GpsOff';
 import Gpsfix from '@material-ui/icons/GpsFixed';
-import {matchSorter} from 'match-sorter';
+import matchSorter from 'match-sorter';
 
-import { uniqueKey, getAllCol } from "./utils";
+import { uniqueKey, getAllCol } from "../utils";
 
 //import basename from 'path';
 
-const ActionButton = (props) => {
-    const isLook = props.look === uniqueKey(props.cellInfo);
-    const isExcept = props.except.has(uniqueKey(props.cellInfo));
+class ActionButton extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    const isLook = this.props.look === uniqueKey(this.props.cellInfo);
+    const isExcept = this.props.except.has(uniqueKey(this.props.cellInfo));
     const lookButColor = isLook ? 'primary' : 'default';
     const exButColor = isExcept ? 'secondary' : 'default';
+
     return (
      <div>
 
       <Tooltip title="View this cascade" placement="left" id="tooltipLook">
       <IconButton className="tableButton" size="small" color={lookButColor} onClick={() => {
-        return props.onLookCur(props.cellInfo);
+        return this.props.onLookCur(this.props.cellInfo);
       }
       }
       >
@@ -35,15 +41,16 @@ const ActionButton = (props) => {
  
     <Tooltip id="tooltipExcept" title="Remove from statistics" placement="top">
       <IconButton className="tableButton" size="small" color={exButColor} onClick={() => {
-        return props.onBan(props.cellInfo, isExcept);
+        return this.props.onBan(this.props.cellInfo, isExcept);
       }
       }>
         {(isExcept) ? <Gpsoff /> : <Gpsfix/>}
       </IconButton>
       </Tooltip>
-      {props.cellInfo.id}
+      {this.props.cellInfo.id}
      </div>
     );
+  }
 }
 
 const RangeFilter = props => {
@@ -104,7 +111,7 @@ const uniqueAr = (ar, fieldAccessor) => {
 
 const isShowCol = (key, showCol) => {
   for (const x of showCol) {
-    if (key === x.value) return true
+    if (key == x.value) return true
   }
   return false;
 }
@@ -127,50 +134,21 @@ export class MainTable extends React.Component {
       filtered : []
     };
   }
-
-  componentWillReceiveProps(nextProps) {
-    /*
-    console.log("In maintable comp did mount");
-    console.log(this.props.data);
-    console.log(this.rows);
-    console.log(nextProps.data);
-    */
-    if (this.rows.length !== 0) return;
-    this.rows = nextProps.data;
-    /*
-    console.log("After");
-    console.log(this.rows);
-    console.log(nextProps.data);
-    */
-    this.filters = this.defaultFilterBounds();
-    this.setState({
-      vfilters : this.defaultFilterBounds(),
-      isFilter : this.defaultIsFilter(),
-      filterSelectAr: this.defulatFilterSelectAr(),
-      filtered : []
-    });
-  }
   
   defulatFilterSelectAr() {
     let res = {};
     for (const field of this.fields) {
-      if (field.filterType !== 'select') continue;
-      res[field['value']] = uniqueAr(this.rows, field['accessor'])
+      if (field.filterType != 'select') continue;
+      res[field['value']] = uniqueAr(this.props.data, field['accessor'])
     }
-    /*
-    console.log("In filterSelect");
-    console.log(this.rows);
-    console.log(this.fields);
-    console.log("res", res);
-    */
     return res;
   }
 
   defaultFilterBounds() {
     let res = {};
     for (const field of this.fields) {
-      if (field.filterType !== 'range') continue;
-      res[field['value']] = minMaxPropsMaker(this.rows, field['accessor']);
+      if (field.filterType != 'range') continue;
+      res[field['value']] = minMaxPropsMaker(this.props.data, field['accessor']);
     }
     return res;
   }
@@ -210,7 +188,7 @@ export class MainTable extends React.Component {
     let isFilter = this.defaultIsFilter();
     for (const x of filtered) {
       const filterType = this.fields[this.keyPos[x.id]].filterType;
-      if (filterType === "select" || filterType === "text") {
+      if (filterType == "select" || filterType == "text") {
         if (x.value.length > 0) {
           isFilter[x.id] = true;
         }
@@ -230,7 +208,7 @@ export class MainTable extends React.Component {
     /*
     for (const field in this.fields) {
       const filterType = this.fields[this.keyPos[x.id]].filterType;
-      if (filterType === "select") {
+      if (filterType == "select") {
         filterSelectAr[x.id] = isFilter[x.id] ? this.state.filterSelectAr[x.id] : uniqueAr(this.rows, this.fields[this.keyPos[x.id]]['accessor']);
         if (isFilter[x.id]) {
 
@@ -247,7 +225,7 @@ export class MainTable extends React.Component {
     */
     for (const key in isFilter) {
       const filterType = this.fields[this.keyPos[key]].filterType;
-      if (filterType === "select")  {
+      if (filterType == "select")  {
         filterSelectAr[key] = isFilter[key] ? this.state.filterSelectAr[key] : uniqueAr(this.rows, this.fields[this.keyPos[key]]['accessor']);
       }
       else if (key !== curFilter) {
@@ -273,7 +251,6 @@ export class MainTable extends React.Component {
         //this.rows = rows;
         return rows;
       }
-      //console.log(filter);
       const ans = rows.filter(row => {
         for (const x of filter.value) {
           if (x.value === row[filter.id]) return true;
@@ -305,7 +282,7 @@ export class MainTable extends React.Component {
                         name={id}
                         value={filter ? filter.value : ""}
                         closeOnSelect={false}
-                        isMulti
+                        multi
                         onChange={val => {
                           return onChange(val);
                         }}
@@ -328,7 +305,7 @@ export class MainTable extends React.Component {
                     );
                   });
   }
-/*
+
   TextColumnFilter({ filter, onChange}) {
     return (
       <input
@@ -340,7 +317,7 @@ export class MainTable extends React.Component {
       />
     )
   }
-*/
+
   render() {
     let resultCols = [];
     let inputCols = [];
@@ -350,17 +327,17 @@ export class MainTable extends React.Component {
       let filter = undefined;
       let filterMethod = undefined;
       let filterAll = true;
-      if (field.filterType === "range") {
+      if (field.filterType == "range") {
         isFilterable = true;
         filterAll = true;
         filter = this.filterRange(key); 
         filterMethod = this.defaultRangeFilterAllFn(); 
-      } else if (field.filterType === 'select') {
+      } else if (field.filterType == 'select') {
         isFilterable = true;
         filterAll = true;
         filter = this.filterSelect(key); 
         filterMethod = this.filterMethodSelect(); 
-      } else if (field.filterType === "text") {
+      } else if (field.filterType == "text") {
         filterMethod = this.filterMethodText();
       }
       const col = {
@@ -373,7 +350,7 @@ export class MainTable extends React.Component {
             filterMethod: filterMethod,
             show: isShowCol(key, this.props.showCol)
           };
-      if (field.type === "input") {
+      if (field.type == "input") {
         inputCols.push(col)
       } else {
         resultCols.push(col)
@@ -421,7 +398,7 @@ export class MainTable extends React.Component {
             }
           ]}
           style={{
-            height: "360px"
+            height: "350px"
           }}
           filtered={this.state.filtered}
           onFilteredChange={(filtered, column) => {
@@ -448,5 +425,3 @@ export class MainTable extends React.Component {
     );
   }
 }
-
-export default MainTable;

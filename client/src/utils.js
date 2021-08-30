@@ -76,7 +76,7 @@ export const getData = () => window.cascades.data;
 
 export const getClassData = (curMode) => window.cluster_classes[curMode];
 
-export const uniqueKey = (row) => row.id + row.infile + row.xyzFilePath;
+export const uniqueKey = (row) => row.id;// + row.infile + row.xyzFilePath;
 
 export const uniqueName = (row) => row.id + "-" + row.substrate + "-" + row.energy;
 
