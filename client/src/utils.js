@@ -118,7 +118,7 @@ export const toXyzArSplit = (data, onlySurviving = true) => {
   let eigen_coords = [];
   if (data && data.coords) {
     coords = data.coords;
-    eigen_coords = data.coords;
+    eigen_coords = data.eigencoords;
     // eigen_coords = data.eigen_coords; TODO
   }
   console.log(data);

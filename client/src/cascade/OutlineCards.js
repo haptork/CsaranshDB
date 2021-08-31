@@ -1,9 +1,9 @@
 import React from "react";
 import Grid from "@material-ui/core/Grid";
-import GridItem from "components/Grid/GridItem.js";
-import Card from "components/Card/Card.js";
-import CardHeader from "components/Card/CardHeader.js";
-import CardIcon from "components/Card/CardIcon.js";
+import GridItem from "../components/Grid/GridItem.js";
+import Card from "../components/Card/Card.js";
+import CardHeader from "../components/Card/CardHeader.js";
+import CardIcon from "../components/Card/CardIcon.js";
 // Icons
 import ElemIcon from "@material-ui/icons/Grain";
 import EnergyIcon from "@material-ui/icons/FlashOn";
@@ -46,7 +46,7 @@ export class OutlineCards extends React.Component {
     const x = colors.map((c, i) => { return ( <Grid container className="content"> <Item color={colors[0]} icon={icons[0]} val={props.values[0]} classes={props.classes}/> </Grid>);});
     return (
       <Grid container className="content"> 
-      {colors.map((c, i) => <Item color={c} icon={icons[i]} val={props.values[i]} classes={props.classes}/>)}
+      {colors.map((c, i) => <Item color={c} icon={icons[i]} key={i} val={props.values[i]} classes={props.classes}/>)}
       </Grid>
     );
   }

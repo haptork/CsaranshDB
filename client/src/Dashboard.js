@@ -26,6 +26,7 @@ import { uniqueKey, getAllCol} from "./utils";
 //import { Statistics } from "../statistics/Statistics";
 //import { Comparison } from "../Comparison/Comparison";
 import {CascadesAndClusterCmp} from "./cascade/CascadesAndClusterCmp";
+import {OutlineCards} from "./cascade/OutlineCards";
 //other components
 import Select from 'react-select';
 import Paper from '@material-ui/core/Paper';
@@ -76,12 +77,19 @@ export class DashboardSimple extends React.Component {
       const data = [];
       this.allCols = getAllCol();
       const initialPick = -1;
-      const initialRow = {'viewfields':{}};
+      const initialRow = {viewfields:'{}'};
       const initialLook = '';
+      const outline = [
+        {title: "Elements", label:'TODO', labelSm: 'later'},
+        {title:'Energies', label:'TODO', labelSm: 'later'},
+        {title:'Potentials', label:'TODO', labelSm: 'later'},
+        {title:'Defect Morphology', label:'TODO', labelSm: 'later'}
+      ]
       this.state = {
           data: [],
           curRows: [],
           //compareRows: new Set(),
+          dataOutline: outline,
           except: new Set(),
           look: initialLook,
           mobileOpen: false,
@@ -105,8 +113,7 @@ export class DashboardSimple extends React.Component {
         const initialRow = data[initialPick];
         const initialLook = uniqueKey(initialRow);
         fetchCascadeInfo(initialRow.id).then(rowData => {
-          console.log(initialRow.id);
-          console.log(rowData);
+          rowData.viewfields = JSON.parse(rowData.viewfields);
           this.setState({
             data : data,
             curRows : data,
@@ -186,8 +193,7 @@ export class DashboardSimple extends React.Component {
     //const compareRows = new Set(this.state.compareRows);
     //compareRows.add(uniqueKey(row));
     fetchCascadeInfo(newRowId).then(rowData => {
-      console.log(newRowId);
-      console.log(rowData);
+      rowData.viewfields = JSON.parse(rowData.viewfields);
       this.setState({
         look : newRowId,
         lookrow : rowData,
@@ -273,7 +279,7 @@ export class DashboardSimple extends React.Component {
           </GridItem>
           </Grid>
           </ClickAwayListener>
-
+       <OutlineCards values= {this.state.dataOutline} classes={classes}/>
        <CascadesAndClusterCmp classes={classes} row={this.state.lookrow} cid={this.state.cidCmp} allCids={this.state.allCids} handleClusterCmp={(cid)=>this.handleClusterCmp(cid)} data={this.state.data} shortName={this.shortName}/>
       </div>
     );

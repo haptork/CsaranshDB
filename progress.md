@@ -40,8 +40,8 @@ WIP:
 - Added migrations and seeding of dev data for the table.
   - Sought help from https://blog.bitsrc.io/seeding-your-database-with-thousands-of-users-using-knex-js-and-faker-js-6009a2e5ffbf
   - commands to remember:
-    - ./node_modules/knex/bin/cli.js migrate:latest --env development
     - ./node_modules/knex/bin/cli.js migrate:down --env development
+    - ./node_modules/knex/bin/cli.js migrate:latest --env development
     - ./node_modules/knex/bin/cli.js seed:run --env development
 
 TODO:
@@ -174,3 +174,37 @@ WIP:
 
 - Adding cascade visualizations.
   - Adding dependencies from Cascade3DViewer for now fscreen, three...
+  - three seems to have changed its interface completely and there are
+  vulnerabilities in earlier version. The way forward seems to be to use
+  three fiber library and rewrite the vizualization.
+  
+30th Aug:
+
+WIP:
+
+- ~~Added custom plotly.js.~~
+- ~~Tested heatmap.~~
+
+TODO:
+
+- Finalize the cascade view.
+- Move to outline and summary.
+
+31st Augh:
+
+WIP:
+
+- Added outline cards to correct for top margin.
+- Added infile styles from earlier dashboard to asssets/dashboardstyles.js for correct css of accordian title and subtitle.
+
+TODO:
+
+- ~~Add eigen-coords, dclustcoords to rowInfo for plotting heatmap and meshcascade.~~
+  - ~~Change coords to eigen-coords in heatmap.~~
+  - ! Add hulls for drawing mesh-cascades.
+- Add cluster comparison info to rowdata for cluster comparison plots.
+  - Will have to add cluster comparison in a different way for adding to DB in pp.
+- Add legend picture for orientation in defect plots such as comparison etc.
+- Add outline summary of data.
+- Add a plotly scatter plot with different glyph for each defect morphology, size representing.
+- Add a plotly scatter plot with different glyph for each defect morphology, hull-meshes for bigger defects and size representing.

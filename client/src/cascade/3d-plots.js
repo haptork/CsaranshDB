@@ -1,6 +1,8 @@
 import React from 'react';
-import Plot from 'react-plotly.js';
 import { getColor, getClassData, getPairColorOrient, uniqueKey } from "../utils";
+import createPlotlyComponent from 'react-plotly.js/factory';
+const Plotly = window.Plotly;
+const Plot = createPlotlyComponent(Plotly);
 
 const getMinMaxFromAr = (mn, mx, ar) => {
   for (let i = 0; i < 3; i++) {
@@ -410,12 +412,12 @@ export const ClusterClassPlot = props => {
 const cookData = (row) => {
   let data = [];
   let i = 0;
-  for (const [cid, cindexList] of Object.entries(row.dclust_coords)) {
+  for (const [cid, cindexList] of Object.entries(row.dclustcoords)) {
     let c = [[],[],[]];
     for (const cindex of cindexList) {
-        c[0].push(row.eigen_coords[cindex][0]);
-        c[1].push(row.eigen_coords[cindex][1]);
-        c[2].push(row.eigen_coords[cindex][2]);
+        c[0].push(row.eigencoords[cindex][0]);
+        c[1].push(row.eigencoords[cindex][1]);
+        c[2].push(row.eigencoords[cindex][2]);
     }
     data.push({
         x: c[0],

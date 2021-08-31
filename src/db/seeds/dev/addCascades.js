@@ -33,6 +33,8 @@ const dbToJsonMap = {
   "hullvol": 'hull_vol',
   "hulldensity": 'hull_density',
   'coords': 'coords',
+  'eigencoords': 'eigen_coords',
+  'dclustcoords': 'dclust_coords',
   'codefects': 'coDefects',
   'clusters': 'clusters',
   'clusterclasses': 'clusterClasses'
@@ -48,7 +50,7 @@ const makeFilteredJson = (row, dbCols) => {
       if (jsonCol === undefined) continue;
       res[dbCol] = row[jsonCol];
     } else {
-      res[dbCol] = JSON.stringify(makeFilteredJson(row, ['coords', 'codefects', 'clusters', 'clusterclasses']));
+      res[dbCol] = JSON.stringify(makeFilteredJson(row, ['coords', 'codefects', 'clusters', 'clusterclasses', 'eigencoords', 'dclustcoords']));
     }
     //res[dbCol] = makeFilteredJson(row, ['coords', 'codefects', 'clusters', 'clusterclasses', 'clustercmp', 'clustercmpsize']);
   }

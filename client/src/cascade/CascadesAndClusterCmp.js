@@ -23,7 +23,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 // charts import
 import { HeatMapC } from "./HeatMap";
-//import { ScatterPlot, ClusterPlot } from "../cascade/3d-plots.js";
+import { ScatterPlot, ClusterPlot } from "../cascade/3d-plots.js";
 //import {ClusterCmpPlot} from "../cascade/ClusterCmpPlot";
 
 import { toXyzArSplit, uniqueKey } from "../utils";
@@ -34,7 +34,6 @@ import {
   //removeCurrentCascade
 } from "../cascade/CascadeVisualizer3D";
 */
-/* 
 class CascadeViews1 extends React.Component {
   constructor(props) {
     super(props);
@@ -46,7 +45,8 @@ class CascadeViews1 extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const row = this.props.row;
+    //const row = this.props.row;
+    const row = this.props.row.viewfields;
     const curXyzCoords = toXyzArSplit(row);
     return (
           <GridItem xs={12} sm={12} md={6}>
@@ -54,6 +54,7 @@ class CascadeViews1 extends React.Component {
               title={"3D"}
               headerColor="info"
               tabs={[
+                /*
                 {
                   tabName: "Clusters",
                   tabIcon: ClusterIcon,
@@ -68,6 +69,7 @@ class CascadeViews1 extends React.Component {
                     </div>
                   )
                 },
+                */
                 {
                   tabName: "Scatter",
                   tabIcon: ScatterIcon,
@@ -101,7 +103,7 @@ class CascadeViews1 extends React.Component {
    );
   }
 }
-*/
+
 class CascadeViews2 extends React.Component {
   constructor(props) {
     super(props);
@@ -113,7 +115,9 @@ class CascadeViews2 extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const row = JSON.parse(this.props.row.viewfields);
+    //console.log("viewfields is");
+    //console.log(this.props.row.viewfields);
+    const row = this.props.row.viewfields;
     const curXyzCoords = toXyzArSplit(row);
     console.log(row);
     console.log(curXyzCoords);
@@ -190,11 +194,8 @@ export class CascadesAndClusterCmp extends React.Component {
   render() {
     const { classes, row, allCids, cid, data} = this.props;
     console.log("rendering CascadesAndCmp");
+    console.log(classes);
     return (
-      <div>
-      <div>
-        CascadesAndCmp
-      </div>
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <div className={classes.column}>
@@ -206,20 +207,16 @@ export class CascadesAndClusterCmp extends React.Component {
         </AccordionSummary>
         <AccordionDetails className={classes.details}>
         <Grid container>
+          <CascadeViews1 classes={classes} row = {row} handleClusterCmp={this.props.handleClusterCmp}/>
           <CascadeViews2 classes={classes} row = {row} />
           <GridItem xs={12} sm={12} md={12}>
+          <ClusterCmpPlot classes={classes} row={row} cid={cid} data={data} handleClusterCmp={this.props.handleClusterCmp} shortName={this.props.shortName} allCids={allCids}/>
           </GridItem>
        </Grid>
         </AccordionDetails>
         </Accordion>
-        </div>
     );
   }
 }
 /*
-
-          <CascadeViews2 classes={classes} row = {row} />
-          <CascadeViews1 classes={classes} row = {row} handleClusterCmp={this.props.handleClusterCmp}/>
-
-          <ClusterCmpPlot classes={classes} row={row} cid={cid} data={data} handleClusterCmp={this.props.handleClusterCmp} shortName={this.props.shortName} allCids={allCids}/>
           */
