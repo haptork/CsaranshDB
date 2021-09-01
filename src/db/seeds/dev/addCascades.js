@@ -82,7 +82,7 @@ exports.seed = async function(knex, Promise) {
   }
   console.log(tableRows[0]);
   await knex('cascades').del();
-  await knex('cascades').insert(tableRows);
+  return knex('cascades').insert(tableRows);
   /*
   return knex('cascades').del()
     .then(function () {

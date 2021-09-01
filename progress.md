@@ -43,6 +43,10 @@ WIP:
     - ./node_modules/knex/bin/cli.js migrate:down --env development
     - ./node_modules/knex/bin/cli.js migrate:latest --env development
     - ./node_modules/knex/bin/cli.js seed:run --env development
+  - More commands:
+    - knex migrate:make initUsers --env development
+    - knex seed:make addUsers --env development
+
 
 TODO:
 

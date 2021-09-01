@@ -96,11 +96,22 @@ module.exports = () => {
   
   api.get('/cascade/:id', async (req, res) => {
     const id = req.params.id;
-    // get book
     const cascade = await dbhandle.where({id:id}).first().from("cascades");
     if (!cascade) res.status(404).send("<h2> Error getting cascade with input id. </h2>");
     res.send(cascade);
   });
+
+  api.get('/cluster/:id/:cid', async (req, res) => {
+    const id = req.params.id;
+    const cid = req.params.cid;
+    const cascade = await dbhandle.where({id:id}).first().from("cascades");
+    if (!cascade) res.status(404).send("<h2> Error getting cascade with input id. </h2>");
+
+    const cmpIds = {};
+    res.send(cascade);
+  });
+
+
 
   return api;
 }
