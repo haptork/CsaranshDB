@@ -102,13 +102,23 @@ const getCoordType = (row, cid) => {
 
 const getComparisonPairs = (cascade, clusterId) => {
   let pairs = {};
-  for (let criterion in cascade.clust_cmp[clusterId]) {
-    pairs[''+cascade.id+","+clusterId] = [cascade.id, clusterId];
+  for (let key in cascade.clust_cmp[clusterId]) {
+    const ar = cascade.clust_cmp[clusterId][key];
+    for (let val of ar) {
+      pairs[''+val[1]+","+val[2]] = [val[1], val[2]];
+    }
   }
-  for (let criterion in cascade.clust_cmp_size[clusterId]) {
-    pairs[''+cascade.id+","+clusterId] = [cascade.id, clusterId];
+  for (let key in cascade.clust_cmp_size[clusterId]) {
+    const ar = cascade.clust_cmp[clusterId][key];
+    for (let val of ar) {
+      pairs[''+val[1]+","+val[2]] = [val[1], val[2]];
+    }
   }
-  return pairs;
+  let res = [];
+  for (const key in pairs) {
+    res.push(pairs[key]);
+  }
+  return res;
 };
 
 exports.seed = async function(knex) {
@@ -128,12 +138,14 @@ exports.seed = async function(knex) {
         'cascadeid':cascade.id,
         'name': clusterId,
         'size': size,
-        'morphology': morphology,
+        'savimorph': morphology,
         'coordtype': coordType,
         'coords': JSON.stringify(coords),
         'cmp': JSON.stringify(cascade.clust_cmp[clusterId]),
         'cmpsize': JSON.stringify(cascade.clust_cmp_size[clusterId]),
-        'cmppairs': JSON.stringify(pairs)
+        'cmppairs': JSON.stringify(pairs),
+        'morphdesc': '',
+        'properties': '',
       });
     }
   }

@@ -5,6 +5,7 @@ const changeFieldCaseForDb = (name) =>  {
 };
 
 const dbToJsonMap = {
+  "id": "id",
   "cascadeid": "id",
   'ncell': 'ncell',
   'energy': 'energy',

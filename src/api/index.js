@@ -101,17 +101,33 @@ module.exports = () => {
     res.send(cascade);
   });
 
-  api.get('/cluster/:id/:cid', async (req, res) => {
+  api.get('/clustercmp/:id/:cid', async (req, res) => {
     const id = req.params.id;
     const cid = req.params.cid;
-    const cascade = await dbhandle.where({id:id}).first().from("cascades");
-    if (!cascade) res.status(404).send("<h2> Error getting cascade with input id. </h2>");
-
-    const cmpIds = {};
-    res.send(cascade);
+    //console.log(id, cid);
+    const cluster = await dbhandle.select("coordtype", "coords", "cmp", "cmpsize", "cmppairs")
+                            .where({cascadeid:id, name:cid}).first().from("clusters");
+    if (!cluster) res.status(404).send("<h2> Error getting cascade with input id. </h2>");
+    const cmpCoords = {};
+    const pairs = JSON.parse(cluster.cmppairs);
+    for (let cmpCluster of pairs) {
+      const curClusterCoords = await dbhandle.select("coordtype", "coords")
+                            .where({cascadeid:cmpCluster[0], name:cmpCluster[1]}).first().from("clusters");
+      if (curClusterCoords) cmpCoords[cmpCluster] = curClusterCoords;
+    }
+    cluster.cmppairs = cmpCoords;
+    res.send(cluster);
   });
 
-
-
+  api.get('/clustercoords/:id/:cid', async (req, res) => {
+    const id = req.params.id;
+    const cid = req.params.cid;
+    console.log(id, cid);
+    const cluster = await dbhandle.select("coordtype", "coords")
+                            .where({cascadeid:id, name:cid}).first().from("clusters");
+    if (!cluster) res.status(404).send("<h2> Error getting cascade with input id. </h2>");
+    console.log(cluster)
+    res.send(cluster);
+  });
   return api;
 }

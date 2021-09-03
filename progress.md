@@ -5,6 +5,7 @@ Main Branches to work:
 - Gui.
 - FCC.
 - Alloy.
+- Surface.
 
 10th Aug:
 
@@ -212,3 +213,25 @@ TODO:
 - Add outline summary of data.
 - Add a plotly scatter plot with different glyph for each defect morphology, size representing.
 - Add a plotly scatter plot with different glyph for each defect morphology, hull-meshes for bigger defects and size representing.
+
+2nd Sep:
+
+WIP:
+- Created clusters table, seeds and get api for it.
+
+3rd Sep:
+
+WIP:
+
+- Fixed some issues with clusters table.
+  - To remove ambiguity, cascades table primary id now starts from zero and it is same as cascade-id (which can now be removed from table (column)).
+
+TODO:
+- Show cluster comparison plots.
+- Show statistics plots.
+- Show table with downloadable info.
+- Add 3d defect morphology plot.
+- Same min-max for contour plots.
+Optimizing json size:
+  - I can use gzip for sending json data initially.
+  - Smaller field names. Possibly with attributes.

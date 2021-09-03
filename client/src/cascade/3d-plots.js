@@ -353,8 +353,6 @@ export class Cluster2CmpPlot extends React.Component {
     const {cid, row} = this.props;
     const coordType = getCoordType(row, cid);
     let coords = [];
-    if (coordType == 1) coords = getClusterLineCoord(row, cid);
-    else coords = getClusterCoord(row, cid);
     let mn = 0.0, mx = 0.0;
     let plotData = [];
     if (coordType == 1) {
