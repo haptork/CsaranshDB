@@ -290,4 +290,8 @@ TODO:
 - Add dclustersv / subcascades to table and statistics.
 - rename json entries in pp.
 - Add table view.
+- pp:
+  - Think of some way to create entries in clustercmp.
+  - store kdd and hdbscan training.
+  - change keys.
 
