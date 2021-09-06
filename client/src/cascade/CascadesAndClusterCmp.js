@@ -192,9 +192,9 @@ export class CascadesAndClusterCmp extends React.Component {
   */
    
   render() {
-    const { classes, row, allCids, cid, data} = this.props;
-    console.log("rendering CascadesAndCmp");
-    console.log(classes);
+    const { classes, row, allCids, cid, cmpData, data} = this.props;
+    //console.log("rendering CascadesAndCmp");
+    //console.log(classes);
     return (
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -209,7 +209,9 @@ export class CascadesAndClusterCmp extends React.Component {
         <Grid container>
           <CascadeViews1 classes={classes} row = {row} handleClusterCmp={this.props.handleClusterCmp}/>
           <CascadeViews2 classes={classes} row = {row} />
+
        </Grid>
+
         </AccordionDetails>
         </Accordion>
     );
@@ -217,6 +219,6 @@ export class CascadesAndClusterCmp extends React.Component {
 }
 /*
           <GridItem xs={12} sm={12} md={12}>
-          <ClusterCmpPlot classes={classes} row={row} cid={cid} data={data} handleClusterCmp={this.props.handleClusterCmp} shortName={this.props.shortName} allCids={allCids}/>
+          <ClusterCmpPlot classes={classes} row={row} cid={cid} cmpData={cmpData} data={data} handleClusterCmp={this.props.handleClusterCmp} shortName={this.props.shortName} allCids={allCids}/>
           </GridItem>
           */

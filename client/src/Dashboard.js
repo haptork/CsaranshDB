@@ -30,13 +30,13 @@ import {OutlineCards} from "./cascade/OutlineCards";
 //other components
 import Select from 'react-select';
 import Paper from '@material-ui/core/Paper';
-//import { getCids, getInitialSelection } from "ClusterCmpPlot.js";
+import { getCids, getInitialSelectionFor } from "./cascade/ClusterCmpPlot.js";
 
 import MainTable from "./Maintable.js"
 //import {ClusterClassesTrends} from "../ClusterClassesTrends.js";
 
-const getCids = (row) => [];
-const getInitialSelection = (row) => '';
+//const getCids = (row) => [];
+//const getInitialSelection = (row) => '';
 
 /*
 const styles = theme => ({
@@ -65,10 +65,23 @@ const styles = theme => ({
   },
 });
 */
+
 const  fetchCascadeInfo = async (id) => {
   const cascadeJson = await fetch('/cascade/' + id);
   const rowData =  await cascadeJson.json();
   return rowData;
+}
+
+const  fetchClusterCmpInfo = async (id, cid) => {
+  try {
+  const clusterCmpJson = await fetch('/clustercmp/' + id + "/" + cid);
+  console.log("clusterCmpJson", clusterCmpJson);
+  const cmpData =  await clusterCmpJson.json();
+  return cmpData;
+  } catch(err) {
+    console.log("error in cluster cmp req.", err);
+  }
+  return {};
 }
 
 export class DashboardSimple extends React.Component {
@@ -77,7 +90,7 @@ export class DashboardSimple extends React.Component {
       const data = [];
       this.allCols = getAllCol();
       const initialPick = -1;
-      const initialRow = {viewfields:'{}'};
+      const initialRow = {viewfields:{}};
       const initialLook = '';
       const outline = [
         {title: "Elements", label:'TODO', labelSm: 'later'},
@@ -85,6 +98,7 @@ export class DashboardSimple extends React.Component {
         {title:'Potentials', label:'TODO', labelSm: 'later'},
         {title:'Defect Morphology', label:'TODO', labelSm: 'later'}
       ]
+      const allCids = getCids(initialRow);
       this.state = {
           data: [],
           curRows: [],
@@ -94,8 +108,9 @@ export class DashboardSimple extends React.Component {
           look: initialLook,
           mobileOpen: false,
           lookrow: initialRow,
-          cidCmp: getInitialSelection(initialRow),
-          allCids: getCids(initialRow),
+          allCids: allCids,
+          cidCmp: getInitialSelectionFor(allCids),
+          cmpData: {},
           showCol: this.allCols.filter(x => x['isShow'])
       };
   }
@@ -114,17 +129,24 @@ export class DashboardSimple extends React.Component {
         const initialLook = uniqueKey(initialRow);
         fetchCascadeInfo(initialRow.id).then(rowData => {
           rowData.viewfields = JSON.parse(rowData.viewfields);
-          this.setState({
-            data : data,
-            curRows : data,
-            lookrow : rowData,
-            // compareRows: new Set(),
-            except : new Set(),
-            look : initialLook,
-            mobileOpen : false,
-            cidCmp : getInitialSelection(initialRow),
-            allCids : getCids(initialRow),
-            showCol : this.allCols.filter(x => x['isShow'])
+          const allCids = getCids(rowData);
+          const cidCmp = getInitialSelectionFor(allCids);
+          //console.log("mounting dashboard", rowData, allCids, cidCmp);
+          fetchClusterCmpInfo(initialRow.id, cidCmp).then(cmpData => {
+            console.log("mounting dashboard", cmpData);
+            this.setState({
+              data : data,
+              curRows : data,
+              lookrow : rowData,
+              // compareRows: new Set(),
+              except : new Set(),
+              look : initialLook,
+              mobileOpen : false,
+              allCids : allCids,
+              cidCmp : cidCmp,
+              cmpData : cmpData,
+              showCol : this.allCols.filter(x => x['isShow'])
+            });
           });
         });
       });
@@ -147,9 +169,12 @@ export class DashboardSimple extends React.Component {
 
   handleClusterCmp(cid) {
     cid = '' + cid;
-    if (!this.state.lookrow.features.hasOwnProperty(cid)) return;
-    this.setState ({
-      cidCmp : cid
+    if (!this.state.lookrow.cluster.hasOwnProperty(cid)) return;
+    fetchClusterCmpInfo(this.state.look, cid).then(cmpData => {
+      this.setState({
+        cidCmp : cid,
+        cmpData : cmpData
+      });
     });
   }
 
@@ -194,11 +219,16 @@ export class DashboardSimple extends React.Component {
     //compareRows.add(uniqueKey(row));
     fetchCascadeInfo(newRowId).then(rowData => {
       rowData.viewfields = JSON.parse(rowData.viewfields);
-      this.setState({
-        look : newRowId,
-        lookrow : rowData,
-        cidCmp : getInitialSelection(row),
-        allCids : getCids(row),
+      const allCids = getCids(row);
+      const cidCmp = getInitialSelectionFor(allCids);
+      fetchClusterCmpInfo(newRowId, cidCmp).then(cmpData => {
+        this.setState({
+          look : newRowId,
+          lookrow : rowData,
+          allCids : allCids,
+          cidCmp : cidCmp,
+          cmpData : cmpData
+        });
       });
     });
 /*
@@ -280,7 +310,7 @@ export class DashboardSimple extends React.Component {
           </Grid>
           </ClickAwayListener>
        <OutlineCards values= {this.state.dataOutline} classes={classes}/>
-       <CascadesAndClusterCmp classes={classes} row={this.state.lookrow} cid={this.state.cidCmp} allCids={this.state.allCids} handleClusterCmp={(cid)=>this.handleClusterCmp(cid)} data={this.state.data} shortName={this.shortName}/>
+       <CascadesAndClusterCmp classes={classes} row={this.state.lookrow} cid={this.state.cidCmp} cmpData={this.state.cmpData} allCids={this.state.allCids} handleClusterCmp={(cid)=>this.handleClusterCmp(cid)} data={this.state.data} shortName={this.shortName}/>
       </div>
     );
 //    return (

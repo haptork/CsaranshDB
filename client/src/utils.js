@@ -121,9 +121,11 @@ export const toXyzArSplit = (data, onlySurviving = true) => {
     eigen_coords = data.eigencoords;
     // eigen_coords = data.eigen_coords; TODO
   }
+  /*
   console.log(data);
   console.log(data.coords);
   console.log(coords);
+  */
   let inter = [[],[], []];
   let vac = [[],[], []];
   for (const i in  coords) {

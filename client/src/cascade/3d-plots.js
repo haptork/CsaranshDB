@@ -350,9 +350,9 @@ export class Cluster2CmpPlot extends React.Component {
   }
 
   render() {
-    const {cid, row} = this.props;
-    const coordType = getCoordType(row, cid);
-    let coords = [];
+    const {cid, row, defectData} = this.props;
+    const coordType = defectData.coordtype;
+    let coords = defectData.coords;
     let mn = 0.0, mx = 0.0;
     let plotData = [];
     if (coordType == 1) {

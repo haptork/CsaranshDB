@@ -105,17 +105,23 @@ module.exports = () => {
     const id = req.params.id;
     const cid = req.params.cid;
     //console.log(id, cid);
-    const cluster = await dbhandle.select("coordtype", "coords", "cmp", "cmpsize", "cmppairs")
+    const cluster = await dbhandle.select("coordtype", "coords", "savimorph", "size", "cmp", "cmpsize", "cmppairs")
                             .where({cascadeid:id, name:cid}).first().from("clusters");
-    if (!cluster) res.status(404).send("<h2> Error getting cascade with input id. </h2>");
+    if (!cluster) {
+      res.status(404).send("<h2> Error getting cascade with input id. </h2>");
+    }
     const cmpCoords = {};
     const pairs = JSON.parse(cluster.cmppairs);
-    for (let cmpCluster of pairs) {
-      const curClusterCoords = await dbhandle.select("coordtype", "coords")
+    for (let cmpClusterStr in pairs) {
+      const cmpCluster = cmpClusterStr.split(',');
+      const curClusterCoords = await dbhandle.select("coordtype", "coords", "savimorph", "size")
                             .where({cascadeid:cmpCluster[0], name:cmpCluster[1]}).first().from("clusters");
-      if (curClusterCoords) cmpCoords[cmpCluster] = curClusterCoords;
+      if (curClusterCoords) cmpCoords[cmpClusterStr] = {...curClusterCoords, ...pairs[cmpClusterStr]};
     }
     cluster.cmppairs = cmpCoords;
+    cluster.cmp = JSON.parse(cluster.cmp);
+    cluster.cmpsize = JSON.parse(cluster.cmpsize);
+    cluster.coords = JSON.parse(cluster.coords);
     res.send(cluster);
   });
 

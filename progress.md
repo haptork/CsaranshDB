@@ -235,3 +235,15 @@ TODO:
 Optimizing json size:
   - I can use gzip for sending json data initially.
   - Smaller field names. Possibly with attributes.
+
+5th Sep:
+
+WIP:
+- Enable cluster comparison view.
+
+TODO:
+- Add error for field not found in shortname.
+- Improve handling of 404 error in clustercmp.
+- Improve handling of 404 error in cascadeinfo.
+- round of dists in cmp, cmpsize etc.
+

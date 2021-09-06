@@ -100,25 +100,27 @@ const getCoordType = (row, cid) => {
   return 0;
 };
 
-const getComparisonPairs = (cascade, clusterId) => {
+const cookCmpCascadeInfo = (row) => {
+  return {id:row.id, substrate: row.substrate, energy: row.energy, temperature: row.temperature, potentialused: row.potentialUsed, author: row.author};
+};
+
+const getComparisonPairs = (data, cascade, clusterId) => {
   let pairs = {};
   for (let key in cascade.clust_cmp[clusterId]) {
     const ar = cascade.clust_cmp[clusterId][key];
     for (let val of ar) {
-      pairs[''+val[1]+","+val[2]] = [val[1], val[2]];
+      pairs[''+val[1]+","+val[2]] = cookCmpCascadeInfo(data[val[1]]);
     }
   }
   for (let key in cascade.clust_cmp_size[clusterId]) {
     const ar = cascade.clust_cmp[clusterId][key];
     for (let val of ar) {
-      pairs[''+val[1]+","+val[2]] = [val[1], val[2]];
+      const newkey = ''+val[1]+","+val[2];
+      if (newkey in pairs) continue;
+      pairs[newkey] = cookCmpCascadeInfo(data[val[1]]);
     }
   }
-  let res = [];
-  for (const key in pairs) {
-    res.push(pairs[key]);
-  }
-  return res;
+  return pairs;
 };
 
 exports.seed = async function(knex) {
@@ -127,7 +129,7 @@ exports.seed = async function(knex) {
   let tableRows = [];
   for (let cascade of data) {
     for (let clusterId in cascade.clust_cmp) {
-      const pairs = getComparisonPairs(cascade, clusterId);
+      const pairs = getComparisonPairs(data, cascade, clusterId);
       const coordType = getCoordType(cascade, clusterId);
       const coords = (coordType == 1) ?
                 getClusterLineCoord(cascade, clusterId):
