@@ -23,7 +23,7 @@ import { uniqueKey, getAllCol} from "./utils";
 //import {ClusterClassesPlot} from "../ClusterClasses.js";
 //import {OutlineCards} from "../cascades/OutlineCards";
 //import { getCurrentCascade } from "../cascades/CascadeVisualizer3D";
-//import { Statistics } from "../statistics/Statistics";
+import { Statistics } from "./statistics/Statistics";
 //import { Comparison } from "../Comparison/Comparison";
 import {CascadesAndClusterCmp} from "./cascade/CascadesAndClusterCmp";
 import {OutlineCards} from "./cascade/OutlineCards";
@@ -169,7 +169,8 @@ export class DashboardSimple extends React.Component {
 
   handleClusterCmp(cid) {
     cid = '' + cid;
-    if (!this.state.lookrow.cluster.hasOwnProperty(cid)) return;
+    console.log(this.state.lookrow);
+    if (!this.state.lookrow.viewfields.clusters.hasOwnProperty(cid)) return;
     fetchClusterCmpInfo(this.state.look, cid).then(cmpData => {
       this.setState({
         cidCmp : cid,
@@ -311,6 +312,20 @@ export class DashboardSimple extends React.Component {
           </ClickAwayListener>
        <OutlineCards values= {this.state.dataOutline} classes={classes}/>
        <CascadesAndClusterCmp classes={classes} row={this.state.lookrow} cid={this.state.cidCmp} cmpData={this.state.cmpData} allCids={this.state.allCids} handleClusterCmp={(cid)=>this.handleClusterCmp(cid)} data={this.state.data} shortName={this.shortName}/>
+        <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <div className={classes.column}>
+            <Typography className={classes.heading}>Statistics over filtered rows</Typography>
+          </div>
+          <div className={classes.column}>
+            <Typography className={classes.secondaryHeading}>{this.state.curRows.length} rows currently filtered</Typography>
+          </div>
+        </AccordionSummary>
+        <AccordionDetails className={classes.details}>
+            <Statistics classes={classes} data={this.state.curRows}/>
+        </AccordionDetails>
+        </Accordion>
+
       </div>
     );
 //    return (

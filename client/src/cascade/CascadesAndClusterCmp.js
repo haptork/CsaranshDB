@@ -24,7 +24,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 // charts import
 import { HeatMapC } from "./HeatMap";
 import { ScatterPlot, ClusterPlot } from "../cascade/3d-plots.js";
-//import {ClusterCmpPlot} from "../cascade/ClusterCmpPlot";
+import {ClusterCmpPlot} from "../cascade/ClusterCmpPlot";
 
 import { toXyzArSplit, uniqueKey } from "../utils";
 
@@ -120,7 +120,7 @@ class CascadeViews2 extends React.Component {
     const row = this.props.row.viewfields;
     const curXyzCoords = toXyzArSplit(row);
     console.log(row);
-    console.log(curXyzCoords);
+    //console.log(curXyzCoords);
     return (
           <GridItem xs={12} sm={12} md={6}>
        <CustomTabs
@@ -194,7 +194,7 @@ export class CascadesAndClusterCmp extends React.Component {
   render() {
     const { classes, row, allCids, cid, cmpData, data} = this.props;
     //console.log("rendering CascadesAndCmp");
-    //console.log(classes);
+    console.log("cmpData", cmpData);
     return (
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -210,6 +210,9 @@ export class CascadesAndClusterCmp extends React.Component {
           <CascadeViews1 classes={classes} row = {row} handleClusterCmp={this.props.handleClusterCmp}/>
           <CascadeViews2 classes={classes} row = {row} />
 
+          <GridItem xs={12} sm={12} md={12}>
+          <ClusterCmpPlot classes={classes} row={row} cid={cid} cmpData={cmpData} data={data} handleClusterCmp={this.props.handleClusterCmp} shortName={this.props.shortName} allCids={allCids}/>
+          </GridItem>
        </Grid>
 
         </AccordionDetails>
@@ -218,7 +221,4 @@ export class CascadesAndClusterCmp extends React.Component {
   }
 }
 /*
-          <GridItem xs={12} sm={12} md={12}>
-          <ClusterCmpPlot classes={classes} row={row} cid={cid} cmpData={cmpData} data={data} handleClusterCmp={this.props.handleClusterCmp} shortName={this.props.shortName} allCids={allCids}/>
-          </GridItem>
           */

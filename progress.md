@@ -239,11 +239,55 @@ Optimizing json size:
 5th Sep:
 
 WIP:
-- Enable cluster comparison view.
+- ~~Enable cluster comparison view.~~
 
 TODO:
-- Add error for field not found in shortname.
+- ~~Add error for field not found in shortname.~~
 - Improve handling of 404 error in clustercmp.
 - Improve handling of 404 error in cascadeinfo.
-- round of dists in cmp, cmpsize etc.
+- round of dists in cmp, cmpsize on save in json etc.
+
+6th Sep:
+
+WIP:
+- ~~Fixed minor issues with cluster comparison.~~
+- Show statistics plots.
+
+TODO:
+- Clean and refactor cluster comparison code.
+- Show statistics plots.
+- Show table with downloadable info.
+- Add 3d defect morphology plot.
+- Same min-max for contour plots.
+Optimizing json size:
+  - I can use gzip for sending json data initially.
+  - Smaller field names. Possibly with attributes.
+
+5th Sep:
+
+WIP:
+- ~~Enable cluster comparison view.~~
+
+TODO:
+- ~~Add error for field not found in shortname.~~
+- Improve handling of 404 error in clustercmp.
+- Improve handling of 404 error in cascadeinfo.
+- round of dists in cmp, cmpsize on save in json etc.
+
+6th Sep:
+
+WIP:
+- ~~Fixed minor issues with cluster comparison.~~
+- ~~Show statistics plots.~~
+
+TODO:
+- Add cluster hdbscan coords to clusters db.
+- Clusters and cluster stats panel.
+- Add 3d defect morphology plot.
+- Better error handling, cleaning of cluster comparison code.
+- Add manual update button on statistics, auto update switch can also be given.
+- Add more columns to statistics.
+- Add dclustersv / subcascades to table and statistics.
+- rename json entries in pp.
+- Add table view.
 

@@ -5,11 +5,15 @@ const Plotly = window.Plotly;
 const Plot = createPlotlyComponent(Plotly);
 
 const getMinMaxFromAr = (mn, mx, ar) => {
+  console.log("mnmx");
+  console.log(mn);
+  console.log(mx);
+  console.log(ar);
   for (let i = 0; i < 3; i++) {
     mn[i] = Math.min(mn[i], ...ar[i]);
     mx[i] = Math.max(mx[i], ...ar[i]);
   }
-  return mn, mx;
+  return [mn, mx];
 }
 
 const cookDataLineCmp = (c) => {
@@ -344,7 +348,7 @@ export class Cluster2CmpPlot extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (!this.props.rows) return true;
+    //if (!this.props.rows) return true;
     return uniqueKey(this.props.row) != uniqueKey(nextProps.row)
            || this.props.cid != nextProps.cid;
   }
@@ -352,24 +356,27 @@ export class Cluster2CmpPlot extends React.Component {
   render() {
     const {cid, row, defectData} = this.props;
     const coordType = defectData.coordtype;
-    let coords = defectData.coords;
+    console.log("defectData", defectData);
     let mn = 0.0, mx = 0.0;
     let plotData = [];
-    if (coordType == 1) {
-      [plotData, mn, mx] = cookDataLineCmp(coords);
-    } else {
-      mn = [10000000000.0, 10000000000.0, 10000000000.0]; // TODO: float max
-      mx = [-10000000000.0, -10000000000.0, -10000000000.0];
-      for (var i = 0; i < 3; i++) {
-        mn[i] = Math.min(mn[i], ...coords[i]);
-        mx[i] = Math.max(mn[i], ...coords[i]);
+    if ('coords' in defectData) {
+      let coords = defectData.coords;
+      if (coordType == 1) {
+        [plotData, mn, mx] = cookDataLineCmp(coords);
+      } else {
+        mn = [10000000000.0, 10000000000.0, 10000000000.0]; // TODO: float max
+        mx = [-10000000000.0, -10000000000.0, -10000000000.0];
+        for (var i = 0; i < 3; i++) {
+          mn[i] = Math.min(mn[i], ...coords[i]);
+          mx[i] = Math.max(mn[i], ...coords[i]);
+        }
+        const maxDiff = Math.max(Math.abs(mx[0] - mn[0]), Math.abs(mx[1] - mn[1]), Math.abs(mx[2] - mn[2]));
+        mx[0] = mn[0] + maxDiff;
+        mx[1] = mn[1] + maxDiff;
+        mx[2] = mn[2] + maxDiff;
+        const colorIndex = parseInt(cid);
+        plotData = cookDataCmp(coords, colorIndex);
       }
-      const maxDiff = Math.max(Math.abs(mx[0] - mn[0]), Math.abs(mx[1] - mn[1]), Math.abs(mx[2] - mn[2]));
-      mx[0] = mn[0] + maxDiff;
-      mx[1] = mn[1] + maxDiff;
-      mx[2] = mn[2] + maxDiff;
-      const colorIndex = parseInt(cid);
-      plotData = cookDataCmp(coords, colorIndex);
     }
     return (<Plot data={plotData} layout={ layoutCmp(mn, mx) }
     style={{height: "320px", width: "100%"}}

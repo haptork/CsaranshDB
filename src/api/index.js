@@ -89,7 +89,7 @@ module.exports = () => {
       }
     }
     //console.log(rows.toSQL().toNative());
-    rows.select("id", "ndefects", "substrate", "energy", "temperature");
+    rows.select("id", "ndefects", "substrate", "energy", "temperature", "maxclustersize", "maxclustersizei", "maxclustersizev", "inclusteri", "inclusterv", "hullvol", "hulldensity", "potentialused", "es", "author");
     const cascades =  await rows;
     res.send(cascades);
   });
@@ -116,6 +116,7 @@ module.exports = () => {
       const cmpCluster = cmpClusterStr.split(',');
       const curClusterCoords = await dbhandle.select("coordtype", "coords", "savimorph", "size")
                             .where({cascadeid:cmpCluster[0], name:cmpCluster[1]}).first().from("clusters");
+      curClusterCoords.coords = JSON.parse(curClusterCoords.coords);
       if (curClusterCoords) cmpCoords[cmpClusterStr] = {...curClusterCoords, ...pairs[cmpClusterStr]};
     }
     cluster.cmppairs = cmpCoords;

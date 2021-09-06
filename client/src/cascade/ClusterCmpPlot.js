@@ -27,14 +27,12 @@ import Paper from '@material-ui/core/Paper';
 
 // TODO rewrite with cmdData.
 const getClusterTypeAndClass = (row, cid, cmpData) => {
-  /*
-  if (cid) {
-    const typeInfo = (row.clusterSizes[cid] > 0) ? "majority interstitials" : "majority vacancies";
-    const classInfo = getClass(row, cid);
+  if (cid && cmpData && cmpData.size && cmpData.savimorph) {
+    const typeInfo = (cmpData.size > 0) ? "" + cmpData.size + " SIAs " : "" + -cmpData.size + " vac. ";
+    const classInfo = (cmpData.size > 0) ? " | SaVi morph: " + cmpData.savimorph : "";
     //const componentClassInfo = (row.hasOwnProperty("clusterClasses") && row.clusterClasses.hasOwnProperty("comp") && row.clusterClasses.comp.hasOwnProperty(cid) && row.clusterClasses.comp[cid] !== -1 && row.clusterClasses.comp[cid] !== "noise") ? "; component class-" + row.clusterClasses.comp[cid] : "";
     return [typeInfo, classInfo];
   }
-  */
   return [-1, -1];
 };
 
@@ -63,8 +61,8 @@ export const getInitialSelection = (row) => {
 };
 
 const getCmpCoord = (row, cid, cmpData, cids, mode, isSize, val) => {
-  if (cid == '') return [row, cid];
-  if (!('clust_cmp_size' in cmpData)) return [];
+  if (cid == '') return [{}, cid];
+  if (!('cmpsize' in cmpData)) return [{}, cid];
   /*
   if (cids.length > 0) cid = cids[0].value;
     else return [row, cid];
@@ -73,15 +71,18 @@ const getCmpCoord = (row, cid, cmpData, cids, mode, isSize, val) => {
   let x = cmpData.cmp[mode];
   //let count = row.clust_cmp_size[cid][mode]
   if (isSize) x = cmpData.cmpsize[mode];
-  if (val >= x.length || x[val].length < 3) return [row, ''];
-  const fid = x[val][1];
+  if (val >= x.length || x[val].length < 3) return [{}, ''];
+  //const fid = x[val][1];
+  console.log(cmpData);
+  console.log(val);
+  console.log(x);
   const cmpDataItem = cmpData.cmppairs[[x[val][1],x[val][2]]];
   return [cmpDataItem, x[val][2]];
 };
 
 const getCmpCids = (row, cid, cmpData, mode, isSize, shortName) => {
   if (cid == '') return [];
-  if (!('clust_cmp_size' in cmpData)) return [];
+  if (!('cmpsize' in cmpData)) return [];
   let scores = cmpData.cmp[mode];
   if (isSize) {
     scores = cmpData.cmpsize[mode];
@@ -141,20 +142,15 @@ export class ClusterCmpPlot extends React.Component {
       curShow : val,
     });
   }
-/*
-  render() {
-    return (
-      <div>whatever</div>
-    )
-  }
-*/
 
- render() {
+  render() {
     const {classes, row, cid, data, allCids, cmpData} = this.props;
     const cmpCids = getCmpCids(row, cid, cmpData, this.state.curMode, this.state.isSize, this.props.shortName);
     const cmpCoords = getCmpCoord(row, cid, cmpData, allCids, this.state.curMode, this.state.isSize, this.state.curShow);
-    //const mainVariance = getClusterVar(row, cid2);
-    const typeAndClass = getClusterTypeAndClass(row, cid2, cmpData);
+    const typeAndClass = getClusterTypeAndClass(row, cid, cmpData);
+    console.log(cmpCids);
+    console.log(cmpCoords);
+    console.log(typeAndClass);
     return (
     <Card chart>
       <CardHeader color="primary">
@@ -164,7 +160,101 @@ export class ClusterCmpPlot extends React.Component {
         <Grid container>
         <GridItem xs={12} sm={12} md={6}>
         <Paper>
-        <Cluster2CmpPlot row={row} defectData={cmpData} cid={cid2}/>
+        <Cluster2CmpPlot row={row} defectData={cmpData} cid={cid}/>
+        <Typography  variant="caption" align="center" color="primary" display="block">{typeAndClass[0]}{typeAndClass[1]}</Typography>
+        <Grid container justify="center">
+        <GridItem xs={12} sm={12} md={12} >
+        <FormGroup column>
+         <FormControl>
+          <InputLabel htmlFor="cid-select">Cluster Id</InputLabel>
+          <Select
+            value={cid}
+            onChange={(event) => { this.props.handleClusterCmp(event.target.value); }}
+            inputProps={{
+              name: 'cluster-selection',
+              id: 'cid-select',
+            }}
+          >
+          {allCids.map((o, i) => <MenuItem key={i} value={o.value}>{o.label}</MenuItem>)}
+          </Select>
+          </FormControl>
+         <FormControl>
+          <InputLabel htmlFor="cluster-mode">Similarity By</InputLabel>
+          <Select
+            value={this.state.curMode}
+            onChange={(event) => { this.handleMode(event.target.value); }}
+            inputProps={{
+              name: 'cluster-mode',
+              id: 'cluster-mode',
+            }}
+          >
+          {this.allModes.map((o, i) => <MenuItem key={i} value={o.value}>{o.label}</MenuItem>)}
+          </Select>
+          </FormControl>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={this.state.isSize}
+              onChange={(event) => { this.handleIsSize(event.target.checked); }}
+              value="isSize"
+              color="primary"
+            />
+          }
+          label="Match only clusters with similar number of defects"
+        />
+        </FormGroup>
+        </GridItem>
+        </Grid>
+        </Paper>
+        </GridItem>
+       <GridItem xs={12} sm={12} md={6}>
+        <Cluster2CmpPlot row={cmpCoords[0]} defectData={cmpCoords[0]} cid={cmpCoords[1]}/>
+        <Stepper alternativeLabel nonLinear activeStep={this.state.curShow}>
+          {cmpCids.map((label, index) => {
+            const buttonProps = {};
+            buttonProps.optional = <Typography variant="caption">{label.info}</Typography>;
+            return (
+              <Step key={index} completed={false}>
+                <StepButton
+                  onClick={() => this.handleShow(index)}
+                  completed={false}
+                  {...buttonProps}
+                >
+                  {label.name}
+                </StepButton>
+              </Step>
+            );
+          })}
+        </Stepper>
+        </GridItem>
+        </Grid>
+      </CardBody>
+      <CardFooter chart>
+        <div className={classes.stats}>
+          <ViewIcon/> For the selected cluster of the current cascade, shows the top similar clusters from the whole database. Plots are in eigen basis, eigen var hints at dimensionality.
+        </div>
+      </CardFooter>
+   </Card>
+    )
+  }
+
+/*
+ render() {
+    const {classes, row, cid, data, allCids, cmpData} = this.props;
+    const cmpCids = getCmpCids(row, cid, cmpData, this.state.curMode, this.state.isSize, this.props.shortName);
+    const cmpCoords = getCmpCoord(row, cid, cmpData, allCids, this.state.curMode, this.state.isSize, this.state.curShow);
+    //const mainVariance = getClusterVar(row, cid2);
+    const typeAndClass = getClusterTypeAndClass(row, cid, cmpData);
+    return (
+    <Card chart>
+      <CardHeader color="primary">
+      Cluster Comparison
+      </CardHeader>
+      <CardBody>
+        <Grid container>
+        <GridItem xs={12} sm={12} md={6}>
+        <Paper>
+        <Cluster2CmpPlot row={row} defectData={cmpData} cid={cid}/>
         <Typography  variant="caption" style={{textAlign:"center"}}>{typeAndClass[0]}{typeAndClass[1]}</Typography>
         <Grid container justify="center">
         <GridItem xs={12} sm={12} md={12} >
@@ -241,6 +331,7 @@ export class ClusterCmpPlot extends React.Component {
    </Card>
    );
  }
+ */
 }
 /*
     const {classes, row, cid, data, allCids} = this.props;

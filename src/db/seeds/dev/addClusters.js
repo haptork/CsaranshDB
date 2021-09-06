@@ -113,7 +113,7 @@ const getComparisonPairs = (data, cascade, clusterId) => {
     }
   }
   for (let key in cascade.clust_cmp_size[clusterId]) {
-    const ar = cascade.clust_cmp[clusterId][key];
+    const ar = cascade.clust_cmp_size[clusterId][key];
     for (let val of ar) {
       const newkey = ''+val[1]+","+val[2];
       if (newkey in pairs) continue;
