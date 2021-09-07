@@ -126,7 +126,64 @@ module.exports = () => {
     res.send(cluster);
   });
 
-  api.get('/clustercoords/:id/:cid', async (req, res) => {
+  api.get('/clustercoords/:id/', async (req, res) => {
+    const id = req.params.id;
+    const cid = req.params.cid;
+    console.log(id, cid);
+    let rows = dbhandle.from("clusters");
+    rows.join('cascades', 'clusters.cascadeid', '=', 'cascades.id')
+    rows.select("cascades.id", "cascades.substrate",
+      "cascades.energy", "cascades.temperature", "cascades.potentialused",
+      "cascades.es", "cascades.author", "coordtype", "coords");
+    const cluster = await rows.where({id:id}).first();
+    if (!cluster) res.status(404).send("<h2> Error getting cascade with input id. </h2>");
+    console.log(cluster)
+    res.send(cluster);
+  });
+
+  api.get('/clustershdb', async (req, res) => {
+    let rows = dbhandle.from("clusters");
+    rows.join('cascades', 'clusters.cascadeid', '=', 'cascades.id')
+    const filters = req.query.filter;
+    for (let column in filters) {
+      if (!column in dbColumns) continue;
+      if (dbColumns[column] === 'text') {
+        rows.where("cascades."+column, "like", '%'+filters[column]+'%');
+      } else if (dbColumns[column] === 'range') {
+        if (filters[column].length < 2) continue;
+        rows.where("cascades."+column, ">=", filters[column][0]);
+        rows.where("cascades."+column, "<", filters[column][1]);
+      }
+    }
+    rows.select("id", "savimorph", "hdbpoint");
+    const clusters = await rows;
+    res.send(clusters);
+  });
+/* 
+  api.get('/clusterhdb', async (req, res) => {
+    let rows = dbhandle.from("clusters");
+    rows.join('cascades', 'clusters.cascadeid', '=', 'cascades.id')
+    const filters = req.query.filter;
+    //console.log(filters)
+    for (let column in filters) {
+      if (!column in dbColumns) continue;
+      if (dbColumns[column] === 'text') {
+        rows.where(column, "like", '%'+filters[column]+'%');
+      } else if (dbColumns[column] === 'range') {
+        if (filters[column].length < 2) continue;
+        rows.where(column, ">=", filters[column][0]);
+        rows.where(column, "<", filters[column][1]);
+      }
+    }
+    
+    rows.select("cascades.id", "cascades.substrate", "cascades.energy", "cascades.temperature", "clusters.hdbpoint", "clusters.name");
+    const cascades =  await rows;
+    res.send(cascades);
+  });
+  */
+ 
+/*
+  api.get('/clusterhdbpoints/:id/:cid', async (req, res) => {
     const id = req.params.id;
     const cid = req.params.cid;
     console.log(id, cid);
@@ -136,5 +193,7 @@ module.exports = () => {
     console.log(cluster)
     res.send(cluster);
   });
+  */
+
   return api;
 }

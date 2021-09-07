@@ -279,6 +279,7 @@ TODO:
 WIP:
 - ~~Fixed minor issues with cluster comparison.~~
 - ~~Show statistics plots.~~
+- ~~Added hdbpoint coordinates to each cluster in clusters.db for clusters plots.~~
 
 TODO:
 - Add cluster hdbscan coords to clusters db.
@@ -290,6 +291,9 @@ TODO:
 - Add dclustersv / subcascades to table and statistics.
 - rename json entries in pp.
 - Add table view.
+- Initially Loading overlay on webpage.
+- On click loading overlay.
+- Plotly plots control bar: svg save, no plotly ad. etc.
 - pp:
   - Think of some way to create entries in clustercmp.
   - store kdd and hdbscan training.

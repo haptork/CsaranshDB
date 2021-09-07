@@ -161,7 +161,7 @@ export class Statistics extends React.Component {
        <GridItem xs={12} sm={12} md={12}>
           <Card chart>
             <CardHeader color="info"> <span>Statistics grouped by </span>
-              <span style={{display:"inline-block", top:"8px", position:"relative", marginLeft:"10px"}}>
+              <span style={{display:"inline-block", top:"8px", minWidth:"200px", color:"slategray", position:"relative", marginLeft:"10px"}}>
               <Select
                 value={groupingLabels}
                 closeOnSelect={false}

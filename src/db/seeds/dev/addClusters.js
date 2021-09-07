@@ -1,4 +1,5 @@
-const devData = require("./cascades-dev.json");
+const devCascades = require("./cascades-dev.json");
+const devClasses = require("./classes-dev.json");
 
 const getClusterCoord = (row, cid) => {
   let c = [[],[],[]];
@@ -125,7 +126,18 @@ const getComparisonPairs = (data, cascade, clusterId) => {
 
 exports.seed = async function(knex) {
   // Deletes ALL existing entries
-  const data = devData.data;
+  const data = devCascades.data;
+  const classData = devClasses['line-graph-components (savi)'];
+  const points = classData.show_point;
+  hdbpoints = {}
+  for (let classLabel in points) {
+    for (let i = 0; i < points[classLabel][0].length; i++) {
+      const ld = points[classLabel];
+      const point = [ld[0][i], ld[1][i]];
+      const key = classData.tags[classLabel][i];
+      hdbpoints[key] = point;
+    }
+  }
   let tableRows = [];
   for (let cascade of data) {
     for (let clusterId in cascade.clust_cmp) {
@@ -143,6 +155,7 @@ exports.seed = async function(knex) {
         'savimorph': morphology,
         'coordtype': coordType,
         'coords': JSON.stringify(coords),
+        'hdbpoint': hdbpoints[[cascade.id,clusterId]],
         'cmp': JSON.stringify(cascade.clust_cmp[clusterId]),
         'cmpsize': JSON.stringify(cascade.clust_cmp_size[clusterId]),
         'cmppairs': JSON.stringify(pairs),
