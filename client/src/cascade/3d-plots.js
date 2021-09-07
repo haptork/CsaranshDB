@@ -561,15 +561,28 @@ export const ScatterPlot = props =>
 // ===============
 
 const cookDataClasses = (classData) => {
+  var ditraces = {};
   var traces = [];
   let i = 0;
-  let labelsOrdered = Object.keys(classData);
-  labelsOrdered.sort();
-  for (const classLabel of labelsOrdered) {
+  for (const cluster of classData) {
+    if (!cluster.savimorph in ditraces) {
+      ditraces[cluster.savimorph] = {
+        x: [], y: [], z: [], mode: 'markers',
+        type: 'scatter3d', name: cluster.savimorph,
+        marker: {
+          color: (classLabel == "noise") ? 'rgb(220,220,220)' : getColor(Object.keys(ditraces).length),
+          size: 2
+        }
+      }
+    }
+    ditraces[cluster.savimorph].x.push(cluster.x);
+    ditraces[cluster.savimorph].y.push(cluster.y);
+    ditraces[cluster.savimorph].z.push(cluster.z);
+  }
     traces.push(
       {
-        x: classData[classLabel][0],
-        y: classData[classLabel][1],
+        x: classData.x[0],
+        y: classData.y[1],
         z: classData[classLabel][2],
         mode: 'markers',
         type: 'scatter3d',

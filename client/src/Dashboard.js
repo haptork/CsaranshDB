@@ -20,7 +20,7 @@ import dashboardStyle from "./assets/jss/material-dashboard-react/views/dashboar
 import { uniqueKey, getAllCol} from "./utils";
 //import { MainTable } from "../cascades/MainTable";
 //import {getCids, getInitialSelection} from "../cascades/ClusterCmpPlot";
-//import {ClusterClassesPlot} from "../ClusterClasses.js";
+import {ClusterClassesPlot} from "../ClusterClasses.js";
 //import {OutlineCards} from "../cascades/OutlineCards";
 //import { getCurrentCascade } from "../cascades/CascadeVisualizer3D";
 import { Statistics } from "./statistics/Statistics";
@@ -325,6 +325,27 @@ export class DashboardSimple extends React.Component {
             <Statistics classes={classes} data={this.state.curRows}/>
         </AccordionDetails>
         </Accordion>
+
+
+        <ExpansionPanel>
+        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+          <div className={classes.column}>
+            <Typography className={classes.heading}>View Cluster Classes</Typography>
+          </div>
+          <div className={classes.column}>
+            <Typography className={classes.secondaryHeading}>Based on the Shapes of the Clusters</Typography>
+          </div>
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails className={classes.details}>
+        <Grid container justify="center">
+          <GridItem xs={12} sm={12} md={12}>
+            <ClusterClassesPlot classes={classes} data={this.data} queryString={this.props.queryString} shortName={this.shortName}/>
+          </GridItem>
+        </Grid>
+        </ExpansionPanelDetails>
+        </ExpansionPanel>
+
+
 
       </div>
     );

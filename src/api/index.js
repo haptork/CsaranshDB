@@ -134,13 +134,14 @@ module.exports = () => {
     rows.join('cascades', 'clusters.cascadeid', '=', 'cascades.id')
     rows.select("cascades.id", "cascades.substrate",
       "cascades.energy", "cascades.temperature", "cascades.potentialused",
-      "cascades.es", "cascades.author", "coordtype", "coords");
-    const cluster = await rows.where({id:id}).first();
+      "cascades.es", "cascades.author", "clusters.coordtype", "clusters.coords", "clusters.savimorph", "clusters.size", "clusters.name");
+    const cluster = await rows.where({"clusters.id":id}).first();
     if (!cluster) res.status(404).send("<h2> Error getting cascade with input id. </h2>");
+    cluster.coords = JSON.parse(cluster.coords);
     console.log(cluster)
     res.send(cluster);
   });
-
+/*
   api.get('/clustershdb', async (req, res) => {
     let rows = dbhandle.from("clusters");
     rows.join('cascades', 'clusters.cascadeid', '=', 'cascades.id')
@@ -155,10 +156,43 @@ module.exports = () => {
         rows.where("cascades."+column, "<", filters[column][1]);
       }
     }
-    rows.select("id", "savimorph", "hdbpoint");
+    rows.select("clusters.id", "savimorph", "hdbpoint");
     const clusters = await rows;
     res.send(clusters);
   });
+  */
+  api.get('/clustershdb', async (req, res) => {
+    let rows = dbhandle.from("clusters");
+    rows.join('cascades', 'clusters.cascadeid', '=', 'cascades.id')
+    const filters = req.query.filter;
+    for (let column in filters) {
+      if (!column in dbColumns) continue;
+      if (dbColumns[column] === 'text') {
+        rows.where("cascades."+column, "like", '%'+filters[column]+'%');
+      } else if (dbColumns[column] === 'range') {
+        if (filters[column].length < 2) continue;
+        rows.where("cascades."+column, ">=", filters[column][0]);
+        rows.where("cascades."+column, "<", filters[column][1]);
+      }
+    }
+    rows.select("clusters.id", "savimorph", "hdbpoint");
+    const clusters = await rows;
+    /*
+    const li = [];
+    
+    {id:[], x:[], y:[], savimorph:[]};
+    for (let row of clusters) {
+      if (!row.savimorph in li) li.savimorph = {};
+        li.id.push(row.id);
+        li.savimorph.push(row.savimorph);
+        const xy = row.hdbpoint.split(",");
+        li.x.push(parseFloat(xy[0]));
+        li.y.push(parseFloat(xy[1]));
+    }
+    */
+    res.send(clusters);
+  });
+
 /* 
   api.get('/clusterhdb', async (req, res) => {
     let rows = dbhandle.from("clusters");
