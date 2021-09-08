@@ -560,40 +560,26 @@ export const ScatterPlot = props =>
 
 // ===============
 
-const cookDataClasses = (classData) => {
-  var ditraces = {};
-  var traces = [];
-  let i = 0;
-  for (const cluster of classData) {
-    if (!cluster.savimorph in ditraces) {
-      ditraces[cluster.savimorph] = {
-        x: [], y: [], z: [], mode: 'markers',
-        type: 'scatter3d', name: cluster.savimorph,
-        marker: {
-          color: (classLabel == "noise") ? 'rgb(220,220,220)' : getColor(Object.keys(ditraces).length),
-          size: 2
+const cookDataClasses = (ogTraces) => {
+  let traces = [];
+  for (let i = 0; i < ogTraces.length; i++) {
+    const trace = ogTraces[i];
+    let z = new Array(trace.length);
+    for (let j=0; j < trace.length; ++j) z[j] = 0;
+    traces.push({
+      x: trace.x,
+      y: trace.y,
+      mode: 'markers',
+      type: 'scatter', 
+      name: trace.name,
+      marker: {
+          color: (trace.name == "noise") ? 'rgb(220,220,220)' : getColor(i),
+          opacity: 0.5
+          //size: 2
         }
-      }
-    }
-    ditraces[cluster.savimorph].x.push(cluster.x);
-    ditraces[cluster.savimorph].y.push(cluster.y);
-    ditraces[cluster.savimorph].z.push(cluster.z);
+    });
   }
-    traces.push(
-      {
-        x: classData.x[0],
-        y: classData.y[1],
-        z: classData[classLabel][2],
-        mode: 'markers',
-        type: 'scatter3d',
-        name: classLabel,
-        marker: {
-          color: (classLabel == "noise") ? 'rgb(220,220,220)' : getColor(i++),
-          size: 2
-        }
-      }
-    )
-  }
+  //console.log("traces", traces);
   return traces;
 }
 
@@ -603,13 +589,14 @@ export class ClassesPlot extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-      return nextProps.mode != this.props.mode;
+    //return true;
+    return (this.props.traces.length === 0 || nextProps.mode != this.props.mode);
   }
 
   render() {
     const props = this.props; 
     return (
-      <Plot data={cookDataClasses(props.coords)} layout={ layout }
+      <Plot data={cookDataClasses(props.traces)} layout={ layout }
       style={{height: "320px", width: "100%"}}
       onClick={props.clickHandler}
       useResizeHandler

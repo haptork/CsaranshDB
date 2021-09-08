@@ -148,9 +148,9 @@ export class ClusterCmpPlot extends React.Component {
     const cmpCids = getCmpCids(row, cid, cmpData, this.state.curMode, this.state.isSize, this.props.shortName);
     const cmpCoords = getCmpCoord(row, cid, cmpData, allCids, this.state.curMode, this.state.isSize, this.state.curShow);
     const typeAndClass = getClusterTypeAndClass(row, cid, cmpData);
-    console.log(cmpCids);
-    console.log(cmpCoords);
-    console.log(typeAndClass);
+    //console.log(cmpCids);
+    //console.log(cmpCoords);
+    //console.log(typeAndClass);
     return (
     <Card chart>
       <CardHeader color="primary">

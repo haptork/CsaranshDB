@@ -1,12 +1,12 @@
 import React from 'react';
 
 import Grid from "@material-ui/core/Grid";
-import GridItem from "components/Grid/GridItem.js";
+import GridItem from "./components/Grid/GridItem.js";
 import Card from "./components/Card/Card.js";
 import CardHeader from "./components/Card/CardHeader.js";
 import CardBody from "./components/Card/CardBody.js";
 import CardFooter from "./components/Card/CardFooter.js";
-import { ClusterClassPlot, ClassesPlot } from "./cascade/3d-plots.js";
+import { ClassesPlot, Cluster2CmpPlot } from "./cascade/3d-plots.js";
 import ClassesIcon from '@material-ui/icons/Category';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -19,17 +19,21 @@ import Paper from '@material-ui/core/Paper';
 import { getClassData } from "./utils";
 
 const getName = (clusterInfo, shortName) => {
-  return "cluster-id " + clusterInfo.name + ' of ' + shortName(clusterInfo);
+  let name = "cluster-id " + clusterInfo.name + ' of ' + shortName(clusterInfo);
+  name += " | size: " + Math.abs(clusterInfo.size) + ", savi-morph.: " + clusterInfo.savimorph;
+  return name;
 };
 
 const  fetchClusterInfo = async (id) => {
   const clusterJson = await fetch('/clustercoords/' + id);
-  const cluster =  await cascadeJson.json();
+  const cluster =  await clusterJson.json();
   return cluster;
 }
 
 const  fetchClusters = async (queryString) => {
-  const classJson = await fetch('/clustershdb' + queryString);
+  const addss = '/clustershdb' + queryString;
+  console.log("fetching clusters with ", addss);
+  const classJson = await fetch(addss);
   const rowData =  await classJson.json();
   return rowData;
 }
@@ -37,32 +41,38 @@ const  fetchClusters = async (queryString) => {
 export class ClusterClassesPlot extends React.Component {
   constructor(props) {
     super(props);
-    this.allModes = [];
+    this.allModes = [{label:"SaVi+Hdbscan", value:"savi"}];
+    /*
     for (const k in window.cluster_classes) {
       this.allModes.push({label:k, value:k});
     }
+    */
     const curMode = this.allModes[0].value;
     this.state = {
-      classData : {id: [], x:[], y:[], morph:{'savi':[]}},
+      classData : {ditraces: {}, traces:[]},
       nm: '',
-      showIndex: -1,
-      curCluster: {}
+      showcid: -1,
+      curCluster: {},
+      curMode: curMode
     };
   }
 
   componentDidMount(prevProps) {
     if (prevProps !== undefined && (prevProps.queryString === this.props.queryString)) return;
+    console.log("mounting clusterclasses", this.props.queryString);
     fetchClusters(this.props.queryString).then(classData => {
-      this.state = {
+      this.setState({
         classData
-      }
+      });
     });
   }
 
-  handleShow(showIndex) {
-    fetchClusterInfo(classData['id'][showIndex]).then(clusterInfo => {
+  handleShow(label, clusterIndex) {
+    const labelIndex = this.state.classData.ditraces[label];
+    const showcid = this.state.classData.traces[labelIndex].id[clusterIndex];
+    fetchClusterInfo(showcid).then(clusterInfo => {
       this.setState({
-        showIndex,
+        showcid,
         nm: getName(clusterInfo, this.props.shortName),
         curCluster: clusterInfo
       });
@@ -78,15 +88,16 @@ export class ClusterClassesPlot extends React.Component {
   }
 
   onPointClick(data) {
-    //this.handleShow(data.points[0].fullData.name, data.points[0].pointNumber);
-    this.handleShow(data.points[0].pointNumber);
+    this.handleShow(data.points[0].fullData.name, data.points[0].pointNumber);
+    //this.handleShow(data.points[0].pointNumber);
   }
 
   shouldComponentUpdate(nextProps, nextState){
-    return this.state.showIndex != nextState.showIndex || this.state.curMode != nextState.curMode;
+    return this.state.classData.traces.length === 0 || this.state.showcid != nextState.showcid || this.state.curMode != nextState.curMode;
   }
 
   render() {
+    console.log("classData", this.state.classData);
     return (
     <Card chart>
       <CardHeader color="info">
@@ -96,7 +107,7 @@ export class ClusterClassesPlot extends React.Component {
         <Grid container>
           <GridItem xs={12} sm={12} md={6}>
           <Paper>
-          <ClassesPlot mode={this.state.curMode} coords={this.state.classData} colorIndex={1} clickHandler={(dt)=>this.onPointClick(dt)} />
+          <ClassesPlot mode={this.state.curMode} traces={this.state.classData.traces} clickHandler={(dt)=>this.onPointClick(dt)} />
         <Grid container justify="center">
         <GridItem xs={12} sm={12} md={12} >
         <FormGroup column>
@@ -119,8 +130,8 @@ export class ClusterClassesPlot extends React.Component {
           </Paper>
           </GridItem>
           <GridItem xs={12} sm={12} md={6}>
-          <ClusterClassPlot curIndex={this.state.curIndex} classIndex={this.state.classIndex} curMode={this.state.curMode} data={this.props.data}/>
-          <Typography  variant="caption" style={{textAlign:"center"}}>{this.state.nm}</Typography>
+          <Cluster2CmpPlot  cid={this.state.showcid} row={this.state.curCluster} defectData={this.state.curCluster}/>
+          <Typography  variant="caption" align="center" color="primary" display="block">{this.state.nm}</Typography>
           </GridItem>
         </Grid>
       </CardBody>

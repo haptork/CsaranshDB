@@ -129,7 +129,7 @@ module.exports = () => {
   api.get('/clustercoords/:id/', async (req, res) => {
     const id = req.params.id;
     const cid = req.params.cid;
-    console.log(id, cid);
+    //console.log(id, cid);
     let rows = dbhandle.from("clusters");
     rows.join('cascades', 'clusters.cascadeid', '=', 'cascades.id')
     rows.select("cascades.id", "cascades.substrate",
@@ -138,7 +138,7 @@ module.exports = () => {
     const cluster = await rows.where({"clusters.id":id}).first();
     if (!cluster) res.status(404).send("<h2> Error getting cascade with input id. </h2>");
     cluster.coords = JSON.parse(cluster.coords);
-    console.log(cluster)
+    //console.log(cluster)
     res.send(cluster);
   });
 /*
@@ -177,6 +177,25 @@ module.exports = () => {
     }
     rows.select("clusters.id", "savimorph", "hdbpoint");
     const clusters = await rows;
+    let ditraces = {};
+    let traces = [];
+    for (let cluster of clusters) {
+      if (!(cluster.savimorph in ditraces)) {
+        ditraces[cluster.savimorph] = traces.length;
+        traces.push({
+          x: [],
+          y: [],
+          id: [],
+          name: cluster.savimorph
+        });
+      }
+      const item = traces[ditraces[cluster.savimorph]];
+      //console.log(cluster.savimorph, ditraces, traces.length);
+      const xy = cluster.hdbpoint.split(",");
+      item.x.push(parseFloat(xy[0]));
+      item.y.push(parseFloat(xy[1]));
+      item.id.push(cluster.id);
+    }
     /*
     const li = [];
     
@@ -190,7 +209,7 @@ module.exports = () => {
         li.y.push(parseFloat(xy[1]));
     }
     */
-    res.send(clusters);
+    res.send({ditraces, traces});
   });
 
 /* 
