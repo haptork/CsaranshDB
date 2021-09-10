@@ -90,9 +90,32 @@ module.exports = () => {
       }
     }
     //console.log(rows.toSQL().toNative());
+    let query1 = rows.clone();
+    let query2 = rows.clone();
+    let query3 = rows.clone();
+    let query4 = rows.clone();
+    //console.log(rows.toSQL().toNative());
+    query1.select(knex.raw("DISTINCT substrate"));
+    query2.select(knex.raw("DISTINCT energy"));
+    query3.select(knex.raw("DISTINCT potentialused"));
+    query4.select(knex.raw("DISTINCT temperature"));
+    
+    //"energy", "temperature", "maxclustersize", "maxclustersizei", "maxclustersizev", "inclusteri", "inclusterv", "hullvol", "hulldensity", "potentialused", "es", "author");
+    let out = {};
+    out.substrate =  await query1;
+    out.energy =  await query2;
+    out.potentialused =  await query3;
+    out.temperature =  await query4;
+    outline = {}
+    for(const label in out) {
+      outline[label] = [];
+      for (const row of out[label]) {
+        outline[label].push(row[label])
+      }
+    }
     rows.select("id", "ndefects", "substrate", "energy", "temperature", "maxclustersize", "maxclustersizei", "maxclustersizev", "inclusteri", "inclusterv", "hullvol", "hulldensity", "potentialused", "es", "author");
     const cascades =  await rows;
-    res.send(cascades);
+    res.send({'data':cascades, 'outline':outline});
   });
   
   api.get('/cascade/:id', async (req, res) => {
@@ -272,7 +295,6 @@ module.exports = () => {
       rows.select(column);
     }
     rows.select("savimorph as name", knex.raw("COUNT(DISTINCT(clusters.cascadeid)) as ncascades"), knex.raw("TOTAL(size) as npoints"), knex.raw("COUNT(*) as nclusters"), knex.raw("GROUP_CONCAT(size) as sizeLi"))
-    //rows.select("cascades.id", "cascades.substrate", "cascades.energy", "cascades.temperature", "clusters.hdbpoint", "clusters.name");
     let rowsres =  await rows;
     for (let row of rowsres) {
       row.sizeLi= row.sizeLi.split(",");
@@ -285,19 +307,5 @@ module.exports = () => {
     }
     res.send(rowsres);
   });
- 
-/*
-  api.get('/clusterhdbpoints/:id/:cid', async (req, res) => {
-    const id = req.params.id;
-    const cid = req.params.cid;
-    console.log(id, cid);
-    const cluster = await dbhandle.select("coordtype", "coords")
-                            .where({cascadeid:id, name:cid}).first().from("clusters");
-    if (!cluster) res.status(404).send("<h2> Error getting cascade with input id. </h2>");
-    console.log(cluster)
-    res.send(cluster);
-  });
-  */
-
   return api;
 }

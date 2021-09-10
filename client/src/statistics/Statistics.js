@@ -80,15 +80,16 @@ const groupBars = (data, fields, groupingLabels) => {
         x: keys,
         visible: (i == 0),
         name: val.label,
-        marker: {color: getColor(i)},
+        //marker: {color: getColor(i)},
         type: 'box',
-        meanline: {
-          visible: true
-        },
-        boxmean: true,
-        jitter: 0.3,
+        boxmean: 'sd',
+        jitter: 0.5,
         pointpos: -1.5,
-        boxpoints: 'all'
+        boxpoints: 'all',
+        whiskerwidth: 0.2,
+        fillcolor: 'cls',
+        marker: {size: 4, color: "black"},
+        line: {width: 1, color:  "#0a86a9"},
       }
     );
     i++;
@@ -157,7 +158,7 @@ export class Statistics extends React.Component {
     const [nDefects, splomKeys, splomVals] = groupBars(this.props.data, this.fields, this.state.groupingLabels); 
     //const [statDists, statAngles] = calcStatDistsAngles(this.props.data);
     return (
-      <Grid container justify="center">
+      <Grid container justifyContent="center">
        <GridItem xs={12} sm={12} md={12}>
           <Card chart>
             <CardHeader color="info"> <span>Statistics grouped by </span>

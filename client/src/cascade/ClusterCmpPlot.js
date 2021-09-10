@@ -162,9 +162,9 @@ export class ClusterCmpPlot extends React.Component {
         <Paper>
         <Cluster2CmpPlot row={row} defectData={cmpData} cid={cid}/>
         <Typography  variant="caption" align="center" color="primary" display="block">{typeAndClass[0]}{typeAndClass[1]}</Typography>
-        <Grid container justify="center">
+        <Grid container justifyContent="center">
         <GridItem xs={12} sm={12} md={12} >
-        <FormGroup column>
+        <FormGroup>
          <FormControl>
           <InputLabel htmlFor="cid-select">Cluster Id</InputLabel>
           <Select

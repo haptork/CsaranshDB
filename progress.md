@@ -315,12 +315,23 @@ WIP:
 
 - ~~Cluster class trends api.~~
 - ~~Cluster class trends plots.~~
+- ~~Added second plot.~~
 
 TODO:
 
 - Remove vacancy clusters from sia morphology stats plot 1.
-- Add second plot.
-- Move common components together and possibly to server side.
-- Add overview API.
+- Move common functions from the two stats plots together and 
+  possibly add them to server side.
+- ~~Add outline API.~~
 - Add table view with download option.
 - knew.raw warning remove.
+
+11th Sep:
+
+TODO:
+
+- csaransh-pp: 
+  - validate and process from cascadesDB.
+    - improved log summary for review.
+    - figure out how to add, save kd-tree etc.
+    - add status to table (unreviewed, reviewed) for statistical testing.

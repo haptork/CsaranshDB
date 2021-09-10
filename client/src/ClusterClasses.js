@@ -108,9 +108,9 @@ export class ClusterClassesPlot extends React.Component {
           <GridItem xs={12} sm={12} md={6}>
           <Paper>
           <ClassesPlot mode={this.state.curMode} traces={this.state.classData.traces} clickHandler={(dt)=>this.onPointClick(dt)} />
-        <Grid container justify="center">
+        <Grid container justifyContent="center">
         <GridItem xs={12} sm={12} md={12} >
-        <FormGroup column>
+        <FormGroup>
          <FormControl>
           <InputLabel htmlFor="cid-select">Classification type</InputLabel>
           <Select

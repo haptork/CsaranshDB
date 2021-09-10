@@ -21,7 +21,6 @@ import { uniqueKey, getAllCol} from "./utils";
 //import { MainTable } from "../cascades/MainTable";
 //import {getCids, getInitialSelection} from "../cascades/ClusterCmpPlot";
 import {ClusterClassesPlot} from "./ClusterClasses.js";
-//import {OutlineCards} from "../cascades/OutlineCards";
 //import { getCurrentCascade } from "../cascades/CascadeVisualizer3D";
 import { Statistics } from "./statistics/Statistics";
 //import { Comparison } from "../Comparison/Comparison";
@@ -66,6 +65,15 @@ const styles = theme => ({
 });
 */
 
+const overallStats = outline => {
+  return [
+    {"title": "Elements", "label": outline.substrate.length, "labelSm": outline.substrate.join(", ")},
+    {"title": "Energies", "label": outline.energy.length, "labelSm": "From " + Math.min(...outline.energy) + " to " + Math.max(...outline.energy) + "keV"},
+    {"title": "Potentials", "label": outline.potentialused.length, "labelSm":outline.potentialused.join(", ")},
+    {"title": "Temperatures", "label": outline.temperature.length, "labelSm": "From " + Math.min(...outline.temperature) + "K to " + Math.max(...outline.temperature) + "K"},
+  ];
+};
+
 const  fetchCascadeInfo = async (id) => {
   const cascadeJson = await fetch('/cascade/' + id);
   const rowData =  await cascadeJson.json();
@@ -93,10 +101,10 @@ export class DashboardSimple extends React.Component {
       const initialRow = {viewfields:{}};
       const initialLook = '';
       const outline = [
-        {title: "Elements", label:'TODO', labelSm: 'later'},
-        {title:'Energies', label:'TODO', labelSm: 'later'},
-        {title:'Potentials', label:'TODO', labelSm: 'later'},
-        {title:'Defect Morphology', label:'TODO', labelSm: 'later'}
+        {title: "Elements", label:'', labelSm: ''},
+        {title:'Energies', label:'', labelSm: ''},
+        {title:'Potentials', label:'', labelSm: ''},
+        {title:'Temperatures', label:'', labelSm: ''}
       ]
       const allCids = getCids(initialRow);
       this.state = {
@@ -111,7 +119,7 @@ export class DashboardSimple extends React.Component {
           allCids: allCids,
           cidCmp: getInitialSelectionFor(allCids),
           cmpData: {},
-          showCol: this.allCols.filter(x => x['isShow'])
+          showCol: this.allCols.filter(x => x['isShow']),
       };
   }
 
@@ -122,7 +130,9 @@ export class DashboardSimple extends React.Component {
     fetch('/cascades'+this.props.queryString)
       .then(res=>res.json())
       .then(cascades => {
-        const data = cascades;
+        const data = cascades.data;
+        const dataOutline = overallStats(cascades.outline);
+        console.log(dataOutline);
         if (data.length === 0) return;
         const initialPick = 0;
         const initialRow = data[initialPick];
@@ -145,7 +155,8 @@ export class DashboardSimple extends React.Component {
               allCids : allCids,
               cidCmp : cidCmp,
               cmpData : cmpData,
-              showCol : this.allCols.filter(x => x['isShow'])
+              showCol : this.allCols.filter(x => x['isShow']),
+              dataOutline: dataOutline
             });
           });
         });
@@ -325,8 +336,6 @@ export class DashboardSimple extends React.Component {
             <Statistics classes={classes} data={this.state.curRows}/>
         </AccordionDetails>
         </Accordion>
-
-
         <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <div className={classes.column}>
@@ -337,7 +346,7 @@ export class DashboardSimple extends React.Component {
           </div>
         </AccordionSummary>
         <AccordionDetails className={classes.details}>
-        <Grid container justify="center">
+        <Grid container justifyContent="center">
           <GridItem xs={12} sm={12} md={12}>
             <ClusterClassesPlot classes={classes} queryString={this.props.queryString} shortName={this.shortName}/>
           </GridItem>
@@ -350,51 +359,9 @@ export class DashboardSimple extends React.Component {
 
 
 
+
       </div>
     );
-//    return (
-//      <div className="main-panel">
-//    <AppBar>
-//            <Toolbar disableGutters={!openly}>
-//             <Typography variant="title" color="inherit" noWrap>
-//                <a id="logoTitle" href="https://github.com/haptork/csaransh">CSaransh</a>
-//              </Typography>
-//  
-//              <IconButton
-//                color="inherit"
-//                aria-label="open drawer"
-//                className={classNames(classes.menuButton, openly && classes.hide)}
-//              >
-//              </IconButton>
-//
-//           </Toolbar>
-//    </AppBar>
-//
-//        <Grid id="mainTableC" justify="flex-end"*/ container> 
-//          <ClickAwayListener onClickAway={this.handleHideDrawer}>
-//          <GridItem id="mainTable" xs={12}>
-//<Accordion id="mainTablePanel" expanded={this.state.mobileOpen} onChange={this.handleToggleDrawer}>
-//          <AccordionSummary /*onMouseEnter={this.handleShowDrawer}*/ expandIcon={<ExpandMoreIcon />}>
-//            <Typography className={classes.heading}>Cascades List - {this.state.curRows.length} cascades {(this.state.curRows.length < data.length) ? " filtered out of total " + data.length : " - Filter, View, Plot Using Action Buttons"} 
-//           </Typography>
-//          </AccordionSummary>
-//          <AccordionDetails>
-//            <div style={{display:"block", width:"100%"}}>
-//              <Select
-//                value={this.state.showCol}
-//                closeOnSelect={false}
-//                multi
-//                options={this.allCols}
-//                onChange={this.handleShowCols}
-//              />
-//            </div>
-//          </AccordionDetails>
-//       </Accordion>
-//          </GridItem>
-//        </ClickAwayListener>
-//          </Grid>
-//          </div>
-//        );
     }
 }
 export default withStyles(dashboardStyle)(DashboardSimple);
@@ -402,5 +369,6 @@ export default withStyles(dashboardStyle)(DashboardSimple);
 //export default withStyles(styles)(withStyles(dashboardStyle)(DashboardSimple));
 //export default withStyles(dashboardStyle)(withStyles(styles)(DashboardSimple));
 /*
+
 
 */
