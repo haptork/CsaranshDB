@@ -295,6 +295,7 @@ TODO:
 - On click loading overlay.
 - Plotly plots control bar: svg save, no plotly ad. etc.
 - pp:
+  - defect morphology, type and desc. such as burgers vector separately.
   - Think of some way to create entries in clustercmp.
   - store kdd and hdbscan training.
   - change keys.
@@ -308,6 +309,18 @@ TODO:
 
 - Cluster class stats.
 
-8th Sep:
+10th Sep:
 
 WIP: 
+
+- ~~Cluster class trends api.~~
+- ~~Cluster class trends plots.~~
+
+TODO:
+
+- Remove vacancy clusters from sia morphology stats plot 1.
+- Add second plot.
+- Move common components together and possibly to server side.
+- Add overview API.
+- Add table view with download option.
+- knew.raw warning remove.

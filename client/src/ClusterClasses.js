@@ -16,7 +16,7 @@ import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 
-import { getClassData } from "./utils";
+//import { getClassData } from "./utils";
 
 const getName = (clusterInfo, shortName) => {
   let name = "cluster-id " + clusterInfo.name + ' of ' + shortName(clusterInfo);
@@ -32,7 +32,7 @@ const  fetchClusterInfo = async (id) => {
 
 const  fetchClusters = async (queryString) => {
   const addss = '/clustershdb' + queryString;
-  console.log("fetching clusters with ", addss);
+  //console.log("fetching clusters with ", addss);
   const classJson = await fetch(addss);
   const rowData =  await classJson.json();
   return rowData;
@@ -59,7 +59,7 @@ export class ClusterClassesPlot extends React.Component {
 
   componentDidMount(prevProps) {
     if (prevProps !== undefined && (prevProps.queryString === this.props.queryString)) return;
-    console.log("mounting clusterclasses", this.props.queryString);
+    //console.log("mounting clusterclasses", this.props.queryString);
     fetchClusters(this.props.queryString).then(classData => {
       this.setState({
         classData

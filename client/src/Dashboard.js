@@ -33,7 +33,7 @@ import Paper from '@material-ui/core/Paper';
 import { getCids, getInitialSelectionFor } from "./cascade/ClusterCmpPlot.js";
 
 import MainTable from "./Maintable.js"
-//import {ClusterClassesTrends} from "../ClusterClassesTrends.js";
+import {ClusterClassesTrends} from "./ClusterClassesTrends.js";
 
 //const getCids = (row) => [];
 //const getInitialSelection = (row) => '';
@@ -339,7 +339,10 @@ export class DashboardSimple extends React.Component {
         <AccordionDetails className={classes.details}>
         <Grid container justify="center">
           <GridItem xs={12} sm={12} md={12}>
-            <ClusterClassesPlot classes={classes} data={this.data} queryString={this.props.queryString} shortName={this.shortName}/>
+            <ClusterClassesPlot classes={classes} queryString={this.props.queryString} shortName={this.shortName}/>
+          </GridItem>
+          <GridItem xs={12} sm={12} md={12}>
+            <ClusterClassesTrends classes={classes} queryString={this.props.queryString}/>
           </GridItem>
         </Grid>
         </AccordionDetails>

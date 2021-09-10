@@ -243,7 +243,7 @@ module.exports = () => {
     res.send({ditraces, traces});
   });
 
-  api.get('/clusterstats', async (req, res) => {
+  api.get('/morphstats', async (req, res) => {
     let rows = dbhandle.from("clusters");
     rows.join('cascades', 'clusters.cascadeid', '=', 'cascades.id')
     const filters = req.query.filter;
@@ -258,11 +258,11 @@ module.exports = () => {
         rows.where(column, "<", filters[column][1]);
       }
     }
-    const groupStr = req.query.group;
+    const groupStr = req.query.groupby;
     //console.log(groupStr);
     const groupColumns = (groupStr) ? groupStr.split(",") : [];
     //console.log(groupColumns);
-    const validColumns = new Set(["energy", "substrate", "potentialused", "author", "temperature"]);
+    const validColumns = new Set(["energy", "substrate", "potentialused", "author", "temperature", "es"]);
     rows.groupBy("savimorph");
     for (let column of groupColumns) {
       console.log(column, (validColumns.has(column)));
@@ -271,7 +271,7 @@ module.exports = () => {
       rows.groupBy(column);
       rows.select(column);
     }
-    rows.select("savimorph as name", knex.raw("TOTAL(size) as npoints"), knex.raw("COUNT(*) as nclusters"), knex.raw("GROUP_CONCAT(size) as sizeLi"))
+    rows.select("savimorph as name", knex.raw("COUNT(DISTINCT(clusters.cascadeid)) as ncascades"), knex.raw("TOTAL(size) as npoints"), knex.raw("COUNT(*) as nclusters"), knex.raw("GROUP_CONCAT(size) as sizeLi"))
     //rows.select("cascades.id", "cascades.substrate", "cascades.energy", "cascades.temperature", "clusters.hdbpoint", "clusters.name");
     let rowsres =  await rows;
     for (let row of rowsres) {
