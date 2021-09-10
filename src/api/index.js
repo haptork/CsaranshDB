@@ -1,5 +1,6 @@
 const Router = require('express').Router;
 const dbhandle = require("../db/dbhandle");
+const knex = require('knex');
 
 module.exports = () => {
   const api = Router();
@@ -161,6 +162,7 @@ module.exports = () => {
     res.send(clusters);
   });
   */
+/*
   api.get('/clustershdb', async (req, res) => {
     let rows = dbhandle.from("clusters");
     rows.join('cascades', 'clusters.cascadeid', '=', 'cascades.id')
@@ -196,24 +198,52 @@ module.exports = () => {
       item.y.push(parseFloat(xy[1]));
       item.id.push(cluster.id);
     }
-    /*
-    const li = [];
-    
-    {id:[], x:[], y:[], savimorph:[]};
-    for (let row of clusters) {
-      if (!row.savimorph in li) li.savimorph = {};
-        li.id.push(row.id);
-        li.savimorph.push(row.savimorph);
-        const xy = row.hdbpoint.split(",");
-        li.x.push(parseFloat(xy[0]));
-        li.y.push(parseFloat(xy[1]));
+    //const li = [];
+   // 
+   // {id:[], x:[], y:[], savimorph:[]};
+   // for (let row of clusters) {
+   //   if (!row.savimorph in li) li.savimorph = {};
+   //     li.id.push(row.id);
+   //     li.savimorph.push(row.savimorph);
+   //     const xy = row.hdbpoint.split(",");
+   //     li.x.push(parseFloat(xy[0]));
+   //     li.y.push(parseFloat(xy[1]));
+   // }
+    res.send({ditraces, traces});
+  });
+*/
+
+  api.get('/clustershdb', async (req, res) => {
+    let rows = dbhandle.from("clusters");
+    rows.join('cascades', 'clusters.cascadeid', '=', 'cascades.id')
+    const filters = req.query.filter;
+    for (let column in filters) {
+      if (!column in dbColumns) continue;
+      if (dbColumns[column] === 'text') {
+        rows.where("cascades."+column, "like", '%'+filters[column]+'%');
+      } else if (dbColumns[column] === 'range') {
+        if (filters[column].length < 2) continue;
+        rows.where("cascades."+column, ">=", filters[column][0]);
+        rows.where("cascades."+column, "<", filters[column][1]);
+      }
     }
-    */
+    //rows.select("clusters.id", "savimorph", "hdbpoint");
+
+    rows.groupBy("savimorph");
+    rows.select("savimorph as name", knex.raw("GROUP_CONCAT(clusters.id) as id"), knex.raw("GROUP_CONCAT(hdbx) as x"), knex.raw("GROUP_CONCAT(hdby) as y"));
+    let traces = await rows;
+    let ditraces = {};
+    let i = 0;
+    for (let trace of traces) {
+      trace.id = trace.id.split(",");
+      trace.x = trace.x.split(",");
+      trace.y = trace.y.split(",");
+      ditraces[trace.name] = i++;
+    }
     res.send({ditraces, traces});
   });
 
-/* 
-  api.get('/clusterhdb', async (req, res) => {
+  api.get('/clusterstats', async (req, res) => {
     let rows = dbhandle.from("clusters");
     rows.join('cascades', 'clusters.cascadeid', '=', 'cascades.id')
     const filters = req.query.filter;
@@ -228,12 +258,33 @@ module.exports = () => {
         rows.where(column, "<", filters[column][1]);
       }
     }
-    
-    rows.select("cascades.id", "cascades.substrate", "cascades.energy", "cascades.temperature", "clusters.hdbpoint", "clusters.name");
-    const cascades =  await rows;
-    res.send(cascades);
+    const groupStr = req.query.group;
+    //console.log(groupStr);
+    const groupColumns = (groupStr) ? groupStr.split(",") : [];
+    //console.log(groupColumns);
+    const validColumns = new Set(["energy", "substrate", "potentialused", "author", "temperature"]);
+    rows.groupBy("savimorph");
+    for (let column of groupColumns) {
+      console.log(column, (validColumns.has(column)));
+      if (!(validColumns.has(column))) continue;
+      console.log(column);
+      rows.groupBy(column);
+      rows.select(column);
+    }
+    rows.select("savimorph as name", knex.raw("TOTAL(size) as npoints"), knex.raw("COUNT(*) as nclusters"), knex.raw("GROUP_CONCAT(size) as sizeLi"))
+    //rows.select("cascades.id", "cascades.substrate", "cascades.energy", "cascades.temperature", "clusters.hdbpoint", "clusters.name");
+    let rowsres =  await rows;
+    for (let row of rowsres) {
+      row.sizeLi= row.sizeLi.split(",");
+      if (row.name === "v") {
+        row.npoints = -row.npoints;
+        for (let j = 0; j < row.sizeLi.length; j++) { //} in row.sizeLi) {
+          row.sizeLi[j] = -parseInt(row.sizeLi[j]);
+        }
+      }
+    }
+    res.send(rowsres);
   });
-  */
  
 /*
   api.get('/clusterhdbpoints/:id/:cid', async (req, res) => {

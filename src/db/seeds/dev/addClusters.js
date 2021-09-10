@@ -148,6 +148,7 @@ exports.seed = async function(knex) {
                 getClusterCoord(cascade, clusterId);
       const size = cascade.clusterSizes[clusterId];
       const morphology = (size < 0) ? 'v' : cascade.clusterClasses.savi[clusterId];
+      const hdbpoint = hdbpoints[[cascade.id,clusterId]];
       tableRows.push({
         'cascadeid':cascade.id,
         'name': clusterId,
@@ -155,7 +156,8 @@ exports.seed = async function(knex) {
         'savimorph': morphology,
         'coordtype': coordType,
         'coords': JSON.stringify(coords),
-        'hdbpoint': hdbpoints[[cascade.id,clusterId]],
+        'hdbx': hdbpoint[0],
+        'hdby': hdbpoint[1],
         'cmp': JSON.stringify(cascade.clust_cmp[clusterId]),
         'cmpsize': JSON.stringify(cascade.clust_cmp_size[clusterId]),
         'cmppairs': JSON.stringify(pairs),
