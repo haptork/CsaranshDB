@@ -237,6 +237,7 @@ Optimizing json size:
   - Smaller field names. Possibly with attributes.
 
 5th Sep:
+========
 
 WIP:
 - ~~Enable cluster comparison view.~~
@@ -325,13 +326,48 @@ TODO:
 - ~~Add outline API.~~
 - Add table view with download option.
 - knew.raw warning remove.
-
-11th Sep:
-
-TODO:
-
 - csaransh-pp: 
   - validate and process from cascadesDB.
     - improved log summary for review.
     - figure out how to add, save kd-tree etc.
     - add status to table (unreviewed, reviewed) for statistical testing.
+
+11th Sep:
+
+WIP:
+
+- python script to start processing and outputting log, log-summary, json, sqlite db.
+  - ~~created client code and scaffolding.~~
+
+TODO:
+
+- Current deployment strategy:
+  - After file upload.
+    - Three possibilities to initiate csaransh validation depending on current implementation of CascadesDB.
+      - Manual: concerned moderator / admin runs cmd or api request to start processing from python / c++.
+      - Start processing using api automatically after file upload.
+      - AWS lambda (not being explored for now).
+  - The function outputs log, json and sqlite db, possibly sends mail for
+    the review.
+  - After review, (possibly kdd cluster comparison again and) add new rows to the main db.
+
+TODO:
+
+- Alternative deployment using aws lambda:
+  - Create a python aws lambda for upload of cascade event.
+  - Save log, add to a db, with a web preview and send mail.
+  - Process an s3 file from aws ec2.
+
+12th Sep:
+
+WIP:
+
+- Adding clusters data from cascades.clusterClasses seems to be a better choice.
+- Good reference for python sqlite:
+  - https://www.sqlitetutorial.net/sqlite-python/ 
+
+TODO:
+
+- Add log for python.
+
+
