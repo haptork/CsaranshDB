@@ -362,12 +362,15 @@ TODO:
 
 WIP:
 
-- Adding clusters data from cascades.clusterClasses seems to be a better choice.
-- Good reference for python sqlite:
+- ~~Added pp code to create sqliteDb.~~
+- Good quick reference for python sqlite:
   - https://www.sqlitetutorial.net/sqlite-python/ 
 
 TODO:
 
 - Add log for python.
-
-
+- Test db created by pp on web-app.
+- log-summary.
+- merge verified file to main db.
+  - cluster-comparison kdd, change ids etc.
+  - save umap pre-trained.

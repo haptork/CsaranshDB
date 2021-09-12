@@ -7,8 +7,8 @@ exports.up = async function(knex, Promise) {
       t.integer("size");
       t.integer('coordtype');
       t.text("coords");
-      t.string("hdbx");
-      t.string("hdby");
+      t.float("hdbx");
+      t.float("hdby");
       t.text("cmp");
       t.text('cmpsize');
       t.text('cmppairs');
