@@ -62,7 +62,8 @@ export const getInitialSelection = (row) => {
 
 const getCmpCoord = (row, cid, cmpData, cids, mode, isSize, val) => {
   if (cid == '') return [{}, cid];
-  if (!('cmpsize' in cmpData)) return [{}, cid];
+  if (!('cmpsize' in cmpData) || !cmpData.cmpsize) return [{}, cid];
+  if (!(mode in cmpData.cmpsize)) return [{}, cid];
   /*
   if (cids.length > 0) cid = cids[0].value;
     else return [row, cid];
@@ -82,7 +83,8 @@ const getCmpCoord = (row, cid, cmpData, cids, mode, isSize, val) => {
 
 const getCmpCids = (row, cid, cmpData, mode, isSize, shortName) => {
   if (cid == '') return [];
-  if (!('cmpsize' in cmpData)) return [];
+  if (!('cmpsize' in cmpData) || !cmpData.cmpsize) return [];
+  if (!(mode in cmpData.cmpsize)) return [];
   let scores = cmpData.cmp[mode];
   if (isSize) {
     scores = cmpData.cmpsize[mode];

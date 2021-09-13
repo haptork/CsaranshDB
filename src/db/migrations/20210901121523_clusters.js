@@ -1,7 +1,7 @@
 exports.up = async function(knex, Promise) {
   await knex.schema.createTable('clusters', t => {
       t.increments('id').primary();
-      t.integer("cascadeid").notNullable().references("id").inTable("cascades").onDelete("CASCADE");
+      t.text("cascadeid").notNullable().references("id").inTable("cascades").onDelete("CASCADE");
       t.integer('name');
       t.string("savimorph");
       t.integer("size");

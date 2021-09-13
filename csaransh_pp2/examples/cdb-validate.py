@@ -112,7 +112,7 @@ dbToJsonMap2 = (
 );
 
 dbTypes = {
-  "id": "integer",
+  "id": "string",
   "cascadeid": "string",
   'ncell': 'integer',
   'energy': 'integer',
@@ -149,7 +149,7 @@ def cookCascadesDbTuple(cascades):
   for cascade in cascades:
     row = []
     for val in dbToJsonMap2:
-      if val[0] == "id": continue
+      #if val[0] == "id": continue
       if val[0] == "coords": break
       row.append(cascade[val[1]])
     row.append(json.dumps({
@@ -162,7 +162,7 @@ def cookCascadesDbTuple(cascades):
     rows.append(tuple(row))
   columns = []
   for val in dbToJsonMap2:
-    if val[0] == "id": continue
+    #if val[0] == "id": continue
     if val[0] == "coords": 
       columns.append('viewfields')
       break
@@ -171,7 +171,7 @@ def cookCascadesDbTuple(cascades):
 
 def addCascadesTable(cascades, cur):
   cur.execute('''create table cascades
-               (id integer Primary key, cascadeid text unique, ncell integer, energy integer, boxsize real, latticeconst real not null,
+               (id text Primary key, cascadeid text unique, ncell integer, energy integer, boxsize real, latticeconst real not null,
                 temperature real, simulationtime real, infile string, xyzfilepath string not null,
                 substrate sring, simulationcode string, potentialused string, author string,
                 es integer, tags text, ndefects integer, nclusters integer,
@@ -273,7 +273,7 @@ def cookClustersDbTuple(cascades):
 def addClustersTable(cascades, cur):
   cur.execute('''create table clusters
                (id integer Primary Key, 
-                cascadeid integer not null, name integer, savimorph text, size integer, coordtype integer,
+                cascadeid text not null, name integer, savimorph text, size integer, coordtype integer,
                 coords text, hdbx real, hdby real, cmp text, cmpsize text, cmppairs text, morphdesc text,
                 properties text, created_at DATETIME DEFAUlT CURRENT_TIMESTAMP, 
                 foreign key (cascadeid) references cascades (id), unique(cascadeid, name))''')

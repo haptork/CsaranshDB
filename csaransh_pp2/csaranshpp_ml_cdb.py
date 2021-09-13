@@ -170,37 +170,6 @@ def dist(a, b):
             res += ((x - y)**2 * 1.0) / (1.0*x)
     return round(res, 4)
 
-
-"""
-compare different histograms of a cluster with all other clusters
-"""
-
-
-def compareWithCluster(pivotI, pivotCid, pivot, data, size, dim):
-    res = {}
-    res_with_size = {}
-    size_tol = .4
-    dim_tol = .2
-    tol_cur = (int)(size * size_tol)
-    for i, fdata in enumerate(data):
-        for cid in fdata['features']:
-            if i == pivotI and cid == pivotCid:
-                continue
-            score = compareTwoClusters(pivot, fdata['features'][cid])
-            for key in score:
-                if (not key in res):
-                    res[key] = []
-                res[key].append((score[key], i, cid))
-                var = fdata['eigen_features'][cid]['var']
-                tol1 = abs(var[0] - dim[0])
-                tol2 = abs(var[0] + var[1] - dim[0] - dim[1])
-                if abs(len(fdata['clusters'][cid]) - size) < tol_cur and tol1 < dim_tol and tol2 < dim_tol:
-                    if (not key in res_with_size):
-                        res_with_size[key] = []
-                    res_with_size[key].append((score[key], i, cid))
-    return res, res_with_size
-
-
 """
 Helper distance function for dimensionality reduction
 """
@@ -342,8 +311,9 @@ def clusterClasses(data, feat, tag):
           if not 'savi' in cascade['clusterClasses']: cascade['clusterClasses']['savi'] = {}
           cascade['clusterClasses']['savi'][tcid] = {"morph":compLabel}
         else:
-          addFullComponentInfo(data[tcas], tcid)
-        cascade['clusterClasses']['savi'][tcid] = {"morph":compLabel, 'hdbpoint':dim}
+          addFullComponentInfo(cascade, tcid)
+          #print(cascade['clusterClasses']['savi'][tcid]['morph'])
+        cascade['clusterClasses']['savi'][tcid]['hdbpoint'] = dim
     return True
 
 def addHull(data):

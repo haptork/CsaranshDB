@@ -368,9 +368,23 @@ WIP:
 
 TODO:
 
-- Add log for python.
 - Test db created by pp on web-app.
+- Add log for python.
 - log-summary.
 - merge verified file to main db.
   - cluster-comparison kdd, change ids etc.
   - save umap pre-trained.
+
+13th Sep:
+
+WIP:
+
+- ~~Test db created by pp on web-app.~~
+- muli kd-tree implementation for cluster pattern recognitioin of new clusters with existing data.
+
+TODO:
+
+- fix potential name.
+- fix outline messages when temperature/ energy is single, e.g. "From 15keV to 15keV"
+- fix wrong row count on excluding a single row from the statistics using the second action button.
+- Validate multiple archives.

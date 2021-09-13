@@ -1,7 +1,8 @@
 exports.up = async function(knex, Promise) {
   await knex.schema.createTable('cascades', t => {
-      t.increments('id').unsigned().primary();
-      t.integer('cascadeid');
+      //t.increments('id').unsigned().primary();
+      t.string('id').primary();
+      t.string('cascadeid');
       t.integer('ncell');
       t.integer('energy');
       t.float('boxsize');
