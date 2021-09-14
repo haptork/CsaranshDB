@@ -254,7 +254,7 @@ def getClusterLineCoord(row, cid):
 def cookClustersDbTuple(cascades):
   rows = []
   for cascade in cascades:
-    for clusterName in cascade['clusterClasses']['savi']:
+    for clusterName in cascade['clusters']:
       row = [cascade['id'], clusterName]
       curClusterClass = cascade['clusterClasses']['savi'][clusterName]
       row.append(cascade['clusterSizes'][clusterName])
@@ -266,7 +266,7 @@ def cookClustersDbTuple(cascades):
       # coords and coordtype
       row.append(curClusterClass['hdbpoint'][0])
       row.append(curClusterClass['hdbpoint'][1])
-    rows.append(tuple(row))
+      rows.append(tuple(row))
   columns = ["cascadeid", "name", "size", "savimorph", "coordtype", "coords", "hdbx", "hdby"]
   return (rows, columns)
 

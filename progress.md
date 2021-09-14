@@ -380,7 +380,6 @@ TODO:
 WIP:
 
 - ~~Test db created by pp on web-app.~~
-- muli kd-tree implementation for cluster pattern recognitioin of new clusters with existing data.
 
 TODO:
 
@@ -388,3 +387,16 @@ TODO:
 - fix outline messages when temperature/ energy is single, e.g. "From 15keV to 15keV"
 - fix wrong row count on excluding a single row from the statistics using the second action button.
 - Validate multiple archives.
+- muli kd-tree implementation for cluster pattern recognitioin of new clusters with existing data.
+
+14th Sep:
+
+WIP:
+
+- ~~Testing adding new database with comparison.~~
+- ~~Added dimensionality reduction updates to new data entries~~
+
+TODO:
+
+- change inputs of validate to src-dir, dest-dir, meta-files (can be multiple)
+- change input of merge to ...

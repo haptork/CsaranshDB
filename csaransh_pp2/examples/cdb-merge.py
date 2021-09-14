@@ -11,6 +11,7 @@ runs a http server and opens the web-app with processed data loaded
 
 
 import sys
+import shutil
 import os
 import json
 import sqlite3
@@ -24,6 +25,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics.cluster import adjusted_rand_score
 from sklearn.metrics.cluster import adjusted_mutual_info_score
 from sklearn.neighbors import NearestNeighbors
+import umap
 
 pathToCsaranshPP = ".."
 sys.path.append(pathToCsaranshPP)
@@ -86,9 +88,8 @@ def clusterClassData(data):
     for i, x in enumerate(data):
         for y in x['features']:
             feat.append(x['features'][y]['angle'] + x['features'][y]['dist'])
-            tag.append((i, y))
+            tag.append((x['id'], y, i))
     return (feat, tag)
-
 
 def quadCustom(wA, wD):
     def quad(x, y):
@@ -106,11 +107,11 @@ def quadCustom(wA, wD):
         return (cA + cD) / (wA + wD)
     return quad
 
-
-
-def createNN(data, oldNN, feat, tag):
+# if old's nearest is from new then update else let it be
+# add new ones with it.
+# new dimensionality reduction :|
+def cookNewComparison(oldFt, feat, tag):
   topsize = 5
-  feat, tag = clusterClassData(data)
   neigh = {}
   keys = ['angle', 'dist', 'all']
   quadAngle = quadCustom(1.0, 0.0)
@@ -122,94 +123,148 @@ def createNN(data, oldNN, feat, tag):
   neigh[keys[2]] = NearestNeighbors(defaultK, metric=quadBoth)
   dists = {}
   neighbours = {}
+  allFeat = oldFt['feat'] + feat
   for key in neigh:
     if len(feat) == 0: continue
-    neigh[key].fit(oldNN['nn1'].data+feat)
+    neigh[key].fit(allFeat)
     dists[key], neighbours[key] = neigh[key].kneighbors()
-  allTags = oldNN['tag1'] + tag
-  for index, (cascadeIndex, cid) in enumerate(allTags):
-    # if new nearest is from new then update else let it be
-    # add new ones with it.
-    # new dimensionality reduction :|
-    if not 'clust_cmp' in cascade:
-        cascade['clust_cmp'] = {}
-        cascade['clust_cmp_size'] = {}
-        cascade['clust_cmp'][cid] = {}
-        cascade['clust_cmp_size'][cid] = {}
-    elif not cid in cascade['clust_cmp']:
-        cascade['clust_cmp'][cid] = {}
-        cascade['clust_cmp_size'][cid] = {}
+  allTags = oldFt['tag'] + tag
+  oldLen = len(oldFt['tag'])
+  additions = {}
+  refs = {}
+  # add old
+  for index, tagv in enumerate(oldFt['tag']):
+    isUpdate = False
+    vals = {}
+    curRef = {}
     for key in neigh:
-        if key not in dists:
-          cascade['clust_cmp'][cid][key] = []
-          cascade['clust_cmp_size'][cid][key] = []
-        cascade['clust_cmp'][cid][key] = [(x, tag[y][0], tag[y][1]) for x, y in zip(
-            dists[key][index][:topsize], neighbours[key][index][:topsize])]
-        curLen = len(cascade['clusters'][cid])
-        lenDiff = [(abs(curLen - len(data[tag[x][0]]['clusters'][tag[x][1]])), i)
-                   for i, x in enumerate(neighbours[key][index])]
-        lenDiff.sort()
-        cascade['clust_cmp_size'][cid][key] = [
-            (dists[key][index][x[1]], tag[neighbours[key][index][x[1]]][0], tag[neighbours[key][index][x[1]]][1]) for x in lenDiff[:topsize]]
-
-
-def addClusterCmp(data):
-    topsize = 5
-    feat, tag = clusterClassData(data)
-    neigh = {}
-    keys = ['angle', 'dist', 'all']
-    quadAngle = quadCustom(1.0, 0.0)
-    quadDist = quadCustom(0.0, 1.0)
-    quadBoth = quad
-    defaultK = topsize * 3 if topsize * 3 < len(feat) else len(feat) - 1
-    neigh[keys[0]] = NearestNeighbors(defaultK, metric=quadAngle)
-    neigh[keys[1]] = NearestNeighbors(defaultK, metric=quadDist)
-    neigh[keys[2]] = NearestNeighbors(defaultK, metric=quadBoth)
-    dists = {}
-    neighbours = {}
+      vals[key] = []
+      curRef[key] = []
+      for x, y in  zip(dists[key][index][:topsize], neighbours[key][index][:topsize]):
+        if y > oldLen: isUpdate = True
+        vals[key].append((round(x, 2), allTags[y][0], allTags[y][1]))
+        curRef[key].append((allTags[y][0], allTags[y][1], allTags[y][2] if (y > oldLen - 1) else -1))
+    if isUpdate:
+      additions[tagv] = vals
+      refs[tagv] = curRef
+  # add new
+  for index, tagv in enumerate(tag):
+    totalIndex = index + oldLen
+    additions[tagv] = {}
+    refs[tagv] = {}
     for key in neigh:
-        if len(feat) == 0: continue
-        neigh[key].fit(feat)
-        dists[key], neighbours[key] = neigh[key].kneighbors()
-    for index, (cascadeIndex, cid) in enumerate(tag):
-        cascade = data[cascadeIndex]
-        if not 'clust_cmp' in cascade:
-            cascade['clust_cmp'] = {}
-            cascade['clust_cmp_size'] = {}
-            cascade['clust_cmp'][cid] = {}
-            cascade['clust_cmp_size'][cid] = {}
-        elif not cid in cascade['clust_cmp']:
-            cascade['clust_cmp'][cid] = {}
-            cascade['clust_cmp_size'][cid] = {}
-        for key in neigh:
-            if key not in dists:
-              cascade['clust_cmp'][cid][key] = []
-              cascade['clust_cmp_size'][cid][key] = []
-            cascade['clust_cmp'][cid][key] = [(x, tag[y][0], tag[y][1]) for x, y in zip(
-                dists[key][index][:topsize], neighbours[key][index][:topsize])]
-            curLen = len(cascade['clusters'][cid])
-            lenDiff = [(abs(curLen - len(data[tag[x][0]]['clusters'][tag[x][1]])), i)
-                       for i, x in enumerate(neighbours[key][index])]
-            lenDiff.sort()
-            cascade['clust_cmp_size'][cid][key] = [
-                (dists[key][index][x[1]], tag[neighbours[key][index][x[1]]][0], tag[neighbours[key][index][x[1]]][1]) for x in lenDiff[:topsize]]
+      additions[tagv][key] = [(round(x,2), allTags[y][0], allTags[y][1]) for x, y in zip(
+                dists[key][totalIndex][:topsize], neighbours[key][totalIndex][:topsize])]
+      refs[tagv][key] = [(allTags[y][0], allTags[y][1], allTags[y][2] if (y > oldLen - 1) else -1) for y in neighbours[key][totalIndex][:topsize]]
+  return additions, refs, allFeat, allTags
+  ##curLen = oldNN['size1'][index]
+  ##lenDiff = [(abs(curLen - len(data[tag[x][0]]['clusters'][tag[x][1]])), i)
+  ##             for i, x in enumerate(neighbours[key][index])]
+  ##  lenDiff.sort()
+  ##  cascade['clust_cmp_size'][cid][key] = [
+  ##      (dists[key][index][x[1]], tag[neighbours[key][index][x[1]]][0], tag[neighbours[key][index][x[1]]][1]) for x in lenDiff[:topsize]]
 
+def mergeCascadeDbs(dbNew, dataPath, dest, dbOld = None, oldFtPath=None):
+  if (not os.path.exists(dataPath)): return False
+  dataFile = open(dataPath, 'r')
+  data = json.load(dataFile)
+  dataFile.close()
+  feat, tag = clusterClassData(data)
+  oldFt = {"feat":[], "tag":[], "reducer": None}
+  rndSeed = 42
+  reducer = umap.UMAP(n_components=2, n_neighbors=9, min_dist=0.11, metric=quad, random_state=rndSeed)
+  dims = None
+  if (oldFtPath and os.path.exists(oldFtPath)):
+    ftFile = open(oldFtPath, 'rb')
+    oldFt = pickle.load(ftFile)
+    reducer = oldFt['reducer']
+    dims = reducer.transform(feat)
+    ftFile.close()
+  else:
+    dims = reducer.fit_transform(feat)
+  additions, addrefs, allFeat, allTags = cookNewComparison(oldFt, feat, tag)
+  #print(updates)
+  #print(additions['all'])
+  #print(allTags)
+  #print(allTags.keys())
+  saveNN(data, {'feat':allFeat, 'tag':allTags, "reducer":reducer}, len(feat), len(oldFt['feat']), dest)
+  #updateComparison(dbNew, additions)
+  #print(dbNew)
+  if dbOld: shutil.copy(dbOld, dest)
+  else: shutil.copy(dbNew, dest)
+  con = sqlite3.connect(dest)
+  cur = con.cursor()
+  if dbOld: addToDb(dbNew, cur, con)
+  newTags = set(tag)
+  for key in additions:
+    cascadeid = key[0]#data[key[0]]['id']
+    name = key[1]
+    valJson = json.dumps(additions[key])
+    pairsJson = getComparisonPairs(data, addrefs[key], cur)
+    if key in newTags:
+      dim = dims[key[2]]
+      print("here ---------")
+      cur.execute("UPDATE clusters set cmp= ?, cmpsize=?, cmppairs = ?, hdbx=?, hdby=? where cascadeid = ? and name = ?", (valJson, valJson, pairsJson, dim[0], dim[1], cascadeid, name))
+      #cur.execute("UPDATE clusters set cmp= ?, cmpsize=?, cmppairs = ? where cascadeid = ? and name = ?", (valJson, valJson, pairsJson, cascadeid, name))
+    else:
+      cur.execute("UPDATE clusters set cmp= ?, cmpsize=?, cmppairs = ? where cascadeid = ? and name = ?", (valJson, valJson, pairsJson, cascadeid, name))
+  con.commit()
+  #store
+  #updateComparison(db2Path, updates)
+  #cpDb(db1Path, db2Path)
 
-def mergeCascadeDbs(db1Path, db2Path, nnPath):
-  nnDi = {"nn1":None, "nn2":None, "tag1":[], "tag2":[]}
-  if (os.path.exists(nnPath)):
-    nnFile = open(nnPath, 'r')
-    nnDi = pickle.load(nnFile)
-    nnFile.close()
-  if not nnDi['nn1']:
-    pass # TODO
+def addToDb(dbNew, cur, con):
+  cur.execute("Attach ? as nu", (dbNew, ))
+  cur.execute("BEGIN")
+  cols = 'cascadeid, name, savimorph, size, coordtype, coords, hdbx, hdby, cmp, cmpsize, cmppairs, morphdesc, properties'
+  cur.execute("INSERT INTO cascades select * from nu.cascades")
+  q1 = "INSERT INTO clusters ("+ cols +") select "+ cols + " from nu.clusters"
+  cur.execute(q1)
+  con.commit()
+  cur.execute("detach database nu")
 
+def saveNN(data, neigh, newLen, oldLen, basepath):
+  i = 0
+  while i < newLen:
+    x = neigh['tag'][oldLen + i]
+    neigh['tag'][oldLen + i] = (x[0], x[1], data[x[2]]['clusterSizes'][x[1]])
+    i += 1
+  f = open(basepath +"-tree.pickle", "wb")
+  pickler = pickle.Pickler(f)
+  pickler.dump(neigh)
+  f.close()
+
+def cookCmpCascadeInfo(row):
+  return {"id":row["id"], "substrate": row["substrate"], "energy": row["energy"], "temperature": row["temperature"], "potentialused": row["potentialUsed"], "author": row["author"]};
+
+def cookCmpCascadeInfoFromDb(cascadeid, cur):
+  cols = ["id", "substrate", "energy", "temperature", "potentialused", "author"]
+  q = "Select " + ", ".join(cols)  + " from cascades WHERE id =?"
+  row = cur.execute(q, (cascadeid, )).fetchone()
+  res = {key:val for (key, val) in zip(cols, row)}
+  return res
+
+def getComparisonPairs(data, cmp, cur):
+  pairs = {};
+  for key in cmp:
+    ar = cmp[key]
+    for val in ar:
+      if val[2] >= 0:
+        pairs[''+str(val[0])+","+str(val[1])] = cookCmpCascadeInfo(data[val[2]])
+      else:
+        if cur: pairs[''+str(val[0])+","+str(val[1])] = cookCmpCascadeInfoFromDb(val[0], cur)
+        else: print ("error") # TODO throw error
+  return json.dumps(pairs)
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("please provide metafilepath, extractiondir, archivepath")
-    else:
-        db1 = sys.argv[1]
-        db2 = sys.argv[2]
-        nn = sys.argv[3]
-        mergeCascadeDbs(db1, db2, nn)
+  if len(sys.argv) < 4:
+    print("please provide new Db path, new data JSON path, destination db path, old Db path (optional), old ft Path (optional)")
+  else:
+    dbNew = sys.argv[1]
+    data = sys.argv[2]
+    dest = sys.argv[3]
+    dbOld = None
+    nnOld = None
+    if len(sys.argv) > 4: dbOld = sys.argv[4]
+    if len(sys.argv) > 5: nnOld = sys.argv[5]
+    mergeCascadeDbs(dbNew, data, dest, dbOld, nnOld)
