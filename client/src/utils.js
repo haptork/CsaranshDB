@@ -16,11 +16,11 @@ export const getAllCol = () => {
     { value: 'substrate', label: 'Material', isShow: true, filterType: "select", type:"input", parseFn: ac.noParse},
     { value: 'energy', label: 'Energy (keV)', isShow: true, filterType: "select", type:"input"},
     { value: 'temperature', label: 'Temperature', isShow: false, filterType: "select", type:"input"},
-    /*
     { value: 'simulationtime', label: 'Simulation Time', isShow: false, filterType: "range", type: "input"},
     { value: 'author', label: 'Author', isShow: false, filterType: "select", type: "input", parseFn: ac.noParse},
     { value: 'potentialused', label: 'Potential Used', isShow: true, filterType: "select", type: "input" , parseFn: ac.noParse},
     { value: 'es', label: 'Electronic Stopping', isShow: false, filterType: "select", type: "input" , parseFn: ac.noParse},
+    /*
     { value: 'xyzfilepath', label: 'Xyz file path', isShow: false, filterType: "text" , type: "input", parseFn: ac.noParse},
     { value: 'xyzfilename', label: 'Xyz file name', isShow: false, filterType: "text" , type: "input", accessor: ac.accessorDefault("xyzFilePath"), parseFn: ac.parseFileName},
     { value: 'infile', label: 'Input File', isShow: false, filterType: "text" , type: "input", parseFn: ac.noParse},
@@ -32,10 +32,10 @@ export const getAllCol = () => {
     { value: 'recphi', label: 'PKA angle - phi', isShow: false, filterType: "range" , type: "input", parseFn: ac.roundOff},
     */
     { value: 'ndefects', label: 'Defects Count', isShow: true },
-    /*
     { value: 'max_cluster_size', label: 'Max cluster size', isShow: false },
     { value: 'in_cluster', label: '% defects in cluster', isShow: false },
     { value: 'n_clusters', label: 'Clusters Count', isShow: false },
+    /*
     { value: 'twod', label: 'Planarity', isShow: false, parseFn: parseInt, "accessor": ac.accessorTwod },
     { value: 'subc', label: 'Subcascades', isShow: false, parseFn: parseInt, "accessor": ac.accessorSubc },
     { value: 'dclust_sec_impact', label: 'Impact fo 2nd big subcascade', isShow: false },

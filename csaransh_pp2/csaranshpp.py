@@ -841,7 +841,9 @@ def getInfoFromMeta(metaInfo, metaFilePath, xyzFilePath):
     extraInfo["substrate"] = metaInfo['material']['formula']
     potUsed = metaInfo['interatomic_potential']['uri']
     cdborg = "https://cascadesdb.org/potential/"
-    if (potUsed.startswith(cdborg)): potUsed = potUsed[len(cdborg):] + "-cdbpot"
+    if (potUsed.startswith(cdborg)): potUsed = "P" + potUsed[len(cdborg):]# + "-cdbpot"
+    cdborg = "https://cascadesdb.iaea.org/potential/"
+    if (potUsed.startswith(cdborg)): potUsed = "P" + potUsed[len(cdborg):]# + "-cdbpot"
     extraInfo["potentialUsed"] = potUsed
     extraInfo["es"] = metaInfo['electronic_stopping'].lower() == "true"
     extraInfo["isPKAGiven"] = False

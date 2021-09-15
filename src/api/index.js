@@ -84,9 +84,10 @@ module.exports = () => {
       if (dbColumns[column] === 'text') {
         rows.where(column, "like", '%'+filters[column]+'%');
       } else if (dbColumns[column] === 'range') {
-        if (filters[column].length < 2) continue;
+        if (filters[column].length == 0) continue;
         rows.where(column, ">=", filters[column][0]);
-        rows.where(column, "<", filters[column][1]);
+        if (filters[column].length < 2) continue;
+        rows.where(column, "<=", filters[column][1]);
       }
     }
     //console.log(rows.toSQL().toNative());

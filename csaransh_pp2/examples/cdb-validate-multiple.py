@@ -155,10 +155,11 @@ def cookCascadesDbTuple(cascades):
       row.append(cascade[val[1]])
     row.append(json.dumps({
       'coords': cascade['coords'],
-      'eigencoords': cascade['eigen_coords'],
       'codefects': cascade['coDefects'],
       'clusters': cascade['clusters'],
-      'clusterclasses': cascade['clusterClasses']
+      'clusterclasses': cascade['clusterClasses'] if 'clusterClasses' in cascade else {"save":{}}, # TODO insert anyway
+      'eigencoords': cascade['eigen_coords'],
+      'dclustcoords': cascade['dclust_coords']
     }))
     rows.append(tuple(row))
   columns = []
@@ -331,12 +332,12 @@ def validateArchive(srcDir, extractionDir, metaFiles, overwriteJson, overwriteDb
       else:
         cascades += curCascades
         #return [isSuccess, msg]
+    cascades = stageDwiMl(cascades)
+    writeMlResultsToJSON(cascades, config)
   else:
     f = open(config['outputJSONFilePath'], 'r')
     cascades = json.load(f)
     f.close()
-  cascades = stageDwiMl(cascades)
-  writeMlResultsToJSON(cascades, config)
   if not(os.path.exists(config['outputDbPath'])) or overwriteDb:
     if os.path.exists(config['outputDbPath']):
       os.remove(config['outputDbPath'])

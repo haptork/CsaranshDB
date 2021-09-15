@@ -395,8 +395,16 @@ WIP:
 
 - ~~Testing adding new database with comparison.~~
 - ~~Added dimensionality reduction updates to new data entries~~
+- ~~change inputs of validate to src-dir, dest-dir, meta-files (can be multiple)~~
 
 TODO:
 
-- change inputs of validate to src-dir, dest-dir, meta-files (can be multiple)
 - change input of merge to ...
+- dclust_coords missing in db viewfields.
+- umap correct params.
+
+15th Sep:
+
+WIP:
+
+- 

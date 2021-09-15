@@ -172,16 +172,16 @@ def mergeCascadeDbs(dbNew, dataPath, dest, dbOld = None, oldFtPath=None):
   feat, tag = clusterClassData(data)
   oldFt = {"feat":[], "tag":[], "reducer": None}
   rndSeed = 42
-  reducer = umap.UMAP(n_components=2, n_neighbors=9, min_dist=0.11, metric=quad, random_state=rndSeed)
+  reducer = umap.UMAP(n_components=2, n_neighbors=9, min_dist=0.15, metric=quad, random_state=rndSeed)
   dims = None
   if (oldFtPath and os.path.exists(oldFtPath)):
     ftFile = open(oldFtPath, 'rb')
     oldFt = pickle.load(ftFile)
     reducer = oldFt['reducer']
-    dims = reducer.transform(feat)
+    dims = reducer.transform(feat).tolist()
     ftFile.close()
   else:
-    dims = reducer.fit_transform(feat)
+    dims = reducer.fit_transform(feat).tolist()
   additions, addrefs, allFeat, allTags = cookNewComparison(oldFt, feat, tag)
   #print(updates)
   #print(additions['all'])
@@ -203,8 +203,7 @@ def mergeCascadeDbs(dbNew, dataPath, dest, dbOld = None, oldFtPath=None):
     pairsJson = getComparisonPairs(data, addrefs[key], cur)
     if key in newTags:
       dim = dims[key[2]]
-      print("here ---------")
-      cur.execute("UPDATE clusters set cmp= ?, cmpsize=?, cmppairs = ?, hdbx=?, hdby=? where cascadeid = ? and name = ?", (valJson, valJson, pairsJson, dim[0], dim[1], cascadeid, name))
+      cur.execute("UPDATE clusters set cmp= ?, cmpsize=?, cmppairs = ?, hdbx=?, hdby=? where cascadeid = ? and name = ?", (valJson, valJson, pairsJson, round(dim[0], 2), round(dim[1], 2), cascadeid, name))
       #cur.execute("UPDATE clusters set cmp= ?, cmpsize=?, cmppairs = ? where cascadeid = ? and name = ?", (valJson, valJson, pairsJson, cascadeid, name))
     else:
       cur.execute("UPDATE clusters set cmp= ?, cmpsize=?, cmppairs = ? where cascadeid = ? and name = ?", (valJson, valJson, pairsJson, cascadeid, name))
