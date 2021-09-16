@@ -97,7 +97,7 @@ export class ClusterClassesPlot extends React.Component {
   }
 
   render() {
-    console.log("classData", this.state.classData);
+    //console.log("classData", this.state.classData);
     return (
     <Card chart>
       <CardHeader color="info">

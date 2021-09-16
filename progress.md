@@ -407,4 +407,11 @@ TODO:
 
 WIP:
 
-- 
+- ~~set up initial server on aws.~~
+  - pm2 is a nice tool to run server: https://hackernoon.com/deploying-a-node-app-on-amazon-ec2-d2fb9a6757eb 
+
+16th Sep:
+
+WIP:
+
+- ~~Deployment build and serve html with express.~~

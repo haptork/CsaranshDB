@@ -5,10 +5,12 @@ const Plotly = window.Plotly;
 const Plot = createPlotlyComponent(Plotly);
 
 const getMinMaxFromAr = (mn, mx, ar) => {
+  /*
   console.log("mnmx");
   console.log(mn);
   console.log(mx);
   console.log(ar);
+  */
   for (let i = 0; i < 3; i++) {
     mn[i] = Math.min(mn[i], ...ar[i]);
     mx[i] = Math.max(mx[i], ...ar[i]);
@@ -356,7 +358,7 @@ export class Cluster2CmpPlot extends React.Component {
   render() {
     const {cid, row, defectData} = this.props;
     const coordType = defectData.coordtype;
-    console.log("defectData", defectData);
+    //console.log("defectData", defectData);
     let mn = 0.0, mx = 0.0;
     let plotData = [];
     if ('coords' in defectData) {

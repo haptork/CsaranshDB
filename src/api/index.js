@@ -1,6 +1,7 @@
 const Router = require('express').Router;
 const dbhandle = require("../db/dbhandle");
 const knex = require('knex');
+const path = require('path');
 
 module.exports = () => {
   const api = Router();
@@ -39,6 +40,10 @@ module.exports = () => {
   const validateCascade = (cascade) => {
       return [cascade, False];
   };
+
+  api.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "..", "..", "client", 'build', 'index.html'));
+  });
   
   api.post('/add', async (req, res) => {
     const [cascade, error] = validateCascade(req.body);

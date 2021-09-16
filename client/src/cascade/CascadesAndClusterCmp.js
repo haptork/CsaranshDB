@@ -119,7 +119,7 @@ class CascadeViews2 extends React.Component {
     //console.log(this.props.row.viewfields);
     const row = this.props.row.viewfields;
     const curXyzCoords = toXyzArSplit(row);
-    console.log(row);
+    //console.log(row);
     //console.log(curXyzCoords);
     return (
           <GridItem xs={12} sm={12} md={6}>
@@ -194,7 +194,7 @@ export class CascadesAndClusterCmp extends React.Component {
   render() {
     const { classes, row, allCids, cid, cmpData, data} = this.props;
     //console.log("rendering CascadesAndCmp");
-    console.log("cmpData", cmpData);
+    //console.log("cmpData", cmpData);
     return (
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>

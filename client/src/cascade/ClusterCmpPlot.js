@@ -74,9 +74,11 @@ const getCmpCoord = (row, cid, cmpData, cids, mode, isSize, val) => {
   if (isSize) x = cmpData.cmpsize[mode];
   if (val >= x.length || x[val].length < 3) return [{}, ''];
   //const fid = x[val][1];
+  /*
   console.log(cmpData);
   console.log(val);
   console.log(x);
+  */
   const cmpDataItem = cmpData.cmppairs[[x[val][1],x[val][2]]];
   return [cmpDataItem, x[val][2]];
 };

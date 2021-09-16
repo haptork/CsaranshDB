@@ -44,7 +44,7 @@ export class OutlineCards extends React.Component {
     const colors = ["success", "warning", "primary", "info"];
     const icons = [ElemIcon, EnergyIcon, PlanarIcon, ClassesIcon];
     const x = colors.map((c, i) => { return ( <Grid container className="content"> <Item color={colors[0]} icon={icons[0]} val={props.values[0]} classes={props.classes}/> </Grid>);});
-    console.log(props.values);
+    //console.log(props.values);
     return (
       <Grid container className="content"> 
       {colors.map((c, i) => <Item color={c} icon={icons[i]} key={i} val={props.values[i]} classes={props.classes}/>)}

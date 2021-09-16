@@ -83,7 +83,7 @@ const  fetchCascadeInfo = async (id) => {
 const  fetchClusterCmpInfo = async (id, cid) => {
   try {
   const clusterCmpJson = await fetch('/clustercmp/' + id + "/" + cid);
-  console.log("clusterCmpJson", clusterCmpJson);
+  //console.log("clusterCmpJson", clusterCmpJson);
   const cmpData =  await clusterCmpJson.json();
   return cmpData;
   } catch(err) {
@@ -132,7 +132,7 @@ export class DashboardSimple extends React.Component {
       .then(cascades => {
         const data = cascades.data;
         const dataOutline = overallStats(cascades.outline);
-        console.log(dataOutline);
+        //console.log(dataOutline);
         if (data.length === 0) return;
         const initialPick = 0;
         const initialRow = data[initialPick];
@@ -143,7 +143,7 @@ export class DashboardSimple extends React.Component {
           const cidCmp = getInitialSelectionFor(allCids);
           //console.log("mounting dashboard", rowData, allCids, cidCmp);
           fetchClusterCmpInfo(initialRow.id, cidCmp).then(cmpData => {
-            console.log("mounting dashboard", cmpData);
+            //console.log("mounting dashboard", cmpData);
             this.setState({
               data : data,
               curRows : data,
@@ -180,7 +180,7 @@ export class DashboardSimple extends React.Component {
 
   handleClusterCmp(cid) {
     cid = '' + cid;
-    console.log(this.state.lookrow);
+    //console.log(this.state.lookrow);
     if (!this.state.lookrow.viewfields.clusters.hasOwnProperty(cid)) return;
     fetchClusterCmpInfo(this.state.look, cid).then(cmpData => {
       this.setState({
@@ -231,7 +231,7 @@ export class DashboardSimple extends React.Component {
     //compareRows.add(uniqueKey(row));
     fetchCascadeInfo(newRowId).then(rowData => {
       rowData.viewfields = JSON.parse(rowData.viewfields);
-      const allCids = getCids(row);
+      const allCids = getCids(rowData);
       const cidCmp = getInitialSelectionFor(allCids);
       fetchClusterCmpInfo(newRowId, cidCmp).then(cmpData => {
         this.setState({
