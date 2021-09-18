@@ -234,7 +234,7 @@ def _sanitizeCppRes(res):
 
 
 def _validateMetaInfo(metaInfo):
-    return metaInfo['has_surface'] == 'false' and metaInfo['initially_perfect'] == 'true' and (metaInfo['material']['structure'] == 'bcc' || metaInfo['material']['structure'] == 'fcc')
+    return metaInfo['has_surface'] == 'false' and metaInfo['initially_perfect'] == 'true' and (metaInfo['material']['structure'] == 'bcc' or metaInfo['material']['structure'] == 'fcc')
 
 
 def _validateInfo(info, extraInfo):
