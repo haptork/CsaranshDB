@@ -66,11 +66,19 @@ const styles = theme => ({
 */
 
 const overallStats = outline => {
+  let elemStr = outline.substrate.join(", ")
+  if (elemStr.length > 25) elemStr = elemStr.substr(0, 25) + " ... ";
+  let energyStr = "From " + Math.min(...outline.energy) + " to " + Math.max(...outline.energy) + "keV";
+  if (outline.energy.length == 1) energyStr = "" + outline.energy + "keV";
+  let temperatureStr = "From " + Math.min(...outline.temperature) + " to " + Math.max(...outline.energy) + "keV";
+  if (outline.temperature.length == 1) temperatureStr = "" + outline.temperature + "K";
+  let potStr = outline.potentialused.join(", ");
+  if (potStr.length > 25) potStr = potStr.substr(0, 25) + " ... ";
   return [
-    {"title": "Elements", "label": outline.substrate.length, "labelSm": outline.substrate.join(", ")},
-    {"title": "Energies", "label": outline.energy.length, "labelSm": "From " + Math.min(...outline.energy) + " to " + Math.max(...outline.energy) + "keV"},
-    {"title": "Potentials", "label": outline.potentialused.length, "labelSm":outline.potentialused.join(", ")},
-    {"title": "Temperatures", "label": outline.temperature.length, "labelSm": "From " + Math.min(...outline.temperature) + "K to " + Math.max(...outline.temperature) + "K"},
+    {"title": "Elements", "label": outline.substrate.length, "labelSm": elemStr},
+    {"title": "Energies", "label": outline.energy.length, "labelSm": energyStr},
+    {"title": "Potentials", "label": outline.potentialused.length, "labelSm": potStr},
+    {"title": "Temperatures", "label": outline.temperature.length, "labelSm": temperatureStr},
   ];
 };
 
