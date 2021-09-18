@@ -257,7 +257,7 @@ module.exports = () => {
       }
     }
     //rows.select("clusters.id", "savimorph", "hdbpoint");
-
+    rows.where("savimorph", "!=", "7-?")
     rows.groupBy("savimorph");
     rows.select("savimorph as name", knex.raw("GROUP_CONCAT(clusters.id) as id"), knex.raw("GROUP_CONCAT(hdbx) as x"), knex.raw("GROUP_CONCAT(hdby) as y"));
     let traces = await rows;
