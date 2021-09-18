@@ -319,13 +319,14 @@ def validateArchive(srcDir, extractionDir, metaFiles, overwriteJson, overwriteDb
   cascades = []
   if not(os.path.exists(config['outputJSONFilePath'])) or overwriteJson:
     for metaFilePath in metaFiles:
+      print("parsing and finding archive for", metaFilePath)
       meta = xmlFileToDict(metaFilePath)
       archiveName = meta['cdbml']['cdbrecord']['data']['archive_name']
       archivePath = os.path.join(srcDir, archiveName)
       #archiveName = os.path.basename(archivePath)
       xyzDir = _unzipFile(extractionDir, archivePath, archiveName)
       if len(xyzDir) == 0: return [False, "Error in unzipping the file.", {}]
-      print("processing: ", metaFilePath, archiveName)
+      print("processing: ", archiveName)
       isSuccess, msg, curCascades = stageEkaCpp(metaFilePath, xyzDir, config)
       if not isSuccess: 
         print("Error in ", metaFilePath, msg)

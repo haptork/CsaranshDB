@@ -415,3 +415,7 @@ WIP:
 WIP:
 
 - ~~Deployment build and serve html with express.~~
+- Fix classification hdb points.
+- Fix outline texts, short / long.
+- python cdb-validate-multiple.py cascadesdb/W/ cascadesdb/W/ 0 1 cascadesdb/W/*xml
+- 

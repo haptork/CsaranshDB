@@ -300,7 +300,7 @@ def clusterClasses(data, feat, tag):
     show_dim = []
     if len(feat) == 0: return []
     rndSeed = 42
-    reduced_dim = umap.UMAP(n_components=2, n_neighbors=9, min_dist=0.11,
+    reduced_dim = umap.UMAP(n_components=2, n_neighbors=6, min_dist=0.40,
                             metric=quad, random_state=rndSeed).fit_transform(feat).tolist()
     for (tcas, tcid), dim in zip(tag,reduced_dim):
         cascade = data[tcas]
@@ -356,12 +356,13 @@ def checkIds(cascades):
 def getBasicLines(cascade, cid):
     return linesForCascade(cascade, cid)
 
-def validateForCdb(cascades, isAddClusterComparison=False, isAddClassification=True):
-    checkIds(cascades)
-    print("Adding coordinates in eigen dimensions and convex hulls for cascades...")
-    addEigenAndSubcascades(cascades)
-    addHull(cascades)
-    print('finished.')
+def validateForCdb(cascades, isInit=True, isAddClusterComparison=False, isAddClassification=True):
+    if isInit:
+      checkIds(cascades)
+      print("Adding coordinates in eigen dimensions and convex hulls for cascades...")
+      addEigenAndSubcascades(cascades)
+      addHull(cascades)
+      print('finished.')
     if isAddClusterComparison:
       print("Adding cluster comparison...")
       addClusterCmp(cascades)
@@ -375,42 +376,3 @@ def validateForCdb(cascades, isAddClusterComparison=False, isAddClassification=T
       else: print("finished with error!")
       sys.stdout.flush()
     return cascades
-
-def saveJs(cascades, config, classification, filePath):
-    di = {"meta": config, "data": cascades}
-    try:
-        f = open(filePath, "w")
-        f.write("var cascades = \n")
-        json.dump(di, f)
-        f.write(";\nvar cluster_classes = \n")
-        di = {}
-        for x in classification:
-            di[x['name']] = {"show_point": x['data'][0], "tags": x['data'][1]}
-        json.dump(di, f)
-        f.close()
-    except IOError:
-        print("Could not open file " + filePath)
-
-
-def analyseAndSaveJs(cascades, config, filePath, isAddClusterComparison=True, isAddClassification=True):
-    cascades, classification = analyseAndClassify(cascades)
-    saveJs(cascades, config, classification, filePath)
-    return cascades, classification
-
-
-if __name__ == "__main__":
-    fname = "cascades-data.json"
-    out_fname = "cascades-data.js"
-    if len(sys.argv) > 1:
-        fname = sys.argv[1]
-        nameWoExt = fname.split('.')[0]
-        out_fname = nameWoExt + ".js"
-    try:
-        f = open(fname, "r+")
-        cascadesWithConfig = json.load(f)
-        cascades = cascadesWithConfig['data']
-        f.close()
-        cascades, classification = analyseAndClassify(cascades)
-        saveJs(cascades, cascadesWithConfig['meta'], classification, out_fname)
-    except IOError:
-        print("Could not open file " + fname)

@@ -172,7 +172,7 @@ def mergeCascadeDbs(dbNew, dataPath, dest, dbOld = None, oldFtPath=None):
   feat, tag = clusterClassData(data)
   oldFt = {"feat":[], "tag":[], "reducer": None}
   rndSeed = 42
-  reducer = umap.UMAP(n_components=2, n_neighbors=9, min_dist=0.15, metric=quad, random_state=rndSeed)
+  reducer = umap.UMAP(n_components=2, n_neighbors=6, min_dist=0.45, metric=quad, random_state=rndSeed)
   dims = None
   if (oldFtPath and os.path.exists(oldFtPath)):
     ftFile = open(oldFtPath, 'rb')
@@ -183,6 +183,7 @@ def mergeCascadeDbs(dbNew, dataPath, dest, dbOld = None, oldFtPath=None):
   else:
     dims = reducer.fit_transform(feat).tolist()
   additions, addrefs, allFeat, allTags = cookNewComparison(oldFt, feat, tag)
+  reducer = umap.UMAP(n_components=2, n_neighbors=6, min_dist=0.45, metric=quad, random_state=rndSeed).fit(allFeat)
   #print(updates)
   #print(additions['all'])
   #print(allTags)
@@ -203,11 +204,14 @@ def mergeCascadeDbs(dbNew, dataPath, dest, dbOld = None, oldFtPath=None):
     pairsJson = getComparisonPairs(data, addrefs[key], cur)
     if key in newTags:
       dim = dims[key[2]]
-      cur.execute("UPDATE clusters set cmp= ?, cmpsize=?, cmppairs = ?, hdbx=?, hdby=? where cascadeid = ? and name = ?", (valJson, valJson, pairsJson, round(dim[0], 2), round(dim[1], 2), cascadeid, name))
+      cur.execute("UPDATE clusters set cmp= ?, cmpsize=?, cmppairs = ? where cascadeid = ? and name = ?", (valJson, valJson, pairsJson, cascadeid, name))
+      #cur.execute("UPDATE clusters set cmp= ?, cmpsize=?, cmppairs = ?, hdbx=?, hdby=? where cascadeid = ? and name = ?", (valJson, valJson, pairsJson, round(dim[0], 2), round(dim[1], 2), cascadeid, name))
       #cur.execute("UPDATE clusters set cmp= ?, cmpsize=?, cmppairs = ? where cascadeid = ? and name = ?", (valJson, valJson, pairsJson, cascadeid, name))
     else:
       cur.execute("UPDATE clusters set cmp= ?, cmpsize=?, cmppairs = ? where cascadeid = ? and name = ?", (valJson, valJson, pairsJson, cascadeid, name))
   con.commit()
+  for (t, z) in zip(tag, dims):
+    cur.execute("UPDATE clusters set hdbx=?, hdby=? where cascadeid = ? and name = ?", (z[0], z[1], t[0], t[1]))
   #store
   #updateComparison(db2Path, updates)
   #cpDb(db1Path, db2Path)
