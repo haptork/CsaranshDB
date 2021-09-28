@@ -16,7 +16,7 @@ import numba
 import umap
 import hdbscan
 
-from pysrc.lineClusterFeatures import linesForCascade
+from pysrc.lineClusterFeatures import getPointDefectLines, linesForCascade, makeLatticeGroups
 from pysrc.lineClassify import addFullComponentInfo
 
 """
@@ -81,7 +81,6 @@ def densityClustering(coords, trans_coords, thresh):
     dbscan_int = DBSCAN(eps=thresh, min_samples=3).fit(int_coords)
     labels_int = dbscan_int.labels_
     return (labels_vac, labels_int)
-
 
 def addEigenAndSubcascades(data):
     for fdata in data:
@@ -161,7 +160,6 @@ def addEigenAndSubcascades(data):
             fdata['dclust_sec_impact'] = dclust_len[1] * 100 / dclust_len[0]
 
 # chiSqr distance criterion for cluster comparison
-
 
 def dist(a, b):
     res = 0.0
@@ -254,9 +252,8 @@ def quadCustom(wA, wD):
 Adds top 5 matching clusters for each cluster in the data
 """
 
-def addClusterCmp(data):
+def addClusterCmp(data, feat, tag):
     topsize = 5
-    feat, tag = clusterClassData(data)
     neigh = {}
     keys = ['angle', 'dist', 'all']
     quadAngle = quadCustom(1.0, 0.0)
@@ -302,6 +299,7 @@ def clusterClasses(data, feat, tag):
     rndSeed = 42
     reduced_dim = umap.UMAP(n_components=2, n_neighbors=6, min_dist=0.40,
                             metric=quad, random_state=rndSeed).fit_transform(feat).tolist()
+    preId = -1
     for (tcas, tcid), dim in zip(tag,reduced_dim):
         cascade = data[tcas]
         if cascade['clusterSizes'][tcid] < 2: 
@@ -311,9 +309,17 @@ def clusterClasses(data, feat, tag):
           if not 'savi' in cascade['clusterClasses']: cascade['clusterClasses']['savi'] = {}
           cascade['clusterClasses']['savi'][tcid] = {"morph":compLabel}
         else:
-          addFullComponentInfo(cascade, tcid)
+          if tcas != preId:
+            preId = tcas
+            triads, pairs = makeLatticeGroups(cascade)
+            if 'sialns' not in cascade:
+              cascade['sialns'] = getPointDefectLines(cascade, triads, pairs)
+          addFullComponentInfo(cascade, tcid, triads, pairs)
           #print(cascade['clusterClasses']['savi'][tcid]['morph'])
         cascade['clusterClasses']['savi'][tcid]['hdbpoint'] = dim
+    for cascade in data:
+      if 'sialns' in cascade: continue
+      cascade['sialns'] = getPointDefectLines(cascade, triads, pairs)
     return True
 
 def addHull(data):
@@ -363,14 +369,15 @@ def validateForCdb(cascades, isInit=True, isAddClusterComparison=False, isAddCla
       addEigenAndSubcascades(cascades)
       addHull(cascades)
       print('finished.')
+    if isAddClusterComparison or isAddClassification:
+      feat, tag = clusterClassData(cascades)
     if isAddClusterComparison:
       print("Adding cluster comparison...")
-      addClusterCmp(cascades)
+      addClusterCmp(cascades, feat, tag)
       print('finished.')
       sys.stdout.flush()
     if isAddClassification:
       print("Defect morphology identification & classification...")
-      feat, tag = clusterClassData(cascades)
       isSuccess = clusterClasses(cascades, feat, tag)
       if (isSuccess): print("finished.")
       else: print("finished with error!")

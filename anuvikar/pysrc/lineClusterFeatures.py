@@ -73,9 +73,9 @@ def linesForCascade(cascade, cid):
     #allVs = list(freeVs) + list(extraVs)
     return lines#, triads, pairs
 
-def lineFeatsForCluster(cascade, cid):
+def lineFeatsForCluster(cascade, cid, triads, pairs):
     if cascade['clusterSizes'][cid] < 0: return None
-    triads, pairs = makeLatticeGroups(cascade)
+    #triads, pairs = makeLatticeGroups(cascade)
     lines, pointLineMap, freeIs = getTriadLines(cascade, cid, triads)
     for line in lines:
       line['forceAlign'] = forceAlign(line['eq'])
@@ -194,6 +194,8 @@ def forceAlign(line):
     return {"type": milFam, 'type1': milFamOne, 'dir': rawDir, 'eq':lineN, 'angles': angles, 'err': (perfect, milErrSum, milErrMax, angErr)}
 
 # In[1104]:
+
+def addDumbbellOrientations():
 
 
 
@@ -598,6 +600,11 @@ def getSymmetricCosineAngle(line):
         res[i] = angle
     return res
 
+"""
+triads represent dumbbells while pairs represent annihilated lattice-site and atom pair that may
+be collinear to a dumbbell forming a crowdion.
+Key is an atom, value is either a lattice site or a lattice site and annihilated atom in case of a dumbbell.
+"""
 def makeLatticeGroups(cascade):
     triads = {}
     pairs = {}
@@ -609,6 +616,32 @@ def makeLatticeGroups(cascade):
             triads[pre + 2] = (pre, pre + 1)
         pre = cur
     return triads, pairs
+
+def getPointDefectLines(cascade, triads, pairs):
+    pointDefectLines = []
+    coordIndexMap = {}
+    for coordIndex, coord in enumerate(cascade['coords']):
+      if coord[4] != -1: continue
+      if coordIndex in triads:
+        vacIndex = triads[coordIndex][0]
+        secAtomIndex =  triads[coordIndex][1]
+        secIndex = secAtomIndex
+        points = [coordIndex, vacIndex, secAtomIndex]
+      elif coordIndex in pairs:
+        vacIndex = triads[coordIndex][0]
+        secIndex = vacIndex
+        points = [coordIndex, vacIndex]
+      else:
+        if cascade['coords'][coordIndex][3] == 1 and cascade['coords'][coordIndex][5] == 1:
+            pass # error shouldn't happen by definition of triads and -1 tag TODO log warning.
+        continue
+      p1 = Point(coord[:3])
+      p2 = Point(cascade['coords'][secIndex][:3])
+      line = Line(p1, p2)
+      fa = forceAlign(line)
+      pointDefectLines.append((points, fa['dir']))
+    return pointDefectLines
+
 
 def getTriadLines(cascade, cid, triads):
     lines = []

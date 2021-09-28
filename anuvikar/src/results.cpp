@@ -68,9 +68,15 @@ void csaransh::ignoreSmallClusters(csaransh::DefectVecT &defects,
   using csaransh::invars::minClusterPoints;
   using csaransh::invars::minClusterSize;
   for (auto &it : defects) {
+
     if (abs(clusterSize[clusterId(it)].surviving) < minClusterSize
         && clusterSize[clusterId(it)].all < minClusterPoints) {
-      clusterId(it, 0); // setting clusterId of small ones to zero
+
+      if (clusterSize[clusterId(it)].surviving > 0) {
+        clusterId(it, -1);
+      } else {
+        clusterId(it, 0); // setting clusterId of small ones to zero
+      }
     }
   }
 }
@@ -82,7 +88,7 @@ csaransh::clusterMapping(const csaransh::DefectVecT &defects) {
   csaransh::ClusterIdMapT clusterIds;
   int i = 0;
   for (const auto &it : defects) {
-    if (clusterId(it) != 0) {
+    if (clusterId(it) > 0) {
       clusterIds[clusterId(it)].push_back(
           i); // adding cluster ids and defect index
     }
@@ -101,7 +107,7 @@ csaransh::getNDefectsAndClusterFractions(const csaransh::DefectVecT &defects) {
   auto singlesV = 0;
   for (const auto &it : defects) {
     if (!isSurviving(it)) continue;
-    if (clusterId(it) == 0) {
+    if (clusterId(it) <= 0) {
       if (isInterstitial(it))
         singlesI++;
       else

@@ -214,12 +214,12 @@ TODO:
 - Add a plotly scatter plot with different glyph for each defect morphology, size representing.
 - Add a plotly scatter plot with different glyph for each defect morphology, hull-meshes for bigger defects and size representing.
 
-2nd Sep:
+## 2nd Sep:
 
 WIP:
 - Created clusters table, seeds and get api for it.
 
-3rd Sep:
+## 3rd Sep:
 
 WIP:
 
@@ -236,8 +236,7 @@ Optimizing json size:
   - I can use gzip for sending json data initially.
   - Smaller field names. Possibly with attributes.
 
-5th Sep:
-========
+## 5th Sep:
 
 WIP:
 - ~~Enable cluster comparison view.~~
@@ -248,7 +247,7 @@ TODO:
 - Improve handling of 404 error in cascadeinfo.
 - round of dists in cmp, cmpsize on save in json etc.
 
-6th Sep:
+## 6th Sep:
 
 WIP:
 - ~~Fixed minor issues with cluster comparison.~~
@@ -264,7 +263,7 @@ Optimizing json size:
   - I can use gzip for sending json data initially.
   - Smaller field names. Possibly with attributes.
 
-5th Sep:
+## 5th Sep:
 
 WIP:
 - ~~Enable cluster comparison view.~~
@@ -275,7 +274,7 @@ TODO:
 - Improve handling of 404 error in cascadeinfo.
 - round of dists in cmp, cmpsize on save in json etc.
 
-6th Sep:
+## 6th Sep:
 
 WIP:
 - ~~Fixed minor issues with cluster comparison.~~
@@ -301,7 +300,7 @@ TODO:
   - store kdd and hdbscan training.
   - change keys.
 
-7th Sep:
+## 7th Sep:
 
 WIP:
 - ~~Cluster Classes plot.~~
@@ -310,7 +309,7 @@ TODO:
 
 - Cluster class stats.
 
-10th Sep:
+## 10th Sep:
 
 WIP: 
 
@@ -332,7 +331,7 @@ TODO:
     - figure out how to add, save kd-tree etc.
     - add status to table (unreviewed, reviewed) for statistical testing.
 
-11th Sep:
+## 11th Sep:
 
 WIP:
 
@@ -358,7 +357,7 @@ TODO:
   - Save log, add to a db, with a web preview and send mail.
   - Process an s3 file from aws ec2.
 
-12th Sep:
+## 12th Sep:
 
 WIP:
 
@@ -375,7 +374,7 @@ TODO:
   - cluster-comparison kdd, change ids etc.
   - save umap pre-trained.
 
-13th Sep:
+## 13th Sep:
 
 WIP:
 
@@ -389,7 +388,7 @@ TODO:
 - Validate multiple archives.
 - muli kd-tree implementation for cluster pattern recognitioin of new clusters with existing data.
 
-14th Sep:
+## 14th Sep:
 
 WIP:
 
@@ -403,14 +402,14 @@ TODO:
 - dclust_coords missing in db viewfields.
 - umap correct params.
 
-15th Sep:
+## 15th Sep:
 
 WIP:
 
 - ~~set up initial server on aws.~~
   - pm2 is a nice tool to run server: https://hackernoon.com/deploying-a-node-app-on-amazon-ec2-d2fb9a6757eb 
 
-16th Sep:
+## 16th Sep:
 
 WIP:
 
@@ -418,4 +417,133 @@ WIP:
 - Fix classification hdb points.
 - Fix outline texts, short / long.
 - python cdb-validate-multiple.py cascadesdb/W/ cascadesdb/W/ 0 1 cascadesdb/W/*xml
+
+## 17th Sep:
+
+WIP:
+
+- ~~Adding Fcc processing. ~~
+- ~~Unit testcases for Fcc processing. ~~
+
+TODO:
+
+- Testing fcc on CascadesDb data.
+
+## 20th Sep:
+
+WIP:
+
+- ~~Tested Fcc on CascadedDb data.~~
+- Begin with ebgl visualizations.
+
+## 21st Sep:
+
+WIP:
+
+- Improving defect morphology information.
+  - Components:
+    - Add direction info for each atom.
+    - Add component morphologies and their attributes separately.
+    - add components and indices for each atom for bounding-box etc.
+    - !Form a name by combining them.
+    - !di-interstitial as three atoms sharing a site.
+    - !distinction between tripod and hexagon/rings.
+
+- Adding morphology visualizations.
+  - atoms have color from direction/type-atom-1,atom-2, vac or morphology of component type.
+  - Add point defects as is. (MeshInstance)
+    - On mouse over show size, sia/vac, morphology and properties etc.
+  - Add small components (size four or less) with 2d blobs representing their morphology and direction. Color may also represent the direction of burgers vector or majority dumbbells or linear combination of all dumbbells in the component. Bounding box of bigger clusters may have more opacity value.
+    - On mouse over highlight the defect, show size, sia/vac, morphology and properties, with %ge of each component  in the defect etc.
+  - Add big components with buffergeometry.
+    - On mouse over highlight the defect, show size, sia/vac, morphology and properties, with %ge of each component  in the defect etc.
+  - Add lines for each dumbbell pair, either all white or color representing orientation.
+  - Different type of atoms (in an alloy) can have different glyphs.
+
+TODO:
+
+- Replace subcascade mesh visualization with convex hull / bounding-box from webgl.
+- Add svg save to threejs and plotly plots.
+
+- lineFeat have points and orient for each line, this data can be used for m-viz.
+- box center , origin and dimensions in database (viewfields) for rendering of coordinates.
+
+## 23rd Sep:
+
+WIP:
+
+- Working on getting buffer geometry in react-three-fiber with opacity value.
+  - TODO: create a issue and pull request on react-three-fiber for:
+    1. Static rendering of points.
+    2. Opacity value for points.
+
+## 24th Sep:
+
+WIP:
+
+- Add line direction for single dumbbells and other sia non-clusters in viewfields.
 - 
+
+
+
+## 24th Sep:
+
+WIP:
+
+- Adding dislocation components to viz with bounding box.
+- Adding ring components to viz with bounding sphere. Later separate tetrahedron, hexagon and sphere.
+- Adding # components to viz with bounding distorted mesh.
+- Adding vacancy clusters with bounding cylinder of color mustard/yellow?
+- Adding lines to components.
+- Adding lines to sia point defects.
+- click and highlight information and change of opacity.
+- simulation wireframe box and camera setting.
+- axis helper.
+- buttons for configuration: if needed.
+- buttons for configuration: if needed.
+
+TODO:
+
+- Work for alloys.
+- buttons for show/hide meshes, camera perspective/orthographic.
+
+## 25th Sep:
+
+WIP:
+
+- Add dislocation component sias and vacancies as one buffer-geometry.
+
+## 26th Sep:
+
+WIP:
+
+- 
+
+TODO:
+- Adding vacancy clusters with bounding cylinder of color mustard/yellow?
+- simulation wireframe box and camera setting.
+- Sia atoms colors according to orientation.
+- click and highlight information for components.
+  - %ge composition etc.
+- simulation wireframe box and camera setting.
+- axis helper.
+- buttons for configuration: if needed.
+- buttons for configuration: if needed.
+
+
+## 27th Sep:
+
+WIP:
+
+- Add -1 as a special case for dumbbells or crowdions.
+- These will have two more numbers for the color.
+- check box dimensions and minimum value in the json.
+- add %ge contribution in number of defect and other information for components.
+
+- using the above add simulation wireframe, camera settings, axis helper, on click info.
+- check if it is easy to add lines.
+
+TODO:
+
+- Add points from 'subline' of main line if not already adding those.
+- Call makeLatticeGroups only once for each cascade. Currently it is being called for each clusterId.

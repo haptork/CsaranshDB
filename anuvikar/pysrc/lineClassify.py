@@ -416,7 +416,24 @@ def findRings(curAttrs, ri, latticeConst, probRingNames, countPar):
                     ringNames.append(curName)
                     ringIndices += curIndices.tolist()
     return ringNames, ringIndices
-    
+
+"""
+@return list of four items
+0: dictionary with key as component label and value as pair having (morphology-type, isSignificant)
+1: list of lists. Each list item has a list of components for each type.
+   e.g. 0th list contains all parallel components. Each component is represented by a list itself:
+   - 0th: isSignificant
+   - 1st: list of lines
+   - 2nd: Has orientation info which is added later: total:?, ratio:? and 'verdict':? 
+2: list of tuples, one for each line. Each tuple has:
+   - 0th: label of component,
+   - 1st: morphology type, isSignificant
+   - 2nd: (number of lines parallel, slightly angles, blocking / nearly orthogonal)
+3: An integer for number of ring componenets.
+
+morphology type integer:
+0: || 1: @ 2: # 3:||# 4: single 5: stray
+"""    
 def findComponents(curAttrs, cascade):
     latticeConst = cascade['latticeConst']
     adjPar, countStrictPar, countStrictNon, parLabels, countPar, countNonPar, countBlocking = getParallelGroups(curAttrs, latticeConst)
@@ -691,12 +708,12 @@ def findDislocationDirection(comp, lines):
     res['verdict'] = maxIndex
     return res
     
-
-def addFullComponentInfo(cascade, cid):
+# TODO use triads and pairs
+def addFullComponentInfo(cascade, cid, triads, pairs):
     if cascade['clusterSizes'][cid] < 2: return
-    linesData = lineFeatsForCluster(cascade, cid)
+    linesData = lineFeatsForCluster(cascade, cid, triads, pairs)
     addLineFeat(cascade, cid, linesData)
-    attrs = cookLineAttrs(cascade, cid, linesData['lines'], linesData['pointsI'])
+    attrs = cookLineAttrs(cascade, cid, linesData['allLines'], linesData['pointsI'])
     components = findComponents(attrs, cascade)
     for comp in components[1][0]:
         comp.append(findDislocationDirection(comp, linesData['lines']))
@@ -707,11 +724,13 @@ def addFullComponentInfo(cascade, cid):
 def getSaviDetails(cascade, cid):
     if cascade['clusterSizes'][cid] < 2: return
     linesData = lineFeatsForCluster(cascade, cid)
-    attrs = cookLineAttrs(cascade, cid, linesData['lines'], linesData['pointsI'])
+    attrs = cookLineAttrs(cascade, cid, linesData['allLines'], linesData['pointsI'])
     components = findComponents(attrs, cascade)
     for comp in components[1][0]:
         comp.append(findDislocationDirection(comp, linesData['lines']))
-    return linesData, attrs, components
+    curClass = findComponentClass(attrs, *components)
+    curClassName = '-'.join([str(x) for x in curClass])
+    return linesData, attrs, components, curClass, curClassName
 
 
 ######-------

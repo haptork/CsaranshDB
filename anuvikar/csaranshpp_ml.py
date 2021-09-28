@@ -24,7 +24,6 @@ Fits and applies PCA transformation to the given points.
 Applies same transformation to other points given as second argument list.
 """
 
-
 def findEigen(points, others):
     pca = PCA(n_components=3)
     pca.fit(points)
