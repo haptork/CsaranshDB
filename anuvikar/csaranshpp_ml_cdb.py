@@ -314,14 +314,16 @@ def clusterClasses(data, feat, tag):
           if tcas != preId:
             preId = tcas
             triads, pairs = makeLatticeGroups(cascade)
-            if 'sialns' not in cascade:
-              cascade['sialns'] = getPointDefectLines(cascade, triads, pairs)
+            if 'siavenu' not in cascade:
+              cascade['siavenu'] = getPointDefectLines(cascade, triads, pairs)
           addFullComponentInfo(cascade, tcid, triads, pairs)
           #print(cascade['clusterClasses']['savi'][tcid]['morph'])
         cascade['clusterClasses']['savi'][tcid]['hdbpoint'] = dim
     for cascade in data:
-      if 'sialns' in cascade: continue
-      cascade['sialns'] = getPointDefectLines(cascade, triads, pairs)
+      if 'siavenu' not in cascade:
+        cascade['siavenu'] = getPointDefectLines(cascade, triads, pairs)
+      if 'savi' not in cascade:
+        cascade['savi'] = {}
     return True
 
 def addHull(data):

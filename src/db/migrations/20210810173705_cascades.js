@@ -16,7 +16,6 @@ exports.up = async function(knex, Promise) {
       t.string('potentialused');
       t.string('author');
       t.integer('es');
-      t.string('simboxfoc');
       t.text('tags');
 
       t.integer("ndefects");
@@ -27,7 +26,7 @@ exports.up = async function(knex, Promise) {
       t.integer("incluster");
       t.integer("inclusteri");
       t.integer("inclusterv");
-      t.integer("ndclusti");
+      t.integer("ndclustv");
       t.float("dclustsecimpact");
       t.float("hullvol");
       t.float("hulldensity");

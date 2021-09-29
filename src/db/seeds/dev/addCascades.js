@@ -20,7 +20,6 @@ const dbToJsonMap = {
   'potentialused': 'potentialUsed',
   'author': 'author',
   'es': 'es',
-  'simboxfoc': 'pka',
   'tags': 'tags',
   'ndefects': 'n_defects',
   "nclusters": 'n_clusters',
@@ -30,7 +29,7 @@ const dbToJsonMap = {
   "incluster": 'in_cluster',
   "inclusteri": 'in_cluster_I',
   "inclusterv": 'in_cluster_V',
-  "ndclusti": 'dclustI_count',
+  "ndclustv": 'dclustV_count',
   "dclustsecimpact": 'dclust_sec_impact',
   "hullvol": 'hull_vol',
   "hulldensity": 'hull_density',
@@ -40,7 +39,8 @@ const dbToJsonMap = {
   'codefects': 'coDefects',
   'clusters': 'clusters',
   'clusterclasses': 'clusterClasses',
-  'clustersizes': 'clusterSizes'
+  'clustersizes': 'clusterSizes',
+  'simboxfoc': 'pka'
   //'clustercmp': 'clusterCmp',
   //'clustercmpsize': 'clusterCmpSize'
 };
@@ -53,7 +53,7 @@ const makeFilteredJson = (row, dbCols) => {
       if (jsonCol === undefined) continue;
       res[dbCol] = row[jsonCol];
     } else {
-      res[dbCol] = JSON.stringify(makeFilteredJson(row, ['coords', 'savi', 'clusters', 'clustersizes', 'clusterclasses', 'eigencoords', 'dclustcoords']));
+      res[dbCol] = JSON.stringify(makeFilteredJson(row, ['coords', 'savi', 'clusters', 'clustersizes', 'clusterclasses', 'eigencoords', 'dclustcoords', 'siavenu', 'simboxfoc']));
     }
     //res[dbCol] = makeFilteredJson(row, ['coords', 'codefects', 'clusters', 'clusterclasses', 'clustercmp', 'clustercmpsize']);
   }

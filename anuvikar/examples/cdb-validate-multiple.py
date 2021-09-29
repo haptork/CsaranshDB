@@ -54,7 +54,6 @@ dbToJsonMap = {
   'potentialused': 'potentialUsed',
   'author': 'author',
   'es': 'es',
-  'simboxfoc': 'pka',
   'tags': 'tags',
   'ndefects': 'n_defects',
   "nclusters": 'n_clusters',
@@ -73,7 +72,9 @@ dbToJsonMap = {
   'dclustcoords': 'dclust_coords',
   'codefects': 'coDefects',
   'clusters': 'clusters',
-  'clusterclasses': 'clusterClasses'
+  'clusterclasses': 'clusterClasses',
+  'siavenu': 'siavenu',
+  'simboxfoc': 'pka'
 };
 
 dbToJsonMap2 = (
@@ -92,7 +93,6 @@ dbToJsonMap2 = (
   ('potentialused', 'potentialUsed'),
   ('author', 'author'),
   ('es', 'es'),
-  ('simboxfoc', 'pka'),
   ('tags', 'tags'),
   ('ndefects', 'n_defects'),
   ("nclusters", 'n_clusters'),
@@ -111,7 +111,9 @@ dbToJsonMap2 = (
   ('dclustcoords', 'dclust_coords'),
   ('codefects', 'coDefects'),
   ('clusters', 'clusters'),
-  ('clusterclasses', 'clusterClasses')
+  ('clusterclasses', 'clusterClasses'),
+  ('siavenu', 'siavenu'),
+  ('simboxfoc', 'pka')
 );
 
 dbTypes = {
@@ -130,7 +132,6 @@ dbTypes = {
   'potentialused': 'string',
   'author': 'string',
   'es': 'integer',
-  'simboxfoc': 'string',
   'tags': 'text',
   'ndefects': 'integer',
   "nclusters": 'integer',
@@ -156,7 +157,7 @@ def cookCascadesDbTuple(cascades):
       #if val[0] == "id": continue
       if val[0] == "coords": break
       res = cascade[val[1]]
-      if (dbTypes[val[0]] == 'string' and type(res) != str): res = str(res)
+      #if (dbTypes[val[0]] == 'string' and type(res) != str): res = str(res)
       row.append(res)
     row.append(json.dumps({
       'coords': cascade['coords'],
@@ -165,7 +166,9 @@ def cookCascadesDbTuple(cascades):
       'clustersizes': cascade['clusterSizes'],
       'clusterclasses': cascade['clusterClasses'] if 'clusterClasses' in cascade else {"savi":{}}, # TODO insert anyway
       'eigencoords': cascade['eigen_coords'],
-      'dclustcoords': cascade['dclust_coords']
+      'dclustcoords': cascade['dclust_coords'],
+      'siavenu': cascade['siavenu'],
+      'simboxfoc': cascade['pka']
     }))
     rows.append(tuple(row))
   columns = []
@@ -182,7 +185,7 @@ def addCascadesTable(cascades, cur):
                (id text Primary key, cascadeid text unique, ncell integer, energy integer, boxsize real, latticeconst real not null,
                 temperature real, simulationtime real, infile string, xyzfilepath string not null,
                 substrate sring, simulationcode string, potentialused string, author string,
-                es integer, simboxfoc string, tags text, ndefects integer, nclusters integer,
+                es integer, tags text, ndefects integer, nclusters integer,
                 maxclustersize integer, maxclustersizei integer, maxclustersizev integer,
                 incluster integer, inclusteri integer, inclusterv integer, ndclustv integer,
                 dclustsecimpact integer, hullvol real, hulldensity real, viewfields text,
@@ -200,8 +203,8 @@ def addCascadesTable(cascades, cur):
 
 def getCoordType (row, cid):
   cid = str(cid);
-  if len(cid) == 0 or cid not in row['eigen_features']: return -1;
-  if 'features' in row and cid in row['features'] and 'lines' in row['features'][cid]: return 1;
+  if len(cid) == 0 or cid not in row['savi']: return -1;
+  if 'savi' in row and cid in row['savi'] and 'venu' in row['savi'][cid]: return 1;
   return 0;
 
 def getClusterCoord(row, cid):
@@ -220,7 +223,7 @@ def getClusterLineCoord(row, cid):
   pointsV = [[], [], [], []];
   cid = str(cid)
   if cid:
-    for x in row['features'][cid]['lines']['linesT']:
+    for x in row['savi'][cid]['venu']['linesT']:
       c = [[],[],[],[], [-1.0, -1.0]]
       c[4] = x['orient']
       for y in x['main']:
@@ -230,7 +233,7 @@ def getClusterLineCoord(row, cid):
         c[2].append(curCoord[2]);
         c[3].append(str(x['orient']));
       linesT.append(c);
-    for x in row['features'][cid]['lines']['lines']:
+    for x in row['savi'][cid]['venu']['lines']:
       c = [[],[],[],[], [-1.0, -1.0]];
       c2 = [[],[],[],[], [-1.0, -1.0]];
       c[4] = x['orient']
@@ -248,13 +251,13 @@ def getClusterLineCoord(row, cid):
         c2[2].append(curCoord[2]);
         c2[3].append(str(x['orient']));
       lines.append({'main':c, 'sub':c2});
-    for x in row['features'][cid]['lines']['pointsI']:
+    for x in row['savi'][cid]['venu']['pointsI']:
       curCoord = row['coords'][row['clusters'][cid][x]]
       pointsI[0].append(curCoord[0]);
       pointsI[1].append(curCoord[1]);
       pointsI[2].append(curCoord[2]);
       pointsI[3].append(x);
-    for x in row['features'][cid]['lines']['pointsV']:
+    for x in row['savi'][cid]['venu']['pointsV']:
       curCoord = row['coords'][row['clusters'][cid][x]]
       pointsV[0].append(curCoord[0]);
       pointsV[1].append(curCoord[1]);
