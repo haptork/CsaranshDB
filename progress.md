@@ -536,8 +536,8 @@ TODO:
 WIP:
 
 - Add -1 as a special case for dumbbells or crowdions.
-- These will have two more numbers for the color.
-- check box dimensions and minimum value in the json.
+- An array for dumbbells and orientations.
+- box dimensions and minimum value in the json.
 - add %ge contribution in number of defect and other information for components.
 
 - using the above add simulation wireframe, camera settings, axis helper, on click info.
@@ -547,3 +547,18 @@ TODO:
 
 - Add points from 'subline' of main line if not already adding those.
 - Call makeLatticeGroups only once for each cascade. Currently it is being called for each clusterId.
+
+## 28th Sep:
+
+WIP:
+
+- An array for dumbbells and orientations.
+- box dimensions and minimum value in the json.
+
+- add %ge contribution in number of defect and other information for components.
+- using the above add simulation wireframe, camera settings, axis helper, on click info.
+
+## 29th Sep:
+
+WIP:
+

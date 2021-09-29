@@ -114,7 +114,7 @@ def addLinesData(data, finalClusters, tags):
             di['linesT'].append({'main': [x[1] for x in line['mainPoints']], 'orient': line['forceAlign']['dir']})
         data[tcas]['features'][tcid]['lines'] = di
 
-def addLineFeat(cascade, cid, lineC):
+def getLineFeat(cascade, cid, lineC):
     di = {'lines':[], 'linesT':[], 'pointsI':lineC['pointsI'], 'pointsV': lineC['pointsV']}
     #print(lineC)
     for line in lineC['lines']:
@@ -125,7 +125,8 @@ def addLineFeat(cascade, cid, lineC):
     for line in lineC['linesT']:
         if 'parent' in line or 'del' in line: continue
         di['linesT'].append({'main': [x[1] for x in line['mainPoints']], 'orient': line['forceAlign']['dir']})
-    cascade['features'][cid]['lines'] = di
+    # cascade['features'][cid]['lines'] = di
+    return di
 
 
 # In[1235]:
@@ -194,10 +195,6 @@ def forceAlign(line):
     return {"type": milFam, 'type1': milFamOne, 'dir': rawDir, 'eq':lineN, 'angles': angles, 'err': (perfect, milErrSum, milErrMax, angErr)}
 
 # In[1104]:
-
-def addDumbbellOrientations():
-
-
 
 # In[1106]:
 
@@ -619,7 +616,6 @@ def makeLatticeGroups(cascade):
 
 def getPointDefectLines(cascade, triads, pairs):
     pointDefectLines = []
-    coordIndexMap = {}
     for coordIndex, coord in enumerate(cascade['coords']):
       if coord[4] != -1: continue
       if coordIndex in triads:
@@ -628,7 +624,7 @@ def getPointDefectLines(cascade, triads, pairs):
         secIndex = secAtomIndex
         points = [coordIndex, vacIndex, secAtomIndex]
       elif coordIndex in pairs:
-        vacIndex = triads[coordIndex][0]
+        vacIndex = pairs[coordIndex]
         secIndex = vacIndex
         points = [coordIndex, vacIndex]
       else:

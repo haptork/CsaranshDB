@@ -17,7 +17,7 @@ from sklearn.neighbors import NearestNeighbors
 from collections import Counter
 from scipy.sparse import csr_matrix, lil_matrix
 
-from .lineClusterFeatures import addLineFeat ,getLinesDataOnly, getAllAttrs, getAllHistAttrs, addLinesData, lineFeatsForCluster
+from .lineClusterFeatures import getLineFeat ,getLinesDataOnly, getAllAttrs, getAllHistAttrs, addLinesData, lineFeatsForCluster
 # In[1098]:
 
 def classesDataToSave(cluster_labels, show_dim, tag):
@@ -56,24 +56,28 @@ def getLineViz(histAttrs, tags, cascades):
     #clusterer = hdbscan.HDBSCAN(min_cluster_size=9)
     return show_dim
 
-def addComponentInfo(lineComponents, curClassName, cascade, tcid):
+def addComponentInfo(lineFeat, components, lineComponents, curClassName, cascade, cid):
     unused = 0
-    for i, line in enumerate(cascade['features'][tcid]['lines']['lines']):
+    for i, line in enumerate(lineFeat['lines']):
         if i >= len(lineComponents): continue
         if not 'main' in line: 
             unused += 1
             continue
         color = [int(lineComponents[i - unused][1][0]), int(lineComponents[i - unused][0])]
         line['color'] = color
-    cascade['features'][tcid]['lines']['cLinesT'] = []
-    for j, line in enumerate(cascade['features'][tcid]['lines']['linesT']):
-        i = j + len(cascade['features'][tcid]['lines']['lines'])
+    lineFeat['cLinesT'] = []
+    for j, line in enumerate(lineFeat['linesT']):
+        i = j + len(lineFeat['lines'])
         if i >= len(lineComponents): continue
         color = [int(lineComponents[i][1][0]), int(lineComponents[i][0])]
-        cascade['features'][tcid]['lines']['cLinesT'].append(color)
+        lineFeat['cLinesT'].append(color)
+    if 'savif' not in cascade: cascade['savif'] = {}
+    if cid not in cascade['savif']: cascade['savif'][cid] = {}
+    cascade['savif'][cid]['samuh'] = makeSerializable(components[1])
+    cascade['savif'][cid]['venu'] = lineFeat
     if not 'clusterClasses' in cascade: cascade['clusterClasses'] = {}
     if not 'savi' in cascade['clusterClasses']: cascade['clusterClasses']['savi'] = {}
-    cascade['clusterClasses']['savi'][tcid] = {"morph": curClassName}
+    cascade['clusterClasses']['savi'][cid] = {"morph": curClassName}
     """
     di = {'lines':[], 'linesT':[], 'pointsI':lineC['pointsI'], 'pointsV': lineC['pointsV']}
     #print(lineC)
@@ -483,18 +487,18 @@ def findComponents(curAttrs, cascade):
                 if x in single or x in stray: continue
                 isMain = x in big
                 result1[x] = (i, isMain)
-                result2[i].append([isMain, x, np.arange(len(randomLabels))[randomLabels==x]])
+                result2[i].append([isMain, int(x), np.arange(len(randomLabels))[randomLabels==x]])
         for x in par:
             if x in single or x in stray: continue
             isMain = x in big
             result1[x] = (0, isMain)
-            result2[0].append([isMain, x, np.arange(len(randomLabels))[randomLabels==x]])
+            result2[0].append([isMain, int(x), np.arange(len(randomLabels))[randomLabels==x]])
         for x in single: 
             result1[x] = (4, False)
-            result2[4].append([False, x, np.arange(len(randomLabels))[randomLabels==x]])
+            result2[4].append([False, int(x), np.arange(len(randomLabels))[randomLabels==x]])
         for x in stray: 
             result1[x] = (5, False)
-            result2[5].append([False, x, np.arange(len(randomLabels))[randomLabels==x]])
+            result2[5].append([False, int(x), np.arange(len(randomLabels))[randomLabels==x]])
         result3 = [(x, result1[x], (p, q, r)) for x, p, q, r in zip(randomLabels, countPar, countNonPar, countBlocking)]
         extraRings = 0
         if curAttrs['nfreeIs'] > 0 and len(pLabels) <= 1 and extraRings < 1 and len(trueRandom) <= 1:
@@ -506,16 +510,16 @@ def findComponents(curAttrs, cascade):
         result2 = [[], [], [], [], [], []]
         for x in big: 
             result1[x] = (0, True)
-            result2[0].append([True, x, np.arange(len(parLabels))[parLabels==x]])
+            result2[0].append([True, int(x), np.arange(len(parLabels))[parLabels==x]])
         for x in small: 
             result1[x] = (0, False)
-            result2[0].append([False, x, np.arange(len(parLabels))[parLabels==x]])
+            result2[0].append([False, int(x), np.arange(len(parLabels))[parLabels==x]])
         for x in single: 
             result1[x] = (4, False)
-            result2[4].append([False, x, np.arange(len(parLabels))[parLabels==x]])
+            result2[4].append([False, int(x), np.arange(len(parLabels))[parLabels==x]])
         for x in stray: 
             result1[x] = (5, False)
-            result2[5].append([False, x, np.arange(len(parLabels))[parLabels==x]])
+            result2[5].append([False, int(x), np.arange(len(parLabels))[parLabels==x]])
         result3 = [(x, result1[x], (p, q, r)) for x, p, q, r in zip(parLabels, countPar, countNonPar, countBlocking)]
         nRings = 1 if curAttrs['nfreeIs'] > 0 and len(big) < 2 else 0
         return (result1, result2, result3, nRings)
@@ -709,17 +713,24 @@ def findDislocationDirection(comp, lines):
     return res
     
 # TODO use triads and pairs
+
+def makeSerializable(result2):
+    for li in result2:
+        li[2] = li[2].tolist()
+    return result2
+
 def addFullComponentInfo(cascade, cid, triads, pairs):
     if cascade['clusterSizes'][cid] < 2: return
     linesData = lineFeatsForCluster(cascade, cid, triads, pairs)
-    addLineFeat(cascade, cid, linesData)
+    #cascade['features'][cid]['lines'] = di
+    lineFeat = getLineFeat(cascade, cid, linesData)
     attrs = cookLineAttrs(cascade, cid, linesData['allLines'], linesData['pointsI'])
     components = findComponents(attrs, cascade)
     for comp in components[1][0]:
         comp.append(findDislocationDirection(comp, linesData['lines']))
     curClass = findComponentClass(attrs, *components)
     curClassName = '-'.join([str(x) for x in curClass])
-    addComponentInfo(components[2], curClassName, cascade, cid)
+    addComponentInfo(lineFeat, components[1], components[2], curClassName, cascade, cid)
 
 def getSaviDetails(cascade, cid):
     if cascade['clusterSizes'][cid] < 2: return
