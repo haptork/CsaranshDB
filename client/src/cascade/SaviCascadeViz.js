@@ -25,6 +25,20 @@ function Sia(props) {
   );
 }
 
+function SiaDebug(props) {
+  console.log('sia debug', props.points);
+  return(
+      <Points 
+       limit={props.points.length} 
+       range={props.points.length}
+      >
+      <pointsMaterial size={10} />
+        {props.points.map((pointProps, i) => <Point key={i} {...pointProps} />)}
+      </Points>
+  );
+}
+
+
 function CompBoxed(props) {
  const [hovered, setHover] = useState(false);
  const [active, setActive] = useState(false);
@@ -107,11 +121,15 @@ function CompVac(props) {
  if (radius > 20) radius *= 0.8;
  console.log("shpere", props, radius)
  const curColor = [0.9, 0.8, 0.1];
+ const clickFn = (e) => {
+   console.log("clicked vlabel", props.label)
+   setActive(!active)
+ };
   return(
       <mesh 
       position={props.position}
       scale={active ? 1.2 : 1.0}
-      onClick={(e)=> setActive(!active) }
+      onClick={clickFn}
       onPointerOver={(e)=> setHover(true) }
       onPointerOut={(e)=> setHover(false) }
       >
@@ -182,6 +200,9 @@ function defectItems(coords, lines, allComps, sias, vacs, meshProps, label) {
 
 function vacClusters(coords, clusterPoints, sias, vacs, meshProps, label) {
   const points = [];
+  if (label == 75) {
+      console.log(vacs.length);
+  }
   for (const cIndex of clusterPoints) { // TODO pointsI and pointsV
     const c = coords[cIndex];
     const curColor = [1.0, 0.8, 0.1];
@@ -192,12 +213,16 @@ function vacClusters(coords, clusterPoints, sias, vacs, meshProps, label) {
       vacs.push({position:[c[0], c[1], c[2]], color:curColor, opacity:((c[5]==1)?0.9:0.4)});
     }
   }
+  if (label == 75) {
+      console.log(points);
+      console.log(vacs.length);
+  }
   if (points.length < 2) return;
   const pointsAr = new Float32Array(points);
   const boxExtent = new THREE.Box3().setFromArray(pointsAr);
   const diffOf = (key) => (boxExtent.max[key] - boxExtent.min[key]);
   const midOf = (key) => (boxExtent.max[key] + boxExtent.min[key])/2.0;
-  const boxProps = {position:[midOf('x'), midOf('y'), midOf('z')], size:[diffOf('x'), diffOf('y'), diffOf('z')]};
+  const boxProps = {label: label, position:[midOf('x'), midOf('y'), midOf('z')], size:[diffOf('x'), diffOf('y'), diffOf('z')]};
   meshProps.push(boxProps)
 }
 
@@ -219,7 +244,7 @@ function DrawClusters({textures, coords, saviInfo, clusters, clustersizes}) {
   return(
    <>
     <Sia points={sias} size={2} sa={true} texture={textures[0]} />
-    <Sia points={vacs} size={2} sa={true} texture={textures[1]} />
+    <SiaDebug points={vacs} size={2} sa={true} texture={textures[1]} />
     {meshProps[0].map((p, i) => <CompBoxed key={i} {...p} />)}
     {meshProps[1].map((p, i) => <CompSphere key={i} {...p} />)}
     {meshProps[2].map((p, i) => <CompDistort1 key={i} {...p} />)}
