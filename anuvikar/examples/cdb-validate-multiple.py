@@ -227,7 +227,7 @@ def getClusterLineCoord(row, cid):
       c = [[],[],[],[], [-1.0, -1.0]]
       c[4] = x['orient']
       for y in x['main']:
-        curCoord = row['coords'][row['clusters'][cid][y]]
+        curCoord = row['coords'][y]
         c[0].append(curCoord[0]);
         c[1].append(curCoord[1]);
         c[2].append(curCoord[2]);
@@ -239,26 +239,26 @@ def getClusterLineCoord(row, cid):
       c[4] = x['orient']
       c2[4] = x['orient']
       for y in x['main']:
-        curCoord = row['coords'][row['clusters'][cid][y]]
+        curCoord = row['coords'][y]
         c[0].append(curCoord[0]);
         c[1].append(curCoord[1]);
         c[2].append(curCoord[2]);
         c[3].append(str(x['orient']));
       for y in x['sub']:
-        curCoord = row['coords'][row['clusters'][cid][y]]
+        curCoord = row['coords'][y]
         c2[0].append(curCoord[0]);
         c2[1].append(curCoord[1]);
         c2[2].append(curCoord[2]);
         c2[3].append(str(x['orient']));
       lines.append({'main':c, 'sub':c2});
     for x in row['savi'][cid]['venu']['pointsI']:
-      curCoord = row['coords'][row['clusters'][cid][x]]
+      curCoord = row['coords'][x]
       pointsI[0].append(curCoord[0]);
       pointsI[1].append(curCoord[1]);
       pointsI[2].append(curCoord[2]);
       pointsI[3].append(x);
     for x in row['savi'][cid]['venu']['pointsV']:
-      curCoord = row['coords'][row['clusters'][cid][x]]
+      curCoord = row['coords'][x]
       pointsV[0].append(curCoord[0]);
       pointsV[1].append(curCoord[1]);
       pointsV[2].append(curCoord[2]);

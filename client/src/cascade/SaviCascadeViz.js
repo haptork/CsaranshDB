@@ -1,50 +1,9 @@
 import * as THREE from 'three';
-import React, { useRef, useState, useMemo, useEffect, useLayoutEffect, useCallback } from 'react';
-import { OrbitControls, PointMaterial, TransformControls, useHelper, useTexture, Sphere, MeshDistortMaterial} from '@react-three/drei';
-//import {Points, Point, PointMaterial } from '@react-three/drei';
-import { Points, Point } from './Points.js';
-import { Canvas, useFrame, useUpdate } from '@react-three/fiber';
-//import { BoxGeometry, BufferAttribute, BufferGeometry, MeshBasicMaterial, PointLightShadow,  } from 'three';
-//import niceColors from 'nice-color-palettes';
-//import Effects from './Effects'
+import React, { useState } from 'react';
+import { OrbitControls, useTexture, MeshDistortMaterial} from '@react-three/drei';
+import { Points, Point } from './SaviCascadeVizHelper';
+import { Canvas} from '@react-three/fiber';
 
-import { useThree} from '@react-three/fiber';
-
-function useMyHelper(object3D, ar, ...args) {
-  const helper = React.useRef();
-  const scene = useThree(state => state.scene);
-  React.useEffect(() => {
-
-    //console.log(object3D.current.geometry.boundingBox);
-    //object3D.current.geometry.computeBoundingBox ();
-    //console.log(object3D.current.geometry);
-    //console.log(object3D.current.geometry.boundingBox);
-    if (object3D.current) {
-
-      //helper.current = new proto(object3D.current, ...args);
-      object3D.current.geometry.computeBoundingBox ();
-      const box = new THREE.Box3().setFromArray(ar);
-      console.log(box);
-      helper.current = new THREE.Box3Helper(box, 0xffff00);
-      console.log(helper.current);
-      if (helper.current) {
-        scene.add(helper.current);
-      }
-    }
-
-    return () => {
-      if (helper.current) {
-        scene.remove(helper.current);
-      }
-    };
-  }, [scene, object3D, args]);
-  useFrame(() => {
-    if (helper.current) {
-      //helper.current.update();
-    }
-  });
-  return helper;
-}
 
 const getPairColorOrient = x => {
   if (x === undefined) return (0.1, 0.1, 0.2);
@@ -53,7 +12,6 @@ const getPairColorOrient = x => {
   //const hexCode = rgbToHex(120, j, 50 + i);
   return [120/255, i/255, (255 - j)/255];
 }
-
 
 function Sia(props) {
   return(
@@ -66,34 +24,7 @@ function Sia(props) {
       </Points>
   );
 }
-/*
-function CompBoxedInstanced(props) {
- const [hovered, setHover] = useState(-1);
- const [active, setActive] = useState(-1);
- const colorAr = useMemo(() => {
-   const allColors = [];
-   for (const color of props.colors) {
-     allColors.push(color);
-   }
-   return Float32Array(allColors);
- }, [props.colors]);
- useFrame((state) => {
 
- });
- const meshRef = useRef();
-  return(
-    <instancedMesh ref={meshRef} args={[null, null, props.count]}
-      onClick={(e)=> setActive(e.instanceId)}
-      onPointerOver={(e)=> setHover(e.instanceId)}
-      onPointerOut={(e)=> setHover(e.instanceId)}>
-      <boxGeometry args={props.size}>
-        <instancedBufferAttribute attachObject={["attributes", "color"]} args={[colorAr, 3]} />
-      </boxGeometry>
-      <meshStandardMaterial transparent={true} opacity={hovered || active ? 0.6 : 0.2} color={props.color} />
-    </instancedMesh>
-  );
-}
-*/
 function CompBoxed(props) {
  const [hovered, setHover] = useState(false);
  const [active, setActive] = useState(false);
@@ -111,7 +42,6 @@ function CompBoxed(props) {
   );
 }
         //<meshLambertMaterial transparent={true} opacity={hovered || active ? 0.6 : 0.2} color={props.color} />
-
 function CompSphere(props) {
  const [hovered, setHover] = useState(false);
  const [active, setActive] = useState(false);
@@ -125,7 +55,7 @@ function CompSphere(props) {
       onPointerOut={(e)=> setHover(false) }
       >
         <sphereGeometry args={[radius, 32, 32]} />
-        <meshPhongMaterial transparent={true} opacity={hovered || active ? 0.6 : 0.2} color={props.color} />
+        <meshStandardMaterial transparent={true} opacity={hovered || active ? 0.6 : 0.2} color={props.color} />
       </mesh>
   );
 }
@@ -192,85 +122,6 @@ function CompVac(props) {
 }
         //<cylinderGeometry args={[radius, radius, radius , 6]} />
 
-function SiaBoxed(props) {
-  const siaRef = useRef();
-  //useMyHelper(siaRef, props.ar, "blue");
-  /*
-  useEffect(()=> {
-    siaRef.current.geometry.computeBoundingBox();
-    siaRef.current.geometry.computeBoundingBox();
-    siaRef.current.geometry.computeBoundingBox();
-    siaRef.current.geometry.computeBoundingBox();
-    console.log(siaRef.current.geometry);
-    if (siaRef.current.geometry.boundingBox == null) {
-      console.log("null")
-    } else {
-      console.log("x", siaRef.current.geometry.boundingBox.min.x);
-    }
-    if (siaRef.current.geometry.boundingSphere == null) {
-      console.log("null")
-    } else {
-      console.log("r", siaRef.current.geometry.boundingSphere.radius);
-    }
-  })
-  useFrame(() => {
-    //siaRef.current.geometry.computeBoundingBox();
-  });
-  */
- const [hovered, setHover] = useState(true);
- const [active, setActive] = useState(false);
-  return(
-    <>
-      <Points ref={siaRef}
-       limit={props.points.length} 
-       range={props.points.length}
-      >
-      <pointsMaterial size={props.size} vertexColors={true} attach="material" map={props.texture} sizeAttenuation={props.sa} transparent={true} alphaTest={0.2}/>
-        {props.points.map((pointProps, i) => <Point key={i} {...pointProps} />)}
-      </Points>
-      <mesh 
-      position={props.boxProps.position}
-      scale={active ? 1.5 : 1}
-      onClick={(e)=> setActive(!active) }
-      onPointerOver={(e)=> setHover(true) }
-      onPointerOut={(e)=> setHover(false) }
-      >
-        <boxGeometry args={props.boxProps.size} />
-        <meshStandardMaterial transparent={true} opacity={hovered || active ? 0.6 : 0.15} color={props.color} />
-      </mesh>
-      </>
-  );
-}
-/*
-function TestBoxed(props) {
-  //const ref = React.useRef();
-  //useHelper(ref, THREE.BoxHelper, 'royalblue');
- return (
-    <mesh>
-      <MeshBasicMaterial/>
-    </mesh>
- );
-}
-*/
-const CubeWithHelpers = () => {
-  const cubeRef = useRef();
-  //useMyHelper(cubeRef, THREE.BoxHelper, "blue");
-  //useHelper(cubeRef, VertexNormalsHelper, 1, "green");
-  //useHelper(cubeRef, FaceNormalsHelper, 0.5, "yellow");
-/*
-  useFrame(() => {
-    cubeRef.current.rotation.x += 0.01;
-    cubeRef.current.rotation.y += 0.01;
-  });
-*/
-  return (
-    <mesh ref={cubeRef}>
-      <boxGeometry args={[2, 2, 2]} />
-      <meshLambertMaterial color={"red"} />
-    </mesh>
-  );
-};
-
 function defectItems(coords, lines, allComps, sias, vacs, meshProps, label) {
   //const sias = [];
   //const vacs = [];
@@ -278,7 +129,6 @@ function defectItems(coords, lines, allComps, sias, vacs, meshProps, label) {
   let i = 0;
   for (const comps of allComps) { // TODO pointsI and pointsV
     for (const comp of comps) {
-      //console.log(comp[2]);
       const points = [];
       const totalColor = [0.0, 0.0]
       for (const lIndex of comp[2]) {
@@ -351,18 +201,19 @@ function vacClusters(coords, clusterPoints, sias, vacs, meshProps, label) {
   meshProps.push(boxProps)
 }
 
-function DrawClusters({textures, coords, lines, comps, clusters, clusterSizes}) {
+function DrawClusters({textures, coords, saviInfo, clusters, clustersizes}) {
   const sias = [];
   const vacs = [];
   const meshProps = [[], [], [], [], []];
-  for (const clusterLabel in comps) {
-    defectItems(coords, lines[clusterLabel], comps[clusterLabel], sias, vacs, meshProps, clusterLabel);
+  for (const clusterLabel in saviInfo) {
+    defectItems(coords, saviInfo[clusterLabel].venu, saviInfo[clusterLabel].samuh, sias, vacs, meshProps, clusterLabel);
   }
   for (const clusterLabel in clusters) {
-    if (clusterSizes[clusterLabel] > -1) continue;
+    if (clustersizes[clusterLabel] > -1) continue;
     vacClusters(coords, clusters[clusterLabel], sias, vacs, meshProps[4], clusterLabel);
   }
-  //console.log(meshProps);
+  console.log("saviInfo", saviInfo);
+  console.log("meshProps", meshProps);
   // TODO use type info in meshProps for different shapes
   // TODO use meshInstance.
   return(
@@ -380,28 +231,13 @@ function DrawClusters({textures, coords, lines, comps, clusters, clusterSizes}) 
 
     //<SiaBoxed texture={texture} points={sias} ar={pointsAr} boxProps={boxProps} sa={true} size={2}/>
 
-export function DrawIt(props) {
-   const [label, setLabel] = useState("shunyam");
-   return (
-     <>
-    <React.Suspense fallback={null}>
-   <DrawCanvas setLabel={setLabel} {...props} />
-    </React.Suspense>
-    <p>
-      {label}
-    </p>
-    </>
-   );
-}
-export function DrawCanvas({coords, lines, comps, setLabel, clusters, clusterSizes}) {
-  // let nSingleSias = 0; // for meshedInstance
-  // let nSingleVacs = 0; // for sprite buffer geometry
+function DrawCanvas({coords, saviInfo, siavenu, clusters, clustersizes, camerapos}) {
   const sias = [];
   const vacs = [];
   const showInfoOf = (index) => {
-    setLabel("clicked " +  index);
+      console.log("clicked" + index);
+    //setLabel("clicked " +  index);
   }
-
   const onClickFnSia = (event) => {
     if (event.intersections.length == 0) return;
     let minDist = event.intersections[0].distanceToRay;
@@ -419,11 +255,11 @@ export function DrawCanvas({coords, lines, comps, setLabel, clusters, clusterSiz
     if (c[4] > 0) continue; // cluster 
     if (c[3] == 1) {
       //nSingleSias++;
-      sias.push({position:[c[0], c[1], c[2]], color:[0.9, 0.2, 0.1], opacity:((c[5]==1)?0.9:0.4), onClick:onClickFnSia});
+      sias.push({position:[c[0], c[1], c[2]], color:[0.5, 0.5, 0.2], opacity:((c[5]==1)?0.9:0.4), onClick:onClickFnSia});
     }
     else {
       //nSingleVacs++;
-      vacs.push({position:[c[0], c[1], c[2]], color:[0.9, 0.2, 0.1], opacity:((c[5]==1)?0.9:0.4), onClick:onClickFnSia});
+      vacs.push({position:[c[0], c[1], c[2]], color:[0.8, 0.8, 0.1], opacity:((c[5]==1)?0.9:0.4), onClick:onClickFnSia});
     }
   }
   const [texture1, texture2] = useTexture(["textures/metalatom.png", "textures/vacancy.png"])
@@ -431,19 +267,34 @@ export function DrawCanvas({coords, lines, comps, setLabel, clusters, clusterSiz
     <Canvas
     linear
     gl={{ antialias: false, alpha: false }}
-    camera={{ position: [0, 0, 60], near: 1, far: 1000 }}
+    camera={{ position: camerapos, near: 1, far: 1000 }}
     onCreated={({ gl }) => gl.setClearColor('#f0f0f0')}>
     <ambientLight />
     <pointLight position={[150, 150, 150]} intensity={0.55} />
     <Sia texture={texture1} points={sias} sa={true} size={2}/>
     <Sia texture={texture2} points={vacs} sa={true} size={2}/>
-    <DrawClusters textures={[texture1, texture2]} coords={coords} lines={lines} comps={comps} clusters={clusters} clusterSizes={clusterSizes}/>
+    <DrawClusters textures={[texture1, texture2]} coords={coords} saviInfo={saviInfo} clusters={clusters} clustersizes={clustersizes}/>
     <OrbitControls/>
     </Canvas>
 
   );
     //
 }
+
+export default function SaviCascadeViz(props) {
+   const [label, setLabel] = useState("shunyam");
+   return (
+    <div style={{height:"360px"}} >
+    <React.Suspense fallback={null}>
+   {props.coords && <DrawCanvas setLabel={setLabel} {...props} />}
+    </React.Suspense>
+    <p>
+      {label}
+    </p>
+    </div>
+   );
+}
+
 
 
     //

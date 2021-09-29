@@ -120,4 +120,43 @@ const Point = /*#__PURE__*/React.forwardRef(({
   }, props), children);
 });
 
+/*
+function useMyHelper(object3D, ar, ...args) {
+  const helper = React.useRef();
+  const scene = useThree(state => state.scene);
+  React.useEffect(() => {
+
+    //console.log(object3D.current.geometry.boundingBox);
+    //object3D.current.geometry.computeBoundingBox ();
+    //console.log(object3D.current.geometry);
+    //console.log(object3D.current.geometry.boundingBox);
+    if (object3D.current) {
+
+      //helper.current = new proto(object3D.current, ...args);
+      object3D.current.geometry.computeBoundingBox ();
+      const box = new THREE.Box3().setFromArray(ar);
+      console.log(box);
+      helper.current = new THREE.Box3Helper(box, 0xffff00);
+      console.log(helper.current);
+      if (helper.current) {
+        scene.add(helper.current);
+      }
+    }
+
+    return () => {
+      if (helper.current) {
+        scene.remove(helper.current);
+      }
+    };
+  }, [scene, object3D, args]);
+  useFrame(() => {
+    if (helper.current) {
+      //helper.current.update();
+    }
+  });
+  return helper;
+}
+*/
+
+//export { Point, Points, useMyHelper };
 export { Point, Points };

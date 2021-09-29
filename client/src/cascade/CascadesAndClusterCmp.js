@@ -27,6 +27,7 @@ import { ScatterPlot, ClusterPlot } from "../cascade/3d-plots.js";
 import {ClusterCmpPlot} from "../cascade/ClusterCmpPlot";
 
 import { toXyzArSplit, uniqueKey } from "../utils";
+import SaviCascadeViz from "./SaviCascadeViz.js";
 
 /*
 import {
@@ -34,6 +35,7 @@ import {
   //removeCurrentCascade
 } from "../cascade/CascadeVisualizer3D";
 */
+//       <DrawIt coords={coords} lines={lines} comps={comps} clusters={clusters} clusterSizes={clusterSizes}/>
 class CascadeViews1 extends React.Component {
   constructor(props) {
     super(props);
@@ -48,19 +50,19 @@ class CascadeViews1 extends React.Component {
     //const row = this.props.row;
     const row = this.props.row.viewfields;
     const curXyzCoords = toXyzArSplit(row);
+    console.log(row);
     return (
           <GridItem xs={12} sm={12} md={6}>
        <CustomTabs
               title={"3D"}
               headerColor="info"
               tabs={[
-                /*
                 {
-                  tabName: "Clusters",
+                  tabName: "Savi-Cascade",
                   tabIcon: ClusterIcon,
                   tabContent: (
                     <div>
-                    TODO
+                      <SaviCascadeViz camerapos={row.simboxfoc} coords={row.coords} saviInfo={row.savi} siavenu={row.siavenu} clusters={row.clusters} clustersizes={row.clustersizes}/>
                     </div>
                   ),
                   footerContent: (
@@ -69,7 +71,6 @@ class CascadeViews1 extends React.Component {
                     </div>
                   )
                 },
-                */
                 {
                   tabName: "Scatter",
                   tabIcon: ScatterIcon,

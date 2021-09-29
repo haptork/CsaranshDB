@@ -73,7 +73,7 @@ def addComponentInfo(lineFeat, components, lineComponents, curClassName, cascade
         lineFeat['cLinesT'].append(color)
     if 'savi' not in cascade: cascade['savi'] = {}
     if cid not in cascade['savi']: cascade['savi'][cid] = {}
-    cascade['savi'][cid]['samuh'] = makeSerializable(components[1])
+    cascade['savi'][cid]['samuh'] = makeSerializable(components)
     cascade['savi'][cid]['venu'] = lineFeat
     if not 'clusterClasses' in cascade: cascade['clusterClasses'] = {}
     if not 'savi' in cascade['clusterClasses']: cascade['clusterClasses']['savi'] = {}
@@ -715,7 +715,8 @@ def findDislocationDirection(comp, lines):
 # TODO use triads and pairs
 
 def makeSerializable(result2):
-    for li in result2:
+    for res in result2:
+      for li in res:
         li[2] = li[2].tolist()
     return result2
 
@@ -723,7 +724,7 @@ def addFullComponentInfo(cascade, cid, triads, pairs):
     if cascade['clusterSizes'][cid] < 2: return
     linesData = lineFeatsForCluster(cascade, cid, triads, pairs)
     #cascade['features'][cid]['lines'] = di
-    lineFeat = getLineFeat(cascade, cid, linesData)
+    lineFeat = getLineFeat(linesData, cascade['clusters'][cid])
     attrs = cookLineAttrs(cascade, cid, linesData['allLines'], linesData['pointsI'])
     components = findComponents(attrs, cascade)
     for comp in components[1][0]:

@@ -114,20 +114,17 @@ def addLinesData(data, finalClusters, tags):
             di['linesT'].append({'main': [x[1] for x in line['mainPoints']], 'orient': line['forceAlign']['dir']})
         data[tcas]['features'][tcid]['lines'] = di
 
-def getLineFeat(cascade, cid, lineC):
-    di = {'lines':[], 'linesT':[], 'pointsI':lineC['pointsI'], 'pointsV': lineC['pointsV']}
-    #print(lineC)
+def getLineFeat(lineC, clusterLi):
+    di = {'lines':[], 'linesT':[], 'pointsI':[clusterLi[x] for x in lineC['pointsI']], 'pointsV': [clusterLi[x] for x in lineC['pointsV']]}
     for line in lineC['lines']:
         if 'parent' in line or 'del' in line: continue
         sub = []
-        if line['subLine']: sub = [x[1] for x in line['subLine']['points']]
-        di['lines'].append({'main': [x[1] for x in line['mainPoints']], 'sub': sub, 'orient': line['forceAlign']['dir']})
+        if line['subLine']: sub = [clusterLi[x[1]] for x in line['subLine']['points']]
+        di['lines'].append({'main': [clusterLi[x[1]] for x in line['mainPoints']], 'sub': sub, 'orient': line['forceAlign']['dir']})
     for line in lineC['linesT']:
         if 'parent' in line or 'del' in line: continue
-        di['linesT'].append({'main': [x[1] for x in line['mainPoints']], 'orient': line['forceAlign']['dir']})
-    # cascade['features'][cid]['lines'] = di
+        di['linesT'].append({'main': [clusterLi[x[1]] for x in line['mainPoints']], 'orient': line['forceAlign']['dir']})
     return di
-
 
 # In[1235]:
 
