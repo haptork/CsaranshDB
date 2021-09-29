@@ -71,10 +71,10 @@ def addComponentInfo(lineFeat, components, lineComponents, curClassName, cascade
         if i >= len(lineComponents): continue
         color = [int(lineComponents[i][1][0]), int(lineComponents[i][0])]
         lineFeat['cLinesT'].append(color)
-    if 'savif' not in cascade: cascade['savif'] = {}
-    if cid not in cascade['savif']: cascade['savif'][cid] = {}
-    cascade['savif'][cid]['samuh'] = makeSerializable(components[1])
-    cascade['savif'][cid]['venu'] = lineFeat
+    if 'savi' not in cascade: cascade['savi'] = {}
+    if cid not in cascade['savi']: cascade['savi'][cid] = {}
+    cascade['savi'][cid]['samuh'] = makeSerializable(components[1])
+    cascade['savi'][cid]['venu'] = lineFeat
     if not 'clusterClasses' in cascade: cascade['clusterClasses'] = {}
     if not 'savi' in cascade['clusterClasses']: cascade['clusterClasses']['savi'] = {}
     cascade['clusterClasses']['savi'][cid] = {"morph": curClassName}

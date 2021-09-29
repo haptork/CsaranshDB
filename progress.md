@@ -556,9 +556,18 @@ WIP:
 - box dimensions and minimum value in the json.
 
 - add %ge contribution in number of defect and other information for components.
+
+TODO:
+
+- Add information for morph. visualization to the DB.
 - using the above add simulation wireframe, camera settings, axis helper, on click info.
 
 ## 29th Sep:
 
 WIP:
 
+- Add information for morph. visualization to the DB.
+
+TODO:
+
+- For cluster from current cascade, no fetch call is needed savi-venu can do the job.

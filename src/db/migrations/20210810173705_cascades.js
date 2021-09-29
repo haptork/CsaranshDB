@@ -16,6 +16,7 @@ exports.up = async function(knex, Promise) {
       t.string('potentialused');
       t.string('author');
       t.integer('es');
+      t.string('simboxfoc');
       t.text('tags');
 
       t.integer("ndefects");

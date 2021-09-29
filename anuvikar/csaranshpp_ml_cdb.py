@@ -87,7 +87,7 @@ def addEigenAndSubcascades(data):
         sys.stdout.write('\rto ' + fdata["infile"] + " "*10)
         sys.stdout.flush()
         # eigen coords and variance for cascade
-        pka = [fdata['xrec'], fdata['yrec'], fdata['zrec']]
+        pka = fdata['pka']
         eigen_coords, eigen_pka, var = transformCascade(fdata['coords'], pka)
         fdata['eigen_coords'] = eigen_coords
         fdata['eigen_pka'] = eigen_pka
@@ -108,6 +108,7 @@ def addEigenAndSubcascades(data):
                                   for x in fdata['eigen_pka'].tolist()]
             fdata['dclust_coords'] = {}
             fdata['dclustI_count'] = 0
+            fdata['dclustV_count'] = 0
             fdata['dclust_sec_impact'] = 0
             continue
         # density clustering
@@ -150,6 +151,7 @@ def addEigenAndSubcascades(data):
             if x in dclustNamesV:
                 fdata['dclust_coords'][x] = subsv[x]
         fdata['dclustI_count'] = len(subsi)
+        fdata['dclustV_count'] = len(subsv)
         dclust_len = [0, 0]
         if (len(lenV) > 0):
             dclust_len[0] = lenV[0][0]

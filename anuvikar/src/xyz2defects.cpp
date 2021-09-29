@@ -343,11 +343,11 @@ csaransh::Coords csaransh::getInitialMaxFcc(const csaransh::Coords &origin,
 
 
 void setCenter(csaransh::ExtraInfo &extraInfo, csaransh::Coords minC,
-               csaransh::Coords maxC) {
+               csaransh::Coords maxC, double latConst) {
   if (!extraInfo.isPkaGiven) {
-    extraInfo.xrec = (maxC[0] - minC[0]) / 2.0 + minC[0];
-    extraInfo.yrec = (maxC[1] - minC[1]) / 2.0 + minC[1];
-    extraInfo.zrec = (maxC[2] - minC[2]) / 2.0 + minC[2];
+    extraInfo.xrec = ((maxC[0] - minC[0]) / 2.0 + minC[0])*latConst;
+    extraInfo.yrec = ((maxC[1] - minC[1]) / 2.0 + minC[1])*latConst;
+    extraInfo.zrec = ((maxC[2] - minC[2]) / 2.0 + minC[2])*latConst;
   }
 }
 
@@ -381,7 +381,7 @@ csaransh::DefectRes csaransh::atoms2defects(
   // std::cout << "\nmaxes: " << maxes[0] << ", " << maxes[1] << ", " << maxes[2] << '\n';
   // std::cout << "\nmaxesInitial: " << maxesInitial[0] << ", " << maxesInitial[1] << ", " << maxesInitial[2] << '\n';
   csaransh::NextExpected nextExpected{firstRow, maxes, maxesInitial};
-  setCenter(extraInfo, firstRow, lastRow);
+  setCenter(extraInfo, firstRow, lastRow, info.latticeConst);
    // csaransh::Logger::inst().log_debug("Min: " + strAr(firstRow) + " coord: " +
    // strAr(std::get<2>(*minmax.first)));
    // csaransh::Logger::inst().log_debug("Max: " + strAr(lastRow) + " coord: " +
@@ -662,7 +662,7 @@ csaransh::DefectRes csaransh::atoms2defectsFcc(
   // std::cout << "\nmaxes: " << maxes[0] << ", " << maxes[1] << ", " << maxes[2] << '\n';
   // std::cout << "\nmaxesInitial: " << maxesInitial[0] << ", " << maxesInitial[1] << ", " << maxesInitial[2] << '\n';
   csaransh::NextExpected nextExpected{firstRow, maxes, maxesInitial, maxesInitial};
-  setCenter(extraInfo, firstRow, lastRow);
+  setCenter(extraInfo, firstRow, lastRow, info.latticeConst);
    // csaransh::Logger::inst().log_debug("Min: " + strAr(firstRow) + " coord: " +
    // strAr(std::get<2>(*minmax.first)));
    // csaransh::Logger::inst().log_debug("Max: " + strAr(lastRow) + " coord: " +

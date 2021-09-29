@@ -54,6 +54,7 @@ dbToJsonMap = {
   'potentialused': 'potentialUsed',
   'author': 'author',
   'es': 'es',
+  'simboxfoc': 'pka',
   'tags': 'tags',
   'ndefects': 'n_defects',
   "nclusters": 'n_clusters',
@@ -91,6 +92,7 @@ dbToJsonMap2 = (
   ('potentialused', 'potentialUsed'),
   ('author', 'author'),
   ('es', 'es'),
+  ('simboxfoc', 'pka'),
   ('tags', 'tags'),
   ('ndefects', 'n_defects'),
   ("nclusters", 'n_clusters'),
@@ -100,7 +102,7 @@ dbToJsonMap2 = (
   ("incluster", 'in_cluster'),
   ("inclusteri", 'in_cluster_I'),
   ("inclusterv", 'in_cluster_V'),
-  ("ndclustv", 'dclustI_count'),
+  ("ndclustv", 'dclustV_count'),
   ("dclustsecimpact", 'dclust_sec_impact'),
   ("hullvol", 'hull_vol'),
   ("hulldensity", 'hull_density'),
@@ -128,6 +130,7 @@ dbTypes = {
   'potentialused': 'string',
   'author': 'string',
   'es': 'integer',
+  'simboxfoc': 'string',
   'tags': 'text',
   'ndefects': 'integer',
   "nclusters": 'integer',
@@ -152,12 +155,15 @@ def cookCascadesDbTuple(cascades):
     for val in dbToJsonMap2:
       #if val[0] == "id": continue
       if val[0] == "coords": break
-      row.append(cascade[val[1]])
+      res = cascade[val[1]]
+      if (dbTypes[val[0]] == 'string' and type(res) != str): res = str(res)
+      row.append(res)
     row.append(json.dumps({
       'coords': cascade['coords'],
-      'codefects': cascade['coDefects'],
+      'savi': cascade['savi'],
       'clusters': cascade['clusters'],
-      'clusterclasses': cascade['clusterClasses'] if 'clusterClasses' in cascade else {"save":{}}, # TODO insert anyway
+      'clustersizes': cascade['clusterSizes'],
+      'clusterclasses': cascade['clusterClasses'] if 'clusterClasses' in cascade else {"savi":{}}, # TODO insert anyway
       'eigencoords': cascade['eigen_coords'],
       'dclustcoords': cascade['dclust_coords']
     }))
@@ -176,7 +182,7 @@ def addCascadesTable(cascades, cur):
                (id text Primary key, cascadeid text unique, ncell integer, energy integer, boxsize real, latticeconst real not null,
                 temperature real, simulationtime real, infile string, xyzfilepath string not null,
                 substrate sring, simulationcode string, potentialused string, author string,
-                es integer, tags text, ndefects integer, nclusters integer,
+                es integer, simboxfoc string, tags text, ndefects integer, nclusters integer,
                 maxclustersize integer, maxclustersizei integer, maxclustersizev integer,
                 incluster integer, inclusteri integer, inclusterv integer, ndclustv integer,
                 dclustsecimpact integer, hullvol real, hulldensity real, viewfields text,
@@ -187,6 +193,9 @@ def addCascadesTable(cascades, cur):
     qStr = "("+ ",".join(li) + ")"
     #print(cascadesTuple[0])
     cStr = "(" + ",".join(columns) + ")"
+    #print(cStr)
+    #print(cascadesTuple[0])
+    #cur.execute("INSERT INTO cascades" + cStr + " VALUES " + qStr, cascadesTuple[0]);
     cur.executemany("INSERT INTO cascades" + cStr + " VALUES " + qStr, cascadesTuple);
 
 def getCoordType (row, cid):
