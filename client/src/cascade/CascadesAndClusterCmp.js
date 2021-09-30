@@ -62,7 +62,7 @@ class CascadeViews1 extends React.Component {
                   tabIcon: ClusterIcon,
                   tabContent: (
                     <div>
-                      <SaviCascadeViz camerapos={row.simboxfoc} coords={row.coords} saviInfo={row.savi} siavenu={row.siavenu} clusters={row.clusters} clustersizes={row.clustersizes}/>
+                      <SaviCascadeViz boxsize={row.boxsize} camerapos={row.simboxfoc} coords={row.coords} saviInfo={row.savi} siavenu={row.siavenu} clusters={row.clusters} clustersizes={row.clustersizes}/>
                     </div>
                   ),
                   footerContent: (

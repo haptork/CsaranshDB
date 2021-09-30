@@ -43,7 +43,6 @@ dbToJsonMap = {
   "cascadeid": "id",
   'ncell': 'ncell',
   'energy': 'energy',
-  'boxsize': 'boxSize',
   'latticeconst': 'latticeConst',
   'temperature': 'temperature',
   'simulationtime': 'simulationTime',
@@ -74,7 +73,8 @@ dbToJsonMap = {
   'clusters': 'clusters',
   'clusterclasses': 'clusterClasses',
   'siavenu': 'siavenu',
-  'simboxfoc': 'pka'
+  'simboxfoc': 'pka',
+  'boxsize': 'boxSize'
 };
 
 dbToJsonMap2 = (
@@ -82,7 +82,6 @@ dbToJsonMap2 = (
   ("cascadeid", "id"),
   ('ncell', 'ncell'),
   ('energy', 'energy'),
-  ('boxsize', 'boxSize'),
   ('latticeconst', 'latticeConst'),
   ('temperature', 'temperature'),
   ('simulationtime', 'simulationTime'),
@@ -113,7 +112,8 @@ dbToJsonMap2 = (
   ('clusters', 'clusters'),
   ('clusterclasses', 'clusterClasses'),
   ('siavenu', 'siavenu'),
-  ('simboxfoc', 'pka')
+  ('simboxfoc', 'pka'),
+  ('boxsize', 'boxSize'),
 );
 
 dbTypes = {
@@ -168,7 +168,8 @@ def cookCascadesDbTuple(cascades):
       'eigencoords': cascade['eigen_coords'],
       'dclustcoords': cascade['dclust_coords'],
       'siavenu': cascade['siavenu'],
-      'simboxfoc': cascade['pka']
+      'simboxfoc': cascade['pka'],
+      'boxsize': cascade['boxSize']
     }))
     rows.append(tuple(row))
   columns = []
@@ -182,7 +183,7 @@ def cookCascadesDbTuple(cascades):
 
 def addCascadesTable(cascades, cur):
   cur.execute('''create table cascades
-               (id text Primary key, cascadeid text unique, ncell integer, energy integer, boxsize real, latticeconst real not null,
+               (id text Primary key, cascadeid text unique, ncell integer, energy integer, latticeconst real not null,
                 temperature real, simulationtime real, infile string, xyzfilepath string not null,
                 substrate sring, simulationcode string, potentialused string, author string,
                 es integer, tags text, ndefects integer, nclusters integer,

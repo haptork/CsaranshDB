@@ -9,7 +9,6 @@ const dbToJsonMap = {
   "cascadeid": "id",
   'ncell': 'ncell',
   'energy': 'energy',
-  'boxsize': 'boxSize',
   'latticeconst': 'latticeConst',
   'temperature': 'temperature',
   'simulationtime': 'simulationTime',
@@ -53,7 +52,7 @@ const makeFilteredJson = (row, dbCols) => {
       if (jsonCol === undefined) continue;
       res[dbCol] = row[jsonCol];
     } else {
-      res[dbCol] = JSON.stringify(makeFilteredJson(row, ['coords', 'savi', 'clusters', 'clustersizes', 'clusterclasses', 'eigencoords', 'dclustcoords', 'siavenu', 'simboxfoc']));
+      res[dbCol] = JSON.stringify(makeFilteredJson(row, ['coords', 'savi', 'clusters', 'clustersizes', 'clusterclasses', 'eigencoords', 'dclustcoords', 'siavenu', 'simboxfoc', 'boxsize']));
     }
     //res[dbCol] = makeFilteredJson(row, ['coords', 'codefects', 'clusters', 'clusterclasses', 'clustercmp', 'clustercmpsize']);
   }

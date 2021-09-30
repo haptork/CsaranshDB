@@ -14,10 +14,12 @@ const getPairColorOrient = x => {
 }
 
 function Sia(props) {
+  console.log(props.points.length);
+  console.log(props.points.length);
   return(
       <Points 
-       limit={props.points.length} 
-       range={props.points.length}
+       limit={10000} 
+       range={10000}
       >
       <pointsMaterial size={props.size} vertexColors={true} attach="material" map={props.texture} sizeAttenuation={props.sa} transparent={true} alphaTest={0.2}/>
         {props.points.map((pointProps, i) => <Point key={i} {...pointProps} />)}
@@ -28,16 +30,12 @@ function Sia(props) {
 function SiaDebug(props) {
   console.log('sia debug', props.points);
   return(
-      <Points 
-       limit={props.points.length} 
-       range={props.points.length}
-      >
-      <pointsMaterial size={10} />
+      <Points>
+      <pointsMaterial size={props.size} vertexColors={true} attach="material" map={props.texture} sizeAttenuation={props.sa} />
         {props.points.map((pointProps, i) => <Point key={i} {...pointProps} />)}
       </Points>
   );
 }
-
 
 function CompBoxed(props) {
  const [hovered, setHover] = useState(false);
@@ -165,9 +163,9 @@ function defectItems(coords, lines, allComps, sias, vacs, meshProps, label) {
           const c = coords[cIndex];
           if (i < 4) points.push(c[0]); points.push(c[1]); points.push(c[2]);
           if (c[3] == 1) {
-            sias.push({position:[c[0], c[1], c[2]], color:curColor, opacity:((c[5]==1)?0.9:0.4)});
+            sias.push({position:[c[0], c[1], c[2]], color:curColor, opacity:((c[5]==1)?0.7:0.4)});
           } else {
-            vacs.push({position:[c[0], c[1], c[2]], color:curColor, opacity:((c[5]==1)?0.9:0.4)});
+            vacs.push({position:[c[0], c[1], c[2]], color:curColor, opacity:((c[5]==1)?0.7:0.4)});
           }
         }
       }
@@ -200,9 +198,11 @@ function defectItems(coords, lines, allComps, sias, vacs, meshProps, label) {
 
 function vacClusters(coords, clusterPoints, sias, vacs, meshProps, label) {
   const points = [];
+  /*
   if (label == 75) {
       console.log(vacs.length);
   }
+  */
   for (const cIndex of clusterPoints) { // TODO pointsI and pointsV
     const c = coords[cIndex];
     const curColor = [1.0, 0.8, 0.1];
@@ -226,21 +226,19 @@ function vacClusters(coords, clusterPoints, sias, vacs, meshProps, label) {
   meshProps.push(boxProps)
 }
 
-function DrawClusters({textures, coords, saviInfo, clusters, clustersizes}) {
-  const sias = [];
-  const vacs = [];
-  const meshProps = [[], [], [], [], []];
-  for (const clusterLabel in saviInfo) {
-    defectItems(coords, saviInfo[clusterLabel].venu, saviInfo[clusterLabel].samuh, sias, vacs, meshProps, clusterLabel);
-  }
-  for (const clusterLabel in clusters) {
-    if (clustersizes[clusterLabel] > -1) continue;
-    vacClusters(coords, clusters[clusterLabel], sias, vacs, meshProps[4], clusterLabel);
-  }
-  console.log("saviInfo", saviInfo);
-  console.log("meshProps", meshProps);
+function DrawClusters({meshProps}) {
   // TODO use type info in meshProps for different shapes
   // TODO use meshInstance.
+  return(
+   <>
+    {meshProps[0].map((p, i) => <CompBoxed key={i} {...p} />)}
+    {meshProps[1].map((p, i) => <CompSphere key={i} {...p} />)}
+    {meshProps[2].map((p, i) => <CompDistort1 key={i} {...p} />)}
+    {meshProps[3].map((p, i) => <CompDistort2 key={i} {...p} />)}
+    {meshProps[4].map((p, i) => <CompVac key={i} {...p} />)}
+    </>
+  );
+  /*
   return(
    <>
     <Sia points={sias} size={2} sa={true} texture={textures[0]} />
@@ -252,13 +250,16 @@ function DrawClusters({textures, coords, saviInfo, clusters, clustersizes}) {
     {meshProps[4].map((p, i) => <CompVac key={i} {...p} />)}
    </> 
   );
+  */
 }
 
     //<SiaBoxed texture={texture} points={sias} ar={pointsAr} boxProps={boxProps} sa={true} size={2}/>
 
-function DrawCanvas({coords, saviInfo, siavenu, clusters, clustersizes, camerapos}) {
+function DrawCanvas({coords, saviInfo, siavenu, clusters, clustersizes, camerapos, boxsize}) {
   const sias = [];
   const vacs = [];
+  const infoSia = [];
+  const infoVac = [];
   const showInfoOf = (index) => {
       console.log("clicked" + index);
     //setLabel("clicked " +  index);
@@ -277,7 +278,8 @@ function DrawCanvas({coords, saviInfo, siavenu, clusters, clustersizes, camerapo
     event.stopPropagation();
   }
   for (const c of coords) {
-    if (c[4] > 0) continue; // cluster 
+    //if (c[4] > 0) continue; // cluster
+    if (c[4] != 0) continue; // cluster or triad
     if (c[3] == 1) {
       //nSingleSias++;
       sias.push({position:[c[0], c[1], c[2]], color:[0.5, 0.5, 0.2], opacity:((c[5]==1)?0.9:0.4), onClick:onClickFnSia});
@@ -287,19 +289,53 @@ function DrawCanvas({coords, saviInfo, siavenu, clusters, clustersizes, camerapo
       vacs.push({position:[c[0], c[1], c[2]], color:[0.8, 0.8, 0.1], opacity:((c[5]==1)?0.9:0.4), onClick:onClickFnSia});
     }
   }
+  const onClickFnTriad = (event) => {
+      console.log("triad");
+      onClickFnSia(event);
+  }
+  for (const triad of siavenu) {
+    const curColor = getPairColorOrient(triad[1]);
+    for (const cIndex of triad[0]) {
+      const c = coords[cIndex];
+      if (c[3] == 1) {
+        //nSingleSias++;
+        sias.push({position:[c[0], c[1], c[2]], color:curColor, opacity:((c[5]==1)?0.9:0.4), onClick:onClickFnTriad});
+      }
+      else {
+        //nSingleVacs++;
+        vacs.push({position:[c[0], c[1], c[2]], color:curColor, opacity:((c[5]==1)?0.9:0.4), onClick:onClickFnTriad});
+      }
+
+    }
+  }
+  //console.log("vacs size", vacs.length);
+  // clusters
+  const meshProps = [[], [], [], [], []];
+  for (const clusterLabel in saviInfo) {
+    defectItems(coords, saviInfo[clusterLabel].venu, saviInfo[clusterLabel].samuh, sias, vacs, meshProps, clusterLabel);
+  }
+  for (const clusterLabel in clusters) {
+    if (clustersizes[clusterLabel] > -1) continue;
+    vacClusters(coords, clusters[clusterLabel], sias, vacs, meshProps[4], clusterLabel);
+  }
   const [texture1, texture2] = useTexture(["textures/metalatom.png", "textures/vacancy.png"])
+  const camPos = [camerapos[0], camerapos[1], camerapos[2] - boxsize/1.6];
+  const box = new THREE.Box3();
+  box.setFromCenterAndSize( new THREE.Vector3(camerapos[0], camerapos[1], camerapos[2]), new THREE.Vector3( boxsize, boxsize, boxsize ) );
   return (
     <Canvas
     linear
     gl={{ antialias: false, alpha: false }}
-    camera={{ position: camerapos, near: 1, far: 1000 }}
-    onCreated={({ gl }) => gl.setClearColor('#f0f0f0')}>
+    camera={{ position: camPos, near: 1, far: 1000 }}
+    onCreated={({ gl }) => gl.setClearColor('#fbfbfe')}>
     <ambientLight />
     <pointLight position={[150, 150, 150]} intensity={0.55} />
     <Sia texture={texture1} points={sias} sa={true} size={2}/>
     <Sia texture={texture2} points={vacs} sa={true} size={2}/>
-    <DrawClusters textures={[texture1, texture2]} coords={coords} saviInfo={saviInfo} clusters={clusters} clustersizes={clustersizes}/>
-    <OrbitControls/>
+    <DrawClusters meshProps={meshProps}/>
+    <box3Helper args={[box, 0x4090a0]}/>
+    <axesHelper args={[10]}/>
+    <OrbitControls target={camerapos}/>
     </Canvas>
 
   );

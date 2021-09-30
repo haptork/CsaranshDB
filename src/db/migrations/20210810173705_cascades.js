@@ -5,7 +5,6 @@ exports.up = async function(knex, Promise) {
       t.string('cascadeid');
       t.integer('ncell');
       t.integer('energy');
-      t.float('boxsize');
       t.float('latticeconst').notNullable();
       t.float('temperature');
       t.integer('simulationtime');

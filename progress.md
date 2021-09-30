@@ -567,8 +567,19 @@ TODO:
 WIP:
 
 - ~~Add information for morph. visualization to the DB.~~
-- Add morph. visualization to csaransh.
+- ~~Add morph. visualization to csaransh.~~
+- ~~Correct Camera position.~~
 
 TODO:
 
 - For cluster from current cascade, no fetch call is needed savi-venu can do the job.
+
+## 30th Sep:
+
+WIP:
+
+- ~~Add wireframe box.~~
+- ~~Add axis helper.~~
+- Add info on mouse-hover.
+- Cluster comparison on click .
+- Finalize Viz.
