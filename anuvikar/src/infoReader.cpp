@@ -35,14 +35,14 @@ std::array<std::string, 2> separateFileAndExt(std::string path) {
 }
 
 std::pair<std::string, std::string>
-csaransh::getInfileFromXyzfile(std::string xyzfile) {
+anuvikar::getInfileFromXyzfile(std::string xyzfile) {
   auto dirFile = separateDirAndFile(xyzfile);
   auto fnameExt = separateFileAndExt(dirFile[1]);
   auto addum = (dirFile[0].length() > 0) ? "/" : "";
   auto origFnameExt = dirFile[1];
   auto origFname = fnameExt[0];
-  csaransh::replaceStr(dirFile[1], "fpos", "md");
-  csaransh::replaceStr(fnameExt[0], "fpos", "md");
+  anuvikar::replaceStr(dirFile[1], "fpos", "md");
+  anuvikar::replaceStr(fnameExt[0], "fpos", "md");
   auto filePaths = std::array<std::string, 6>{
       {dirFile[0] + addum + fnameExt[0] + ".in",
        dirFile[0] + addum + dirFile[1] + ".in",
@@ -61,11 +61,11 @@ csaransh::getInfileFromXyzfile(std::string xyzfile) {
 }
 
 // extract information from input file
-std::tuple<csaransh::InputInfo, csaransh::ExtraInfo, bool>
-csaransh::extractInfoLammps(std::string fpath, std::string ftag) {
+std::tuple<anuvikar::InputInfo, anuvikar::ExtraInfo, bool>
+anuvikar::extractInfoLammps(std::string fpath, std::string ftag) {
   std::ifstream infile(fpath);
-  csaransh::InputInfo mainInfo;
-  csaransh::ExtraInfo extraInfo;
+  anuvikar::InputInfo mainInfo;
+  anuvikar::ExtraInfo extraInfo;
   if (infile.bad() || !infile.is_open()) {
     return std::make_tuple(mainInfo, extraInfo, false);
   }
@@ -73,7 +73,7 @@ csaransh::extractInfoLammps(std::string fpath, std::string ftag) {
   int xyzrec{0};
   bool careAboutAngles = false;
   auto isOrigin = 0;
-  csaransh::Coords velocity{{0.0, 0.0, 0.0}};
+  anuvikar::Coords velocity{{0.0, 0.0, 0.0}};
   while (std::getline(infile, line)) {
     auto eq =
         std::find_if(begin(line), end(line), [](int ch) { return ch == '='; });
@@ -166,9 +166,9 @@ std::string readStr(std::string msg) {
   return buffer;
 }
 
-std::pair<bool, csaransh::Coords> readAr(std::string msg) {
+std::pair<bool, anuvikar::Coords> readAr(std::string msg) {
   auto line = readStr(msg);
-  csaransh::Coords res;
+  anuvikar::Coords res;
   if (line.empty()) return std::make_pair(false, res);
   auto first = std::find_if(begin(line), end(line),
                             [](int ch) { return !std::isspace(ch); });
@@ -233,9 +233,9 @@ int readInt(std::string msg) {
   return res;
 }
 
-std::tuple<csaransh::InputInfo, csaransh::ExtraInfo, bool> csaransh::infoFromStdIn() {
-  csaransh::InputInfo mainInfo;
-  csaransh::ExtraInfo extraInfo;
+std::tuple<anuvikar::InputInfo, anuvikar::ExtraInfo, bool> anuvikar::infoFromStdIn() {
+  anuvikar::InputInfo mainInfo;
+  anuvikar::ExtraInfo extraInfo;
   std::string buffer;
   std::cout << "\rInput file missing, please provide inputs here: \n"; 
   while (buffer.size() == 0 || mainInfo.latticeConst < 0.0) {
@@ -266,12 +266,12 @@ std::tuple<csaransh::InputInfo, csaransh::ExtraInfo, bool> csaransh::infoFromStd
   extraInfo.potentialUsed = readStr("Potential used: ");
   extraInfo.es = readStr("Is electronic stopping used (y/n): ") == "y" ? true : false;
   auto xyzFormat = readInt("xyz file formate (1-generic-xyz (default), 2-lammps, 3-parcas, 4-cascadesDb 5-displaced): ");
-  std::vector<csaransh::XyzFileType> codes{
-    csaransh::XyzFileType::generic,
-    csaransh::XyzFileType::lammpsWithStdHeader,
-    csaransh::XyzFileType::parcasWithStdHeader,
-    csaransh::XyzFileType::cascadesDbLikeCols,
-    csaransh::XyzFileType::lammpsDisplacedCompute
+  std::vector<anuvikar::XyzFileType> codes{
+    anuvikar::XyzFileType::generic,
+    anuvikar::XyzFileType::lammpsWithStdHeader,
+    anuvikar::XyzFileType::parcasWithStdHeader,
+    anuvikar::XyzFileType::cascadesDbLikeCols,
+    anuvikar::XyzFileType::lammpsDisplacedCompute
   };
   mainInfo.xyzFileType = (xyzFormat < codes.size() && xyzFormat > 0) ? codes[xyzFormat - 1] : codes[0];
   auto xyzCol = readInt("column number for x-coordinate (subsequent columns will be taken as y & z) (default: auto): ");
@@ -281,11 +281,11 @@ std::tuple<csaransh::InputInfo, csaransh::ExtraInfo, bool> csaransh::infoFromStd
 
 
 // extract information from input file
-std::tuple<csaransh::InputInfo, csaransh::ExtraInfo, bool>
-csaransh::extractInfoParcas(std::string fpath, std::string ftag) {
+std::tuple<anuvikar::InputInfo, anuvikar::ExtraInfo, bool>
+anuvikar::extractInfoParcas(std::string fpath, std::string ftag) {
   std::ifstream infile(fpath);
-  csaransh::InputInfo mainInfo;
-  csaransh::ExtraInfo extraInfo;
+  anuvikar::InputInfo mainInfo;
+  anuvikar::ExtraInfo extraInfo;
   if (!infile.bad() && infile.is_open()) {
     std::string line;
     auto count = 0;
@@ -350,8 +350,8 @@ csaransh::extractInfoParcas(std::string fpath, std::string ftag) {
   return std::make_tuple(mainInfo, extraInfo, false);
 }
 
-std::pair<csaransh::XyzFileType, bool>
-csaransh::getSimulationCode(std::string fname) {
+std::pair<anuvikar::XyzFileType, bool>
+anuvikar::getSimulationCode(std::string fname) {
   std::ifstream infile(fname);
   if (!infile.bad() && infile.is_open()) {
     std::string line;
@@ -359,12 +359,12 @@ csaransh::getSimulationCode(std::string fname) {
     constexpr auto maxLinesToLook = 10;
     std::vector<std::string> keyWords{ "CASCADESDBLIKECOLS", "PARCAS",
                                       "LAMMPS-XYZ", "LAMMPS-DISP", "XYZ",};
-    std::vector<csaransh::XyzFileType> codes{
-        csaransh::XyzFileType::cascadesDbLikeCols,
-        csaransh::XyzFileType::parcasWithStdHeader,
-        csaransh::XyzFileType::lammpsWithStdHeader,
-        csaransh::XyzFileType::lammpsDisplacedCompute,
-        csaransh::XyzFileType::generic,
+    std::vector<anuvikar::XyzFileType> codes{
+        anuvikar::XyzFileType::cascadesDbLikeCols,
+        anuvikar::XyzFileType::parcasWithStdHeader,
+        anuvikar::XyzFileType::lammpsWithStdHeader,
+        anuvikar::XyzFileType::lammpsDisplacedCompute,
+        anuvikar::XyzFileType::generic,
         };
     while (std::getline(infile, line) && lineNo++ < maxLinesToLook) {
       for (size_t i = 0; i < keyWords.size(); i++) {
@@ -373,5 +373,5 @@ csaransh::getSimulationCode(std::string fname) {
       }
     }
   }
-  return std::make_pair(csaransh::XyzFileType::generic, false);
+  return std::make_pair(anuvikar::XyzFileType::generic, false);
 }

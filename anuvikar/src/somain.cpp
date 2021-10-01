@@ -56,13 +56,13 @@ struct PyConfig {
   bool safeRunChecks{true};
   double thresholdFactor{0.345};
   double extraDefectsSafetyFactor{50.0};
-  int logMode{csaransh::LogMode::warning | csaransh::LogMode::error};
+  int logMode{anuvikar::LogMode::warning | anuvikar::LogMode::error};
   const char *logFilePath;
   const char *outputJSONFilePath;
 };
 
 auto pyConfigToCppConfig(const PyConfig &pyConfig) {
-  auto config = csaransh::Config{};
+  auto config = anuvikar::Config{};
   config.allFrames = pyConfig.allFrames;
   config.onlyDefects = pyConfig.onlyDefects;
   config.isFindClusterFeatures = pyConfig.isFindClusterFeatures;
@@ -81,7 +81,7 @@ auto pyConfigToCppConfig(const PyConfig &pyConfig) {
 
 auto pyInfoToCppInfo(const InfoPyInput &pyinput,
                      const InfoPyExtraInput &pyextra) {
-  csaransh::InputInfo input;
+  anuvikar::InputInfo input;
   input.ncell = pyinput.ncell;
   input.boxSize = pyinput.boxSize;
   input.latticeConst = pyinput.latticeConst;
@@ -99,19 +99,19 @@ auto pyInfoToCppInfo(const InfoPyInput &pyinput,
   );
   std::vector<std::string> keyWords{"GENERIC", "CASCADESDBLIKECOLS", "PARCAS",
                                     "LAMMPS-XYZ", "LAMMPS-DISP"};
-  std::vector<csaransh::XyzFileType> codes{
-      csaransh::XyzFileType::generic,
-      csaransh::XyzFileType::cascadesDbLikeCols,
-      csaransh::XyzFileType::parcasWithStdHeader,
-      csaransh::XyzFileType::lammpsWithStdHeader,
-      csaransh::XyzFileType::lammpsDisplacedCompute};
+  std::vector<anuvikar::XyzFileType> codes{
+      anuvikar::XyzFileType::generic,
+      anuvikar::XyzFileType::cascadesDbLikeCols,
+      anuvikar::XyzFileType::parcasWithStdHeader,
+      anuvikar::XyzFileType::lammpsWithStdHeader,
+      anuvikar::XyzFileType::lammpsDisplacedCompute};
   for (size_t i = 0; i < keyWords.size(); i++) {
     if (simCodeStr == keyWords[i]) {
       input.xyzFileType = codes[i];
       break;
     }
   }
-  csaransh::ExtraInfo extra;
+  anuvikar::ExtraInfo extra;
   extra.energy = pyextra.energy;
   extra.simulationTime = pyextra.simulationTime;
   extra.isPkaGiven = pyextra.isPkaGiven;
@@ -132,26 +132,26 @@ auto pyInfoToCppInfo(const InfoPyInput &pyinput,
 
 extern "C" char *pyProcessFile(InfoPyInput pyInfo, InfoPyExtraInput pyExtraInfo,
                                PyConfig pyConfig) {
-  using csaransh::Logger;
+  using anuvikar::Logger;
   auto config = pyConfigToCppConfig(pyConfig);
-  auto info = csaransh::InputInfo{};
-  auto extraInfo = csaransh::ExtraInfo{};
+  auto info = anuvikar::InputInfo{};
+  auto extraInfo = anuvikar::ExtraInfo{};
   auto isSuccess = false;
   std::tie(isSuccess, info, extraInfo) = pyInfoToCppInfo(pyInfo, pyExtraInfo);
   Logger::inst().mode(config.logMode);
   Logger::inst().file(config.logFilePath);
   std::stringstream outfile;
-  auto res = csaransh::resultsT{};
+  auto res = anuvikar::resultsT{};
   auto success = 0;
   if (!isSuccess) {
-    res.err = csaransh::ErrorStatus::unknownSimulator;
+    res.err = anuvikar::ErrorStatus::unknownSimulator;
   } else {
     Logger::inst().log_info("Started Processing file \"" + info.xyzFilePath +
                             " (" + extraInfo.infile + ") " + "\"");
-    csaransh::frameStatus fs = csaransh::frameStatus::prelude;
+    anuvikar::frameStatus fs = anuvikar::frameStatus::prelude;
     std::ifstream xyzfile{info.xyzFilePath};
     if (xyzfile.bad() || !xyzfile.is_open()) {
-      res.err = csaransh::ErrorStatus::xyzFileReadError;
+      res.err = anuvikar::ErrorStatus::xyzFileReadError;
     }
     auto frameCount = 0;
     auto initId = extraInfo.id;
@@ -159,20 +159,20 @@ extern "C" char *pyProcessFile(InfoPyInput pyInfo, InfoPyExtraInput pyExtraInfo,
     while (true) {
       if (config.allFrames && origSimTime == 0) extraInfo.simulationTime = success + 1;
       if (config.allFrames) extraInfo.id = initId + "_" + std::to_string(success + 1);
-      auto res = csaransh::processTimeFile(info, extraInfo, config, xyzfile, fs, outfile, success == 0);
+      auto res = anuvikar::processTimeFile(info, extraInfo, config, xyzfile, fs, outfile, success == 0);
       frameCount++;
-      if (res.second != csaransh::ErrorStatus::noError) {
+      if (res.second != anuvikar::ErrorStatus::noError) {
         Logger::inst().log_info("Error processing" + std::to_string(frameCount) +" frame in file \"" + info.xyzFilePath + "\"");
       } else {
         ++success;
         if (config.allFrames) Logger::inst().log_info("Finished processing" + std::to_string(success) +" frame in file \"" + info.xyzFilePath + "\"");
       }
-      if (res.first == csaransh::xyzFileStatus::eof) break;
+      if (res.first == anuvikar::xyzFileStatus::eof) break;
     }
     xyzfile.close();
     Logger::inst().log_info("Finished Processing");
   }
-  if (success == 0) csaransh::printJson(outfile, info, extraInfo, res);
+  if (success == 0) anuvikar::printJson(outfile, info, extraInfo, res);
   std::string str = outfile.str();
   char *writable = (char *)malloc(sizeof(char) * (str.size() + 1));
   std::copy(str.begin(), str.end(), writable);
@@ -181,17 +181,17 @@ extern "C" char *pyProcessFile(InfoPyInput pyInfo, InfoPyExtraInput pyExtraInfo,
 }
 
 extern "C" char *pyProcessFileWoInfo(char *xyzfile, PyConfig pyConfig) {
-  using csaransh::Logger;
+  using anuvikar::Logger;
   auto config = pyConfigToCppConfig(pyConfig);
   auto xyzfileStr = std::string(xyzfile);
   Logger::inst().mode(config.logMode);
   Logger::inst().file(config.logFilePath);
   Logger::inst().log_info("Started Processing file \"" + xyzfileStr + "\"");
   std::stringstream outfile;
-  csaransh::InputInfo info;
-  csaransh::ExtraInfo extraInfo;
+  anuvikar::InputInfo info;
+  anuvikar::ExtraInfo extraInfo;
   bool isInfo;
-  auto res = csaransh::processFileTimeCmd(xyzfileStr, outfile, config, 0, info, extraInfo, isInfo);
+  auto res = anuvikar::processFileTimeCmd(xyzfileStr, outfile, config, 0, info, extraInfo, isInfo);
   Logger::inst().log_info("Finished Processing");
   std::string str = outfile.str();
   char *writable = (char *)malloc(

@@ -19,7 +19,7 @@
 
 #include <iostream>
 
-auto getThresh(const csaransh::InputInfo &info, const double &factor) {
+auto getThresh(const anuvikar::InputInfo &info, const double &factor) {
   return factor * info.latticeConst;
 }
 
@@ -69,8 +69,8 @@ auto existAnchorInter(
 // sets the surviving flag of an interstitial and vacancy if they are closer
 // than a threshold
 auto clean(
-    std::vector<std::tuple<csaransh::Coords, csaransh::Coords, bool>> &inter,
-    std::vector<std::tuple<csaransh::Coords, bool>> &vac, double latticeConst) {
+    std::vector<std::tuple<anuvikar::Coords, anuvikar::Coords, bool>> &inter,
+    std::vector<std::tuple<anuvikar::Coords, bool>> &vac, double latticeConst) {
   const auto &thresh = latticeConst; // * sqrt(3) / 2;
   for (size_t i = 0; i < vac.size(); ++i) {
     if (!std::get<1>(vac[i])) continue;
@@ -79,7 +79,7 @@ auto clean(
     for (size_t j = 0; j < inter.size(); ++j) {
       if (!std::get<2>(inter[j])) continue;
       auto dist =
-          csaransh::calcDist(std::get<0>(vac[i]), std::get<1>(inter[j]));
+          anuvikar::calcDist(std::get<0>(vac[i]), std::get<1>(inter[j]));
       if (dist < min) {
         min = dist;
         minj = j;
@@ -92,88 +92,88 @@ auto clean(
   }
 }
 
-std::pair<csaransh::xyzFileStatus, std::array<std::vector<csaransh::Coords>, 2>>
-getDisplacedAtomsTime(csaransh::InputInfo &info, csaransh::ExtraInfo &extraInfo,
-         const csaransh::Config &config, std::istream &infile, csaransh::frameStatus &fs) {
-  using csaransh::Coords;
+std::pair<anuvikar::xyzFileStatus, std::array<std::vector<anuvikar::Coords>, 2>>
+getDisplacedAtomsTime(anuvikar::InputInfo &info, anuvikar::ExtraInfo &extraInfo,
+         const anuvikar::Config &config, std::istream &infile, anuvikar::frameStatus &fs) {
+  using anuvikar::Coords;
   using std::get;
   using std::string;
   using std::tuple;
   using std::vector;
-  std::pair<csaransh::xyzFileStatus, std::array<std::vector<csaransh::Coords>, 2>> res;
+  std::pair<anuvikar::xyzFileStatus, std::array<std::vector<anuvikar::Coords>, 2>> res;
   auto &atoms = res.second;
-  //std::array<std::vector<csaransh::Coords>, 2> atoms;
+  //std::array<std::vector<anuvikar::Coords>, 2> atoms;
   // const auto latConst = info.latticeConst;
   std::string line;
   // read file and apply object
-  std::array<csaransh::Coords, 2> c;
-  csaransh::lineStatus ls;
+  std::array<anuvikar::Coords, 2> c;
+  anuvikar::lineStatus ls;
   auto origin = std::array<double,3>{{info.originX, info.originY, info.originZ}};
   auto latConst = info.latticeConst;
-  auto obj = csaransh::AddOffset{latConst, info.structure, origin};
+  auto obj = anuvikar::AddOffset{latConst, info.structure, origin};
   auto fn = [&latConst] (double x) { return x * latConst; };
-  res.first = csaransh::xyzFileStatus::eof;
+  res.first = anuvikar::xyzFileStatus::eof;
   while (std::getline(infile, line)) {
-    std::tie(ls, c) = csaransh::getCoordDisplaced(line);
-    if (ls == csaransh::lineStatus::coords &&
-        fs == csaransh::frameStatus::inFrame) {
+    std::tie(ls, c) = anuvikar::getCoordDisplaced(line);
+    if (ls == anuvikar::lineStatus::coords &&
+        fs == anuvikar::frameStatus::inFrame) {
       auto vacC = std::get<0>(obj(c[0]));
       std::transform(begin(vacC), end(vacC), begin(vacC), fn);
       atoms[0].emplace_back(std::move(vacC));
       atoms[1].emplace_back(c[1]);
-    } else if (ls == csaransh::lineStatus::frameBorder) {
-      if (fs != csaransh::frameStatus::prelude) {
-        fs = csaransh::frameStatus::inFrame;
+    } else if (ls == anuvikar::lineStatus::frameBorder) {
+      if (fs != anuvikar::frameStatus::prelude) {
+        fs = anuvikar::frameStatus::inFrame;
         if (config.allFrames && !atoms[0].empty()) {
-          res.first = csaransh::xyzFileStatus::reading;
+          res.first = anuvikar::xyzFileStatus::reading;
           break;
         }
         atoms[0].clear();
         atoms[1].clear();
       }
-      fs = csaransh::frameStatus::inFrame;
+      fs = anuvikar::frameStatus::inFrame;
     }
   }
   return res;
 }
 
-std::pair<csaransh::xyzFileStatus, std::vector<std::tuple<csaransh::Coords, double, csaransh::Coords>>>
-getAtomsTime(csaransh::InputInfo &info, csaransh::ExtraInfo &extraInfo,
-         const csaransh::Config &config, std::istream &infile, csaransh::frameStatus &fs) {
-  using csaransh::Coords;
-  using csaransh::strAr;
+std::pair<anuvikar::xyzFileStatus, std::vector<std::tuple<anuvikar::Coords, double, anuvikar::Coords>>>
+getAtomsTime(anuvikar::InputInfo &info, anuvikar::ExtraInfo &extraInfo,
+         const anuvikar::Config &config, std::istream &infile, anuvikar::frameStatus &fs) {
+  using anuvikar::Coords;
+  using anuvikar::strAr;
   using std::get;
   using std::string;
   using std::tuple;
   using std::vector;
   vector<Coords>
       atoms; // for all the atoms along with nearest closest sites and offset
-  std::pair<csaransh::xyzFileStatus, vector<tuple<Coords, double, Coords>>>
+  std::pair<anuvikar::xyzFileStatus, vector<tuple<Coords, double, Coords>>>
       res; // for all the atoms along with nearest closest sites and offset
   const auto &latConst = info.latticeConst;
   if (info.ncell > 0) atoms.reserve(info.ncell * info.ncell * info.ncell * 2);
   std::string line;
   // read file and apply object
   Coords c;
-  csaransh::lineStatus ls;
-  res.first = csaransh::xyzFileStatus::eof;
+  anuvikar::lineStatus ls;
+  res.first = anuvikar::xyzFileStatus::eof;
   while (std::getline(infile, line)) {
-    std::tie(ls, c) = csaransh::getCoord(line, fs, info, extraInfo);
-    if (ls == csaransh::lineStatus::coords &&
-        fs == csaransh::frameStatus::inFrame) {
+    std::tie(ls, c) = anuvikar::getCoord(line, fs, info, extraInfo);
+    if (ls == anuvikar::lineStatus::coords &&
+        fs == anuvikar::frameStatus::inFrame) {
       atoms.emplace_back(c);
-    } else if (ls == csaransh::lineStatus::inFrameCoords) {
+    } else if (ls == anuvikar::lineStatus::inFrameCoords) {
       atoms.emplace_back(c);
-    } else if (ls == csaransh::lineStatus::frameBorder) {
-      if (fs != csaransh::frameStatus::prelude) {
-        fs = csaransh::frameStatus::inFrame;
+    } else if (ls == anuvikar::lineStatus::frameBorder) {
+      if (fs != anuvikar::frameStatus::prelude) {
+        fs = anuvikar::frameStatus::inFrame;
         if (config.allFrames && !atoms.empty()) {
-          res.first = csaransh::xyzFileStatus::reading;
+          res.first = anuvikar::xyzFileStatus::reading;
           break;
         }
         atoms.clear();
       }
-      fs = csaransh::frameStatus::inFrame;
+      fs = anuvikar::frameStatus::inFrame;
         //atoms.clear(); // Ignoring the frame before this one
     }
   }
@@ -188,28 +188,28 @@ getAtomsTime(csaransh::InputInfo &info, csaransh::ExtraInfo &extraInfo,
     info.latticeConst = secLatConst;
     secLatConst = -1.0;
   }
-  std::vector<std::tuple<csaransh::Coords, double, std::string, int>> combos;
+  std::vector<std::tuple<anuvikar::Coords, double, std::string, int>> combos;
   if (info.originType > 0) {
-    auto originEstimated = csaransh::estimateOrigin(atoms, info.latticeConst);
+    auto originEstimated = anuvikar::estimateOrigin(atoms, info.latticeConst);
     combos.emplace_back(
-        csaransh::Coords{
+        anuvikar::Coords{
             {originEstimated[0], originEstimated[1], originEstimated[2]}},
         info.latticeConst, "estimated origin, given latConst", 0);
     if (secLatConst > 0.0) {
-      auto originEstimatedSec = csaransh::estimateOrigin(atoms, secLatConst);
+      auto originEstimatedSec = anuvikar::estimateOrigin(atoms, secLatConst);
       combos.emplace_back(
-          csaransh::Coords{{originEstimatedSec[0], originEstimatedSec[1],
+          anuvikar::Coords{{originEstimatedSec[0], originEstimatedSec[1],
                             originEstimatedSec[2]}},
           secLatConst, "estimated originSec, boxSize/ncell latconst", 0);
     }
   }
   if ((secLatConst > 0.0 && info.originType == 0) || info.originType == 2) {
     combos.emplace_back(
-        csaransh::Coords{{info.originX, info.originY, info.originZ}},
+        anuvikar::Coords{{info.originX, info.originY, info.originZ}},
         info.latticeConst, "given origin, given latconst", 0);
     if (secLatConst > 0.0)
       combos.emplace_back(
-          csaransh::Coords{{info.originX, info.originY, info.originZ}},
+          anuvikar::Coords{{info.originX, info.originY, info.originZ}},
           secLatConst, "given origin, boxSize/ncell latconst", 0);
   }
   if (!combos.empty()) {
@@ -220,12 +220,12 @@ getAtomsTime(csaransh::InputInfo &info, csaransh::ExtraInfo &extraInfo,
       for (size_t i = 0; i < combos.size(); i++) {
         auto curOrigin = std::get<0>(combos[i]);
         auto curLatConst = std::get<1>(combos[i]);
-        auto obj = csaransh::AddOffset{curLatConst, info.structure, curOrigin};
+        auto obj = anuvikar::AddOffset{curLatConst, info.structure, curOrigin};
         std::get<3>(combos[i]) = std::count_if(
             begin(atoms), end(atoms), [&obj, thresh](const auto &it) {
               return std::get<1>(obj(it)) > thresh;
             });
-        csaransh::Logger::inst().log_debug(
+        anuvikar::Logger::inst().log_debug(
             std::get<2>(combos[i]) + " origin, latconst " + strAr(curOrigin) +
             ", " + std::to_string(curLatConst) + " : nThreshold " +
             std::to_string(std::get<3>(combos[i])));
@@ -241,8 +241,8 @@ getAtomsTime(csaransh::InputInfo &info, csaransh::ExtraInfo &extraInfo,
     info.latticeConst = std::get<1>(combos[leastIndex]);
   }
   res.second.reserve(atoms.size());
-  auto origin = csaransh::Coords{{info.originX, info.originY, info.originZ}};
-  auto obj = csaransh::AddOffset{info.latticeConst, info.structure, origin};
+  auto origin = anuvikar::Coords{{info.originX, info.originY, info.originZ}};
+  auto obj = anuvikar::AddOffset{info.latticeConst, info.structure, origin};
   // std::cout << "latInfo: " << info.latticeConst << ", " << info.structure << ", " << origin[0] << '\n';
   std::transform(begin(atoms), end(atoms), std::back_inserter(res.second), obj);
   // std::cout << "\natoms1: " << atoms[0][0] << " | " << atoms[atoms.size() - 1][0] << '\n';
@@ -251,29 +251,29 @@ getAtomsTime(csaransh::InputInfo &info, csaransh::ExtraInfo &extraInfo,
   return res;
 }
 
-csaransh::DefectRes
-csaransh::xyz2defectsTime(csaransh::InputInfo &mainInfo,
-                      csaransh::ExtraInfo &extraInfo,
-                      const csaransh::Config &config, std::istream &infile, csaransh::frameStatus &fs) {
+anuvikar::DefectRes
+anuvikar::xyz2defectsTime(anuvikar::InputInfo &mainInfo,
+                      anuvikar::ExtraInfo &extraInfo,
+                      const anuvikar::Config &config, std::istream &infile, anuvikar::frameStatus &fs) {
   auto atoms = getAtomsTime(mainInfo, extraInfo, config, infile, fs);
   if (atoms.second.empty())
-    return std::make_tuple(atoms.first, ErrorStatus::noError, csaransh::DefectVecT{}, std::vector<int>{});
-  return (mainInfo.structure == "bcc") ? csaransh::atoms2defects(atoms, mainInfo, extraInfo, config) : csaransh::atoms2defectsFcc(atoms, mainInfo, extraInfo, config);
+    return std::make_tuple(atoms.first, ErrorStatus::noError, anuvikar::DefectVecT{}, std::vector<int>{});
+  return (mainInfo.structure == "bcc") ? anuvikar::atoms2defects(atoms, mainInfo, extraInfo, config) : anuvikar::atoms2defectsFcc(atoms, mainInfo, extraInfo, config);
 }
 
-csaransh::DefectRes
-csaransh::displaced2defectsTime(csaransh::InputInfo &mainInfo,
-                      csaransh::ExtraInfo &extraInfo,
-                      const csaransh::Config &config, std::istream &infile, csaransh::frameStatus &fs) {
+anuvikar::DefectRes
+anuvikar::displaced2defectsTime(anuvikar::InputInfo &mainInfo,
+                      anuvikar::ExtraInfo &extraInfo,
+                      const anuvikar::Config &config, std::istream &infile, anuvikar::frameStatus &fs) {
   auto atoms = getDisplacedAtomsTime(mainInfo, extraInfo, config, infile, fs);
   if (atoms.second.empty())
-    return std::make_tuple(atoms.first, ErrorStatus::noError, csaransh::DefectVecT{}, std::vector<int>{});
-  return csaransh::displacedAtoms2defects(atoms, mainInfo.latticeConst);
+    return std::make_tuple(atoms.first, ErrorStatus::noError, anuvikar::DefectVecT{}, std::vector<int>{});
+  return anuvikar::displacedAtoms2defects(atoms, mainInfo.latticeConst);
 }
 
 /*
-void testIt(std::vector<std::tuple<csaransh::Coords, double, csaransh::Coords>>
-atoms, csaransh::NextExpected n) { std::ofstream f{"junk_got.txt"}; for (auto it
+void testIt(std::vector<std::tuple<anuvikar::Coords, double, anuvikar::Coords>>
+atoms, anuvikar::NextExpected n) { std::ofstream f{"junk_got.txt"}; for (auto it
 : atoms) { for (auto jt: std::get<0>(it)) { f << jt << " ";
     }
     f << " | ";
@@ -307,8 +307,8 @@ atoms, csaransh::NextExpected n) { std::ofstream f{"junk_got.txt"}; for (auto it
 }
 */
 
-csaransh::Coords csaransh::getInitialMax(const csaransh::Coords &origin,
-                                         const csaransh::Coords &maxes) {
+anuvikar::Coords anuvikar::getInitialMax(const anuvikar::Coords &origin,
+                                         const anuvikar::Coords &maxes) {
   auto maxes1 = maxes;
   constexpr auto epsilon = 1e-2;
   for (auto i = 0; i < 3; i++) {
@@ -323,8 +323,8 @@ csaransh::Coords csaransh::getInitialMax(const csaransh::Coords &origin,
   return maxes1;
 }
 
-csaransh::Coords csaransh::getInitialMaxFcc(const csaransh::Coords &origin,
-                                         const csaransh::Coords &maxes) {
+anuvikar::Coords anuvikar::getInitialMaxFcc(const anuvikar::Coords &origin,
+                                         const anuvikar::Coords &maxes) {
   auto maxes1 = maxes;
   constexpr auto epsilon = 1e-2;
   //for (auto i = 2; i < 3; i++) {
@@ -342,8 +342,8 @@ csaransh::Coords csaransh::getInitialMaxFcc(const csaransh::Coords &origin,
 
 
 
-void setCenter(csaransh::ExtraInfo &extraInfo, csaransh::Coords minC,
-               csaransh::Coords maxC, double latConst) {
+void setCenter(anuvikar::ExtraInfo &extraInfo, anuvikar::Coords minC,
+               anuvikar::Coords maxC, double latConst) {
   if (!extraInfo.isPkaGiven) {
     extraInfo.xrec = ((maxC[0] - minC[0]) / 2.0 + minC[0])*latConst;
     extraInfo.yrec = ((maxC[1] - minC[1]) / 2.0 + minC[1])*latConst;
@@ -355,11 +355,11 @@ void setCenter(csaransh::ExtraInfo &extraInfo, csaransh::Coords minC,
 // single frame file having xyz coordinates of all the atoms and input
 // information
 // Can be improved to O(N) as given here: https://arxiv.org/abs/1811.10923
-csaransh::DefectRes csaransh::atoms2defects(
-    std::pair<csaransh::xyzFileStatus, std::vector<csaransh::offsetCoords>> stAtoms,
-    csaransh::InputInfo &info, csaransh::ExtraInfo &extraInfo,
-    const csaransh::Config &config) {
-  using csaransh::Coords;
+anuvikar::DefectRes anuvikar::atoms2defects(
+    std::pair<anuvikar::xyzFileStatus, std::vector<anuvikar::offsetCoords>> stAtoms,
+    anuvikar::InputInfo &info, anuvikar::ExtraInfo &extraInfo,
+    const anuvikar::Config &config) {
+  using anuvikar::Coords;
   using std::get;
   using std::tuple;
   using std::vector;
@@ -375,18 +375,18 @@ csaransh::DefectRes csaransh::atoms2defects(
   auto firstRow = std::get<0>(*(minmax.first));
   auto lastRow = std::get<0>(*(minmax.second));
   auto maxes = lastRow;
-  auto maxesInitial = csaransh::getInitialMax(firstRow, maxes);
-  // csaransh::Logger::inst().log_debug("Atoms: " + std::to_string(atoms.size()));
+  auto maxesInitial = anuvikar::getInitialMax(firstRow, maxes);
+  // anuvikar::Logger::inst().log_debug("Atoms: " + std::to_string(atoms.size()));
   // std::cout << "\nfirstRow: " << firstRow[0] << '\n';
   // std::cout << "\nmaxes: " << maxes[0] << ", " << maxes[1] << ", " << maxes[2] << '\n';
   // std::cout << "\nmaxesInitial: " << maxesInitial[0] << ", " << maxesInitial[1] << ", " << maxesInitial[2] << '\n';
-  csaransh::NextExpected nextExpected{firstRow, maxes, maxesInitial};
+  anuvikar::NextExpected nextExpected{firstRow, maxes, maxesInitial};
   setCenter(extraInfo, firstRow, lastRow, info.latticeConst);
-   // csaransh::Logger::inst().log_debug("Min: " + strAr(firstRow) + " coord: " +
+   // anuvikar::Logger::inst().log_debug("Min: " + strAr(firstRow) + " coord: " +
    // strAr(std::get<2>(*minmax.first)));
-   // csaransh::Logger::inst().log_debug("Max: " + strAr(lastRow) + " coord: " +
+   // anuvikar::Logger::inst().log_debug("Max: " + strAr(lastRow) + " coord: " +
    // strAr(std::get<2>(*minmax.second)));
-   //csaransh::NextExpected nextExpected2{firstRow, maxes, maxesInitial}; testIt(atoms, nextExpected2);
+   //anuvikar::NextExpected nextExpected2{firstRow, maxes, maxesInitial}; testIt(atoms, nextExpected2);
   std::tuple<double, Coords, Coords> pre;
   bool isPre = false;
   const auto latConst = info.latticeConst;
@@ -406,6 +406,9 @@ csaransh::DefectRes csaransh::atoms2defects(
     return false;
   };
   const auto &extraFactor = config.extraDefectsSafetyFactor;
+  std::string errMsg = "";
+  if (!(Logger::inst().mode() & LogMode::info))
+    errMsg = "from \"" + info.xyzFilePath + "\": ";
   for (const auto &row : atoms) {
     Coords ar = get<0>(row);
     double curOffset = get<1>(row);
@@ -432,12 +435,10 @@ csaransh::DefectRes csaransh::atoms2defects(
                           nextExpected.maxCur(), boundaryThresh)) {
           vacSias.emplace_back(interstitials.size());
           vacancies.emplace_back(nextExpected.cur(), true);
-          //csaransh::Logger::inst().log_debug("vac: " + strAr(nextExpected.cur()) + " coord: " + strAr(ar)); 
+          //anuvikar::Logger::inst().log_debug("vac: " + strAr(nextExpected.cur()) + " coord: " + strAr(ar)); 
           if (config.safeRunChecks &&
               vacancies.size() * extraFactor > atoms.size()) {
-            if (!(Logger::inst().mode() & LogMode::info))
-              Logger::inst().log_info("from \"" + info.xyzFilePath + "\"");
-            Logger::inst().log_error(
+            Logger::inst().log_error( errMsg + 
                 "not processing since too many vacancies, this might be due to "
                 "wrong inputs like latticeConst, boxDim or corrupt xyz file. "
                 "(v): " +
@@ -473,9 +474,7 @@ csaransh::DefectRes csaransh::atoms2defects(
       }
       if (config.safeRunChecks &&
           interstitials.size() * extraFactor > atoms.size()) {
-        if (!(Logger::inst().mode() & LogMode::info))
-          Logger::inst().log_info("from \"" + info.xyzFilePath + "\"");
-        Logger::inst().log_error(
+        Logger::inst().log_error( errMsg + 
             "not processing since too many interstitials, this might be due to "
             "wrong inputs like latticeConst, boxDim or corrupt xyz file. "
             "(i): " +
@@ -488,9 +487,7 @@ csaransh::DefectRes csaransh::atoms2defects(
   if (config.safeRunChecks) {
     if (interstitials.size() * extraFactor > atoms.size() ||
         vacancies.size() * extraFactor > atoms.size()) {
-      if (!(Logger::inst().mode() & LogMode::info))
-        Logger::inst().log_info("from \"" + info.xyzFilePath + "\"");
-      Logger::inst().log_error(
+      Logger::inst().log_error(errMsg +
           "not processing since too many interstitials and vacancies, this may "
           "be due to wrong inputs like latticeConst, boxDim or corrupt xyz "
           "file. (i, v): " +
@@ -499,9 +496,7 @@ csaransh::DefectRes csaransh::atoms2defects(
       return std::make_tuple(stAtoms.first, ErrorStatus::defectOverflow, DefectVecT{}, vector<int>{});
     }
     if (interThresh.size() > extraFactor * interstitials.size()) {
-      if (!(Logger::inst().mode() & LogMode::info))
-        Logger::inst().log_info("from \"" + info.xyzFilePath + "\"");
-      Logger::inst().log_error(
+      Logger::inst().log_error(errMsg + 
           "not processing since interThresh is too big, this may be due to "
           "inputs like latticeConst, boxDim or corrupt xyz file.  (i, v, "
           "interThresh): " +
@@ -512,16 +507,15 @@ csaransh::DefectRes csaransh::atoms2defects(
     }
     if (interstitials.size() != vacancies.size()) {
       if ((int(interstitials.size()) / int(vacancies.size())) > extraFactor) {
-        if (!(Logger::inst().mode() & LogMode::info))
-          Logger::inst().log_info("from \"" + info.xyzFilePath + "\"");
-        csaransh::Logger::inst().log_warning(
+
+        anuvikar::Logger::inst().log_warning(errMsg +
             "interstitails and vacancies have different sizes (i, v, "
             "interTresh): " +
             std::to_string(interstitials.size()) + ", " +
             std::to_string(vacancies.size()) + ", " +
             std::to_string(interThresh.size()));
       } else {
-        csaransh::Logger::inst().log_debug(
+        anuvikar::Logger::inst().log_debug(
             "interstitails and vacancies have different sizes (i, v, "
             "interThresh): " +
             std::to_string(interstitials.size()) + ", " +
@@ -530,9 +524,8 @@ csaransh::DefectRes csaransh::atoms2defects(
       }
       if (interstitials.size() * (extraFactor / 10) < vacancies.size() ||
           vacancies.size() * (extraFactor / 10) < interstitials.size()) {
-        if (!(Logger::inst().mode() & LogMode::info))
-          Logger::inst().log_info("from \"" + info.xyzFilePath + "\"");
-        csaransh::Logger::inst().log_error(
+
+        anuvikar::Logger::inst().log_error(errMsg+
             "not processing since the difference is too big (i, v, "
             "interThresh): " +
             std::to_string(interstitials.size()) + ", " +
@@ -546,7 +539,7 @@ csaransh::DefectRes csaransh::atoms2defects(
   // std::cout<<"\nvacancies: " << vacancies.size() << '\n';
   // std::cout<<"\ninterThresh: " << interThresh.size() << '\n';
   atoms.clear();
-  csaransh::DefectVecT defects;
+  anuvikar::DefectVecT defects;
   defects.reserve(2 * vacancies.size());
   auto vacCleanSave = vacancies;
   auto anchor2coord = [&latConst](Coords c) {
@@ -618,8 +611,9 @@ csaransh::DefectRes csaransh::atoms2defects(
     defects.emplace_back(std::move(get<1>(jt)), true, count++, get<2>(jt));
   }
   if (config.safeRunChecks && extraDefects > interstitials.size()) {
+
     if (extraDefects > maxExtraDefects) {
-      Logger::inst().log_warning(
+      Logger::inst().log_warning(errMsg+
           "Some threshold based defects ignored. Too many threshold based "
           "defects. (i, v, extraI): " +
           std::to_string(interstitials.size()) + ", " +
@@ -636,11 +630,11 @@ csaransh::DefectRes csaransh::atoms2defects(
   return std::make_tuple(stAtoms.first, ErrorStatus::noError, std::move(defects), std::move(vacSiasNu));
 }
 
-csaransh::DefectRes csaransh::atoms2defectsFcc(
-    std::pair<csaransh::xyzFileStatus, std::vector<csaransh::offsetCoords>> stAtoms,
-    csaransh::InputInfo &info, csaransh::ExtraInfo &extraInfo,
-    const csaransh::Config &config) {
-  using csaransh::Coords;
+anuvikar::DefectRes anuvikar::atoms2defectsFcc(
+    std::pair<anuvikar::xyzFileStatus, std::vector<anuvikar::offsetCoords>> stAtoms,
+    anuvikar::InputInfo &info, anuvikar::ExtraInfo &extraInfo,
+    const anuvikar::Config &config) {
+  using anuvikar::Coords;
   using std::get;
   using std::tuple;
   using std::vector;
@@ -656,18 +650,18 @@ csaransh::DefectRes csaransh::atoms2defectsFcc(
   auto firstRow = std::get<0>(*(minmax.first));
   auto lastRow = std::get<0>(*(minmax.second));
   auto maxes = lastRow;
-  auto maxesInitial = csaransh::getInitialMaxFcc(firstRow, maxes);
-  // csaransh::Logger::inst().log_debug("Atoms: " + std::to_string(atoms.size()));
+  auto maxesInitial = anuvikar::getInitialMaxFcc(firstRow, maxes);
+  // anuvikar::Logger::inst().log_debug("Atoms: " + std::to_string(atoms.size()));
   // std::cout << "\nfirstRow: " << firstRow[0] << '\n';
   // std::cout << "\nmaxes: " << maxes[0] << ", " << maxes[1] << ", " << maxes[2] << '\n';
   // std::cout << "\nmaxesInitial: " << maxesInitial[0] << ", " << maxesInitial[1] << ", " << maxesInitial[2] << '\n';
-  csaransh::NextExpected nextExpected{firstRow, maxes, maxesInitial, maxesInitial};
+  anuvikar::NextExpected nextExpected{firstRow, maxes, maxesInitial, maxesInitial};
   setCenter(extraInfo, firstRow, lastRow, info.latticeConst);
-   // csaransh::Logger::inst().log_debug("Min: " + strAr(firstRow) + " coord: " +
+   // anuvikar::Logger::inst().log_debug("Min: " + strAr(firstRow) + " coord: " +
    // strAr(std::get<2>(*minmax.first)));
-   // csaransh::Logger::inst().log_debug("Max: " + strAr(lastRow) + " coord: " +
+   // anuvikar::Logger::inst().log_debug("Max: " + strAr(lastRow) + " coord: " +
    // strAr(std::get<2>(*minmax.second)));
-   //csaransh::NextExpected nextExpected2{firstRow, maxes, maxesInitial}; testIt(atoms, nextExpected2);
+   //anuvikar::NextExpected nextExpected2{firstRow, maxes, maxesInitial}; testIt(atoms, nextExpected2);
   std::tuple<double, Coords, Coords> pre;
   bool isPre = false;
   const auto latConst = info.latticeConst;
@@ -687,6 +681,9 @@ csaransh::DefectRes csaransh::atoms2defectsFcc(
     return false;
   };
   const auto &extraFactor = config.extraDefectsSafetyFactor;
+  std::string errMsg = "";
+  if (!(Logger::inst().mode() & LogMode::info))
+    errMsg = "from \"" + info.xyzFilePath + "\": ";
   for (const auto &row : atoms) {
     Coords ar = get<0>(row);
     double curOffset = get<1>(row);
@@ -713,12 +710,10 @@ csaransh::DefectRes csaransh::atoms2defectsFcc(
                           nextExpected.maxCur(), boundaryThresh)) {
           vacSias.emplace_back(interstitials.size());
           vacancies.emplace_back(nextExpected.cur(), true);
-          //csaransh::Logger::inst().log_debug("vac: " + strAr(nextExpected.cur()) + " coord: " + strAr(ar)); 
+          //anuvikar::Logger::inst().log_debug("vac: " + strAr(nextExpected.cur()) + " coord: " + strAr(ar)); 
           if (config.safeRunChecks &&
               vacancies.size() * extraFactor > atoms.size()) {
-            if (!(Logger::inst().mode() & LogMode::info))
-              Logger::inst().log_info("from \"" + info.xyzFilePath + "\"");
-            Logger::inst().log_error(
+            Logger::inst().log_error(errMsg+
                 "not processing since too many vacancies, this might be due to "
                 "wrong inputs like latticeConst, boxDim or corrupt xyz file. "
                 "(v): " +
@@ -754,9 +749,7 @@ csaransh::DefectRes csaransh::atoms2defectsFcc(
       }
       if (config.safeRunChecks &&
           interstitials.size() * extraFactor > atoms.size()) {
-        if (!(Logger::inst().mode() & LogMode::info))
-          Logger::inst().log_info("from \"" + info.xyzFilePath + "\"");
-        Logger::inst().log_error(
+        Logger::inst().log_error(errMsg +
             "not processing since too many interstitials, this might be due to "
             "wrong inputs like latticeConst, boxDim or corrupt xyz file. "
             "(i): " +
@@ -769,9 +762,7 @@ csaransh::DefectRes csaransh::atoms2defectsFcc(
   if (config.safeRunChecks) {
     if (interstitials.size() * extraFactor > atoms.size() ||
         vacancies.size() * extraFactor > atoms.size()) {
-      if (!(Logger::inst().mode() & LogMode::info))
-        Logger::inst().log_info("from \"" + info.xyzFilePath + "\"");
-      Logger::inst().log_error(
+      Logger::inst().log_error(errMsg +
           "not processing since too many interstitials and vacancies, this may "
           "be due to wrong inputs like latticeConst, boxDim or corrupt xyz "
           "file. (i, v): " +
@@ -780,9 +771,7 @@ csaransh::DefectRes csaransh::atoms2defectsFcc(
       return std::make_tuple(stAtoms.first, ErrorStatus::defectOverflow, DefectVecT{}, vector<int>{});
     }
     if (interThresh.size() > extraFactor * interstitials.size()) {
-      if (!(Logger::inst().mode() & LogMode::info))
-        Logger::inst().log_info("from \"" + info.xyzFilePath + "\"");
-      Logger::inst().log_error(
+      Logger::inst().log_error(errMsg +
           "not processing since interThresh is too big, this may be due to "
           "inputs like latticeConst, boxDim or corrupt xyz file.  (i, v, "
           "interThresh): " +
@@ -793,16 +782,14 @@ csaransh::DefectRes csaransh::atoms2defectsFcc(
     }
     if (interstitials.size() != vacancies.size()) {
       if ((int(interstitials.size()) / int(vacancies.size())) > extraFactor) {
-        if (!(Logger::inst().mode() & LogMode::info))
-          Logger::inst().log_info("from \"" + info.xyzFilePath + "\"");
-        csaransh::Logger::inst().log_warning(
+        anuvikar::Logger::inst().log_warning(errMsg +
             "interstitails and vacancies have different sizes (i, v, "
             "interTresh): " +
             std::to_string(interstitials.size()) + ", " +
             std::to_string(vacancies.size()) + ", " +
             std::to_string(interThresh.size()));
       } else {
-        csaransh::Logger::inst().log_debug(
+        anuvikar::Logger::inst().log_debug(
             "interstitails and vacancies have different sizes (i, v, "
             "interThresh): " +
             std::to_string(interstitials.size()) + ", " +
@@ -813,7 +800,7 @@ csaransh::DefectRes csaransh::atoms2defectsFcc(
           vacancies.size() * (extraFactor / 10) < interstitials.size()) {
         if (!(Logger::inst().mode() & LogMode::info))
           Logger::inst().log_info("from \"" + info.xyzFilePath + "\"");
-        csaransh::Logger::inst().log_error(
+        anuvikar::Logger::inst().log_error(errMsg + 
             "not processing since the difference is too big (i, v, "
             "interThresh): " +
             std::to_string(interstitials.size()) + ", " +
@@ -827,7 +814,7 @@ csaransh::DefectRes csaransh::atoms2defectsFcc(
   //std::cout<<"\nvacancies: " << vacancies.size() << '\n';
   //std::cout<<"\ninterThresh: " << interThresh.size() << '\n';
   atoms.clear();
-  csaransh::DefectVecT defects;
+  anuvikar::DefectVecT defects;
   defects.reserve(2 * vacancies.size());
   auto vacCleanSave = vacancies;
   auto anchor2coord = [&latConst](Coords c) {
@@ -900,7 +887,7 @@ csaransh::DefectRes csaransh::atoms2defectsFcc(
   }
   if (config.safeRunChecks && extraDefects > interstitials.size()) {
     if (extraDefects > maxExtraDefects) {
-      Logger::inst().log_warning(
+      Logger::inst().log_warning(errMsg+
           "Some threshold based defects ignored. Too many threshold based "
           "defects. (i, v, extraI): " +
           std::to_string(interstitials.size()) + ", " +
@@ -919,17 +906,17 @@ csaransh::DefectRes csaransh::atoms2defectsFcc(
 
 
 
-auto cleanDisplaced(csaransh::DefectVecT &inter, csaransh::DefectVecT &vac,
+auto cleanDisplaced(anuvikar::DefectVecT &inter, anuvikar::DefectVecT &vac,
                     double latticeConst) {
-  using csaransh::DefectTWrap::coords;
-  using csaransh::DefectTWrap::isSurviving;
+  using anuvikar::DefectTWrap::coords;
+  using anuvikar::DefectTWrap::isSurviving;
   auto thresh = latticeConst; // * sqrt(3) / 2;
   for (size_t i = 0; i < vac.size(); ++i) {
     auto min = thresh + 1e-6;
     size_t minj = 0;
     for (size_t j = 0; j < inter.size(); ++j) {
       if (!isSurviving(inter[j])) continue;
-      auto dist = csaransh::calcDist(coords(vac[i]), coords(inter[j]));
+      auto dist = anuvikar::calcDist(coords(vac[i]), coords(inter[j]));
       if (dist < min) {
         min = dist;
         minj = j;
@@ -942,13 +929,13 @@ auto cleanDisplaced(csaransh::DefectVecT &inter, csaransh::DefectVecT &vac,
   }
 }
 
-csaransh::DefectRes csaransh::displacedAtoms2defects(
-    std::pair<csaransh::xyzFileStatus, std::array<std::vector<csaransh::Coords>, 2>> statoms, double latticeConst) {
-  using csaransh::Coords;
+anuvikar::DefectRes anuvikar::displacedAtoms2defects(
+    std::pair<anuvikar::xyzFileStatus, std::array<std::vector<anuvikar::Coords>, 2>> statoms, double latticeConst) {
+  using anuvikar::Coords;
   using std::get;
   using std::tuple;
   using std::vector;
-  csaransh::DefectVecT inter, vac, defects;
+  anuvikar::DefectVecT inter, vac, defects;
   auto &atoms = statoms.second;
   constexpr auto epsilon = 1e-4;
   const auto nn = (std::sqrt(3) * latticeConst) / 2 + epsilon;
@@ -1095,5 +1082,5 @@ csaransh::DefectRes csaransh::displacedAtoms2defects(
   std::cout << '\n';
   */
   //std::cout <<"finnal defects size: " << defects.size() << '\n';
-  return std::make_tuple(statoms.first, csaransh::ErrorStatus::noError, std::move(defects), std::move(latticeSiteGroups));
+  return std::make_tuple(statoms.first, anuvikar::ErrorStatus::noError, std::move(defects), std::move(latticeSiteGroups));
 }

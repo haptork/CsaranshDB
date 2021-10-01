@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
-project(csaransh-pp)
+project(anuvikar)
 
-set (csaransh_VERSION_MAJOR 0)
-set (csaransh_VERSION_MINOR 3)
+set (anuvikar_VERSION_MAJOR 0)
+set (anuvikar_VERSION_MINOR 5)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

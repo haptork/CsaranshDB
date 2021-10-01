@@ -19,16 +19,16 @@ import seaborn as sns
 from pandas import DataFrame
 pathToCsaranshPP = ".."
 sys.path.append(pathToCsaranshPP)
-from csaranshpp import getDefaultConfig, writeResultsToJSON
+from anuvikarpp import getDefaultConfig, writeResultsToJSON
 buildDir = os.path.join(pathToCsaranshPP, "_build")
-libPath = os.path.join(buildDir, "libcsaransh-pp_shared.so")
+libPath = os.path.join(buildDir, "libanuvikar_shared.so")
 if (not os.path.exists(buildDir) or not os.path.exists(libPath)):
     print("Library not found at", libPath)
     print("This might be due to build errors in cmake.")
     print("If built successfully, edit this source and correct build directory & lib file (so / dlib / dll) path.")
 
-from csaranshpp import processXyzFilesInDirGivenMetaFile, _unzipFile
-from csaranshpp_ml_cdb import validateForCdb
+from anuvikarpp import processXyzFilesInDirGivenMetaFile, _unzipFile
+from anuvikarpp_ml_cdb import validateForCdb
 
 def stageEkaCpp(metaFilePath, xyzDir, config):
     isSuccess, cascades = processXyzFilesInDirGivenMetaFile(metaFilePath, xyzDir, config)
@@ -310,7 +310,7 @@ def validateArchive(metaFilePath, extractionDir, archivePath, overwriteJson, ove
   config['logFilePath'] = os.path.join(xyzDir, "log.txt")
   config['outputJSONFilePath'] = os.path.join(xyzDir, "cascades.json")
   config['outputDbPath'] = os.path.join(xyzDir, "cascades.db")
-  config['csaranshLib'] = libPath
+  config['anuvikarLib'] = libPath
   if not(os.path.exists(config['outputJSONFilePath'])) or overwriteJson:
     isSuccess, msg, cascades = stageEkaCpp(metaFilePath, xyzDir, config)
     if not isSuccess: return [isSuccess, msg]

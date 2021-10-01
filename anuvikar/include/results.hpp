@@ -3,8 +3,8 @@
  * Finding different results like cluster size distribution, distance and
  * angles of defects from PKA origin.
  * */
-#ifndef RESULTS_CSARANSH_HPP
-#define RESULTS_CSARANSH_HPP
+#ifndef RESULTS_ANUVIKAR_HPP
+#define RESULTS_ANUVIKAR_HPP
 
 #include <array>
 #include <tuple>
@@ -14,7 +14,7 @@
 #include <cluster2features.hpp>
 #include <helper.hpp>
 
-namespace csaransh {
+namespace anuvikar {
 
 // coords, isInterstitial, ClusterId, isSurviving
 using DefectT = std::tuple<std::array<double, 3>, bool, int, bool>;
@@ -86,22 +86,22 @@ ClusterIVMapT clusterIVType(const ClusterIdMapT &, ClusterSizeMapT &);
 
 // number of defects and fraction of interstitials and vacancies in cluster
 std::tuple<int, double, double>
-getNDefectsAndClusterFractions(const csaransh::DefectVecT &defects);
+getNDefectsAndClusterFractions(const anuvikar::DefectVecT &defects);
 
 using ClusterFeatMapT = std::unordered_map<int, featT>;
 
 // cluster features based on pair distances, triad angles and neighbourhood
 // count
-ClusterFeatMapT clusterFeatures(const csaransh::DefectVecT &defects,
-                                const csaransh::ClusterIdMapT &clusters,
-                                csaransh::ClusterSizeMapT &clusterCounts,
+ClusterFeatMapT clusterFeatures(const anuvikar::DefectVecT &defects,
+                                const anuvikar::ClusterIdMapT &clusters,
+                                anuvikar::ClusterSizeMapT &clusterCounts,
                                 double latticeConst);
 
 // maximum of surviving defects among all of clusters
 // (interstitial and vacancy cluster separately)
 std::tuple<int, int>
-getMaxClusterSizes(csaransh::ClusterSizeMapT &clusterCounts,
-                   const csaransh::ClusterIdMapT &clusters);
+getMaxClusterSizes(anuvikar::ClusterSizeMapT &clusterCounts,
+                   const anuvikar::ClusterIdMapT &clusters);
 
-} // namespace csaransh
-#endif // CSARANSH_RESULTS_HPP
+} // namespace anuvikar
+#endif // ANUVIKAR_RESULTS_HPP

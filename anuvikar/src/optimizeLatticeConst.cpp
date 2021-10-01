@@ -3,7 +3,7 @@
 #include <AddOffset.hpp>
 #include <optimizeLatticeConst.hpp>
 
-auto optimizeForOffset(std::vector<csaransh::Coords> &atoms, double minLatConst,
+auto optimizeForOffset(std::vector<anuvikar::Coords> &atoms, double minLatConst,
                        double maxLatConst, double step) {
   double resLatConst = 0.0;
   double minOffsetTotal = std::numeric_limits<double>::max();
@@ -12,8 +12,8 @@ auto optimizeForOffset(std::vector<csaransh::Coords> &atoms, double minLatConst,
   for (double curLatConst = minLatConst; curLatConst < maxLatConst;
        curLatConst += step) {
     double res = 0.0;
-    csaransh::AddOffset addOffset{curLatConst, "bcc",
-                                  csaransh::Coords{{0., 0., 0.}}};
+    anuvikar::AddOffset addOffset{curLatConst, "bcc",
+                                  anuvikar::Coords{{0., 0., 0.}}};
     for (size_t i = 0; i < atoms.size(); i++) {
       for (auto c : atoms[i]) {
         auto offset = std::fmod(c, curLatConst / 4.0);
@@ -22,14 +22,14 @@ auto optimizeForOffset(std::vector<csaransh::Coords> &atoms, double minLatConst,
         allOffsets[i] = offset;
       }
     }
-    auto atomsToIgnore = csaransh::atomsToIgnore;
+    auto atomsToIgnore = anuvikar::atomsToIgnore;
     if (allOffsets.size() > atomsToIgnore * atomsToIgnore * 10) {
       atomsToIgnore *= 10;
     } else if (allOffsets.size() < atomsToIgnore * 100) {
       atomsToIgnore /= 10;
     }
     auto toConsider = long(allOffsets.size()) - atomsToIgnore;
-    if (toConsider < csaransh::atomsToIgnore) toConsider = allOffsets.size();
+    if (toConsider < anuvikar::atomsToIgnore) toConsider = allOffsets.size();
     std::nth_element(
         begin(allOffsets), begin(allOffsets) + toConsider, end(allOffsets),
         [](double a, double b) { return std::fabs(a) < std::fabs(b); });
@@ -45,7 +45,7 @@ auto optimizeForOffset(std::vector<csaransh::Coords> &atoms, double minLatConst,
   return resLatConst;
 }
 
-auto optimizeLatConst(std::vector<csaransh::Coords> &atoms, double latConst) {
+auto optimizeLatConst(std::vector<anuvikar::Coords> &atoms, double latConst) {
   double minLatConst = latConst - 0.015;
   double maxLatConst = latConst + 0.015;
   double step = 0.001;

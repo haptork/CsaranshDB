@@ -3,8 +3,8 @@
  * helper functions for general usage
  * */
 
-#ifndef LOGGER_CSARANSH_HPP
-#define LOGGER_CSARANSH_HPP
+#ifndef LOGGER_ANUVIKAR_HPP
+#define LOGGER_ANUVIKAR_HPP
 
 #include <ctime>
 #include <fstream>
@@ -12,7 +12,7 @@
 #include <memory>
 #include <string>
 
-namespace csaransh {
+namespace anuvikar {
 
 enum class LogMode : int {
   none = 0x00,
@@ -131,5 +131,5 @@ public:
 
   const LogModeT &mode() const { return _logMode; }
 };
-} // namespace csaransh
+} // namespace anuvikar
 #endif

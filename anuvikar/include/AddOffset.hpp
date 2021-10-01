@@ -2,15 +2,15 @@
  * @file
  * class for calculating offset & closest lattice site of an atom
  * */
-#ifndef ADDOFFSET_CSARANSH_HPP
-#define ADDOFFSET_CSARANSH_HPP
+#ifndef ADDOFFSET_ANUVIKAR_HPP
+#define ADDOFFSET_ANUVIKAR_HPP
 
 #include <array>
 #include <string>
 #include <tuple>
 #include <vector>
 
-namespace csaransh {
+namespace anuvikar {
 
 using offsetCoords = std::tuple<std::array<double, 3>, double, std::array<double, 3>>;
 
@@ -33,6 +33,6 @@ private:
   long double _latConst;
   long double roundOffTo = 10000.0;
 };
-} // namespace csaransh
+} // namespace anuvikar
 
-#endif // ADDOFFSET_CSARANSH_HPP
+#endif // ADDOFFSET_ANUVIKAR_HPP

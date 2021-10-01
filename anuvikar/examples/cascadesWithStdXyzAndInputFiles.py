@@ -16,9 +16,9 @@ import seaborn as sns
 from pandas import DataFrame
 pathToCsaranshPP = ".." # change if required
 sys.path.append(pathToCsaranshPP)
-from csaranshpp import getDefaultConfig, processXyzFileWithInputFile, processXyzFilesInDirWithInputFiles
+from anuvikarpp import getDefaultConfig, processXyzFileWithInputFile, processXyzFilesInDirWithInputFiles
 buildDir = os.path.join(pathToCsaranshPP, "_build")
-libPath = os.path.join(buildDir, "libcsaransh-pp_shared.so")
+libPath = os.path.join(buildDir, "libanuvikar_shared.so")
 if (not os.path.exists(buildDir) or not os.path.exists(libPath)):
     print("Library not found at", libPath)
     print("This might be due to build errors in cmake.")
@@ -31,7 +31,7 @@ if (not os.path.exists(buildDir) or not os.path.exists(libPath)):
 config = getDefaultConfig()
 config['logFilePath'] = "local-log-Fe.txt"
 config['outputJSONFilePath'] = "local-Fe.json"
-config['csaranshLib'] = libPath 
+config['anuvikarLib'] = libPath 
 xyzDir = os.path.join(pathToCsaranshPP, "data", "parcas")
 isSuccess, cascades = processXyzFilesInDirWithInputFiles(xyzDir, config)
 
@@ -54,7 +54,7 @@ plt.show()
 # In[ ]:
 
 
-from csaranshpp_ml import analyseAndSaveJs
+from anuvikarpp_ml import analyseAndSaveJs
 jsFile = "local-Fe.js"
 cascades, classes = analyseAndSaveJs(cascades, config, jsFile)
 
@@ -107,7 +107,7 @@ sys.exit(0)
 #     - *suffix* (optional): a list of suffixes for xyz files in the archive, only files that end with one of the suffixes will be included in processing. (default: ["xyz"])
 #     - *excludePrefix* (optional): a list of prefixes for non xyz files in the archive, files that start with one of these prefixes will NOT be included in processing. (default: ["init", "."])
 #     - *excludeSuffix* (optional): a list of suffixes for non xyz files in the archive, files that end with one of the suffixes will NOT be included in processing. (default: [""])
-#     - *idStartIndex* (optional): if appending to list that already has cascades then set as cascades in the list, this is to ensure id is unique for each cascade in a list, important only if you view cascades in csaransh web-app(default: 0)    
+#     - *idStartIndex* (optional): if appending to list that already has cascades then set as cascades in the list, this is to ensure id is unique for each cascade in a list, important only if you view cascades in anuvikar web-app(default: 0)    
 #     - *onlyProcessTop* (optional): return if number of processed cascades are equal to or more than this value (default: 0 (i.e. process all))
 #  
 # 
@@ -115,7 +115,7 @@ sys.exit(0)
 #  --------------------------------
 #  
 #  returned with getDefaultConfig()
-#   - "csaranshLib" : path to csaransh c++ library most probably compiled with cmake
+#   - "anuvikarLib" : path to anuvikar c++ library most probably compiled with cmake
 #   - "onlyDefects" : Switch - Compute only the defect coordinates (default: False)
 #   - "isFindDistribAroundPKA": Switch - compute distribution around pka if pka coordinates are given (default: True)
 #   - "isFindClusterFeatures": Switch - find cluster features that can be used for pattern matching and classification of clusters later (default: True)
@@ -125,7 +125,7 @@ sys.exit(0)
 #   - "safeRunChecks": Check and ignore files with anomalous number or proportion of defects (default: True)
 #   - "thresholdFactor": threshold factor for threshold based interstitials (threshol value will be factor * latticeConstant), applicable only if threshold based interstitials are allowed. (default: 0.345)
 #   - "extraDefectsSafetyFactor": safety factor for checks, lower value implies stricter checks to ignore files. Only matters if safety checks are not disabled altogether. (default: 50.0),
-#   - "logFilePath": (default log-csaransh-pp-cpp.txt)
+#   - "logFilePath": (default log-anuvikar-cpp.txt)
 #   - "outputJSONFilePath": only needed if saving json file, (default cascades-data-py.json)
 #   - "logMode": (default: warning and error (2 + 4 = 6)) can be set by input parameters to getDefaultConfig function. Its paramters can be any combination of the following strings: 
 #     "none", "info", "warning", "error", "debug", "all"
@@ -158,7 +158,7 @@ sys.exit(0)
 #     - originType : 0 (given), 1 (estimated) ,  2 (both were tried)
 #     - simulationCode: Lammps, Parcas, Lammps-disp, cascadesdblikecols
 # 
-# - output scalar values added by csaranshpp:
+# - output scalar values added by anuvikarpp:
 #     - error : error message while processing if any
 #     - n_defects : number of defects found
 #     - n_clusters : number of clusters found
@@ -169,7 +169,7 @@ sys.exit(0)
 #     - in_cluster_V : proportion of vacancies in the clusters
 #     - in_cluster : proportion of defects in the clusters
 #     
-# - output lists added by csaranshpp:
+# - output lists added by anuvikarpp:
 #     - coords : list of coordinates, each item is [x, y, z, isIntersitial, clusterId, isSurviving], clusterId is zero if defect is single e.g. [3.5, 2.45, -1.4, 0, 2, 1] is a surviving vacancy in cluster 2. 
 #     - clusters : dictionary of cluster ids each having list of indices that correspond to defect coordinates that belong to that cluster id. e.g. {'2': [11, 2, 34], '206': [9, 1, 7, 124]}, there are two clusters with ids '2' and '206' having 3 and 4 defects respectively. The coordinates for defects in cluster-id '2' can be found in coords[11], coords[2], coords[34].
 #     - clusterSizes : surviving number of defects for each cluster-id. negative values imply the vacancy cluster. e.g. {'2': -3, '206': 2} implies that there are two clusters(ids: '2','206'). '2' has three surviving vacancies while '206' has two surviving interstitials.
@@ -180,7 +180,7 @@ sys.exit(0)
 #     - anglesI : angle distribution of interstitials from PKA if pka position was given as input. 
 #     - anglesV : angle distribution of vacancies from PKA if pka position was given as input.
 #     
-# - added by csaranshpp-ml:
+# - added by anuvikarpp-ml:
 #     - eigen_coords : coordinates of defects in principle components (PCA). Ideal for plotting the cascade in 2D.
 #     - eigen_pka : 3D coordinates of pka in principle components (PCA) found for coords.
 #     - eigen_var : variance explained by first, second and third principle component e.g. [0.5, 0.3, 0.2]. A high value in first implies the cascade is spread in one direction way more than others, while a high value in first + second would imply it is a planar cascade. A value of 0.95 or above in first index can mean highly linear cascade while higher than 0.95 in first two would mean planar.

@@ -3,8 +3,8 @@
  * class implementing union-find or disjoint set datastructure
  * */
 
-#ifndef UF_CSARANSH_HPP
-#define UF_CSARANSH_HPP
+#ifndef UF_ANUVIKAR_HPP
+#define UF_ANUVIKAR_HPP
 
 #include <algorithm>
 #include <functional>
@@ -28,7 +28,7 @@ using std::transform;
 using std::initializer_list;
 using std::max_element;
 
-namespace csaransh {
+namespace anuvikar {
 
 template <size_t Index, class Tobj> class UnionFind {
 public:
@@ -144,4 +144,4 @@ int main() {
   return 0;
 }
 */
-#endif // UF_CSARANSH_HPP
+#endif // UF_ANUVIKAR_HPP

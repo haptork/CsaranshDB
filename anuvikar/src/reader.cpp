@@ -14,13 +14,13 @@
 #include <results.hpp>
 #include <xyz2defects.hpp>
 
-auto filterZeroClusters(csaransh::DefectVecT &defects,
-                        csaransh::ClusterSizeMapT &clusterSize, bool isFilter) {
-  using namespace csaransh::DefectTWrap;
-  if (csaransh::Logger::inst().mode() & csaransh::LogMode::debug) {
+auto filterZeroClusters(anuvikar::DefectVecT &defects,
+                        anuvikar::ClusterSizeMapT &clusterSize, bool isFilter) {
+  using namespace anuvikar::DefectTWrap;
+  if (anuvikar::Logger::inst().mode() & anuvikar::LogMode::debug) {
     for (auto it : clusterSize) {
       if (it.second.surviving == 0) {
-        csaransh::Logger::inst().log_debug(
+        anuvikar::Logger::inst().log_debug(
             "Found cluster with zero size. (id, total defects): " +
             std::to_string(it.first) + ", " + std::to_string(it.second.all));
       }
@@ -36,46 +36,46 @@ auto filterZeroClusters(csaransh::DefectVecT &defects,
       defects.end());
 }
 
-std::pair<csaransh::ErrorStatus,int> csaransh::processFileTimeCmd(std::string xyzfileName,
+std::pair<anuvikar::ErrorStatus,int> anuvikar::processFileTimeCmd(std::string xyzfileName,
                                             std::ostream &outfile,
-                                            const csaransh::Config &config, int id, const csaransh::InputInfo &defaultInfo, const csaransh::ExtraInfo &defaultExtraInfo, bool isDefaultInfo) {
+                                            const anuvikar::Config &config, int id, const anuvikar::InputInfo &defaultInfo, const anuvikar::ExtraInfo &defaultExtraInfo, bool isDefaultInfo) {
   std::string infileName, tag;
-  std::tie(infileName, tag) = csaransh::getInfileFromXyzfile(xyzfileName);
-  //if (infileName.empty()) return std::make_pair(csaransh::ErrorStatus::inputFileMissing, 0);
-  csaransh::XyzFileType sc {csaransh::XyzFileType::generic};
-  csaransh::InputInfo info;
-  csaransh::ExtraInfo extraInfo;
+  std::tie(infileName, tag) = anuvikar::getInfileFromXyzfile(xyzfileName);
+  //if (infileName.empty()) return std::make_pair(anuvikar::ErrorStatus::inputFileMissing, 0);
+  anuvikar::XyzFileType sc {anuvikar::XyzFileType::generic};
+  anuvikar::InputInfo info;
+  anuvikar::ExtraInfo extraInfo;
   bool isInfo;
   if (infileName.empty()) {
-    if (!isDefaultInfo) return std::make_pair(csaransh::ErrorStatus::inputFileMissing, 0);
+    if (!isDefaultInfo) return std::make_pair(anuvikar::ErrorStatus::inputFileMissing, 0);
     info = defaultInfo;
     extraInfo = defaultExtraInfo;
     isInfo = isDefaultInfo;
     sc = info.xyzFileType;
   } else {
     bool status;
-    std::tie(sc, status) = csaransh::getSimulationCode(infileName);
-    if (!status) return std::make_pair(csaransh::ErrorStatus::unknownSimulator, 0);
+    std::tie(sc, status) = anuvikar::getSimulationCode(infileName);
+    if (!status) return std::make_pair(anuvikar::ErrorStatus::unknownSimulator, 0);
     std::tie(info, extraInfo, isInfo) =
-      (sc == csaransh::XyzFileType::parcasWithStdHeader)
-          ? csaransh::extractInfoParcas(infileName, tag)
-          : csaransh::extractInfoLammps(infileName, tag);
+      (sc == anuvikar::XyzFileType::parcasWithStdHeader)
+          ? anuvikar::extractInfoParcas(infileName, tag)
+          : anuvikar::extractInfoLammps(infileName, tag);
     if (isDefaultInfo) Logger::inst().log_info("Found input file " + infileName);
   }
-  if (!isInfo) return std::make_pair(csaransh::ErrorStatus::InputFileincomplete, 0);
+  if (!isInfo) return std::make_pair(anuvikar::ErrorStatus::InputFileincomplete, 0);
   info.xyzFileType = sc;
   info.xyzFilePath = xyzfileName;
-  csaransh::frameStatus fs = csaransh::frameStatus::prelude;
+  anuvikar::frameStatus fs = anuvikar::frameStatus::prelude;
   std::ifstream xyzfile{info.xyzFilePath};
-  if (xyzfile.bad() || !xyzfile.is_open()) return std::make_pair(csaransh::ErrorStatus::xyzFileReadError, 0);
+  if (xyzfile.bad() || !xyzfile.is_open()) return std::make_pair(anuvikar::ErrorStatus::xyzFileReadError, 0);
   auto success = 0;
   auto frameCount = 0;
   while (true) {
     extraInfo.simulationTime = success + 1;
     extraInfo.id = std::to_string(id + success + 1);
-    auto res = csaransh::processTimeFile(info, extraInfo, config, xyzfile, fs, outfile, success == 0);
+    auto res = anuvikar::processTimeFile(info, extraInfo, config, xyzfile, fs, outfile, success == 0);
     frameCount++;
-    if (res.second != csaransh::ErrorStatus::noError) {
+    if (res.second != anuvikar::ErrorStatus::noError) {
       if (config.allFrames) std::cerr << "\nError: " << errToStr(res.second) << " in frame " << frameCount << " of file " << xyzfileName << '\n' << std::flush;
       else std::cerr << "\nError: " << errToStr(res.second) << " of file " << xyzfileName << '\n' << std::flush;
       Logger::inst().log_info("Error processing" + std::to_string(frameCount) +" frame in file \"" + xyzfileName + "\"");
@@ -86,44 +86,44 @@ std::pair<csaransh::ErrorStatus,int> csaransh::processFileTimeCmd(std::string xy
         Logger::inst().log_info("Finished processing" + std::to_string(success) +" frame in file \"" + xyzfileName + "\"");
       }
     }
-    if (res.first == csaransh::xyzFileStatus::eof) break;
+    if (res.first == anuvikar::xyzFileStatus::eof) break;
   }
   xyzfile.close();
-  if (success > 0) return std::make_pair(csaransh::ErrorStatus::noError, success);
-  return std::make_pair(csaransh::ErrorStatus::unknownError, 0);
+  if (success > 0) return std::make_pair(anuvikar::ErrorStatus::noError, success);
+  return std::make_pair(anuvikar::ErrorStatus::unknownError, 0);
 }
 
-std::pair<csaransh::xyzFileStatus, csaransh::ErrorStatus> 
-                          csaransh::processTimeFile(csaransh::InputInfo &info,
-                                     csaransh::ExtraInfo &extraInfo,
-                                     const csaransh::Config &config, std::istream &infile, csaransh::frameStatus &fs, std::ostream &outfile, bool isFirst) {
-  auto res = csaransh::resultsT{};
-  //res.err = csaransh::ErrorStatus::noError;
-  csaransh::xyzFileStatus fl;
+std::pair<anuvikar::xyzFileStatus, anuvikar::ErrorStatus> 
+                          anuvikar::processTimeFile(anuvikar::InputInfo &info,
+                                     anuvikar::ExtraInfo &extraInfo,
+                                     const anuvikar::Config &config, std::istream &infile, anuvikar::frameStatus &fs, std::ostream &outfile, bool isFirst) {
+  auto res = anuvikar::resultsT{};
+  //res.err = anuvikar::ErrorStatus::noError;
+  anuvikar::xyzFileStatus fl;
   std::tie(fl, res.err, res.defects, res.coDefects) = 
-      (info.xyzFileType == csaransh::XyzFileType::lammpsDisplacedCompute)
-          ? csaransh::displaced2defectsTime(info, extraInfo, config, infile, fs)
-          : csaransh::xyz2defectsTime(info, extraInfo, config, infile, fs);
-  if (res.err != csaransh::ErrorStatus::noError) return std::make_pair(fl, res.err);
-  res.defects = csaransh::groupDefects(std::move(res.defects), info.latticeConst);
-  auto clusterSizeMap = csaransh::clusterSizes(res.defects);
+      (info.xyzFileType == anuvikar::XyzFileType::lammpsDisplacedCompute)
+          ? anuvikar::displaced2defectsTime(info, extraInfo, config, infile, fs)
+          : anuvikar::xyz2defectsTime(info, extraInfo, config, infile, fs);
+  if (res.err != anuvikar::ErrorStatus::noError) return std::make_pair(fl, res.err);
+  res.defects = anuvikar::groupDefects(std::move(res.defects), info.latticeConst);
+  auto clusterSizeMap = anuvikar::clusterSizes(res.defects);
   filterZeroClusters(res.defects, clusterSizeMap,
                      config.filterZeroSizeClusters);
-  csaransh::ignoreSmallClusters(res.defects, clusterSizeMap);
-  res.clusters = csaransh::clusterMapping(res.defects);
-  res.clustersIV = csaransh::clusterIVType(res.clusters, clusterSizeMap);
+  anuvikar::ignoreSmallClusters(res.defects, clusterSizeMap);
+  res.clusters = anuvikar::clusterMapping(res.defects);
+  res.clustersIV = anuvikar::clusterIVType(res.clusters, clusterSizeMap);
   if (config.isFindClusterFeatures)
-    res.feats = csaransh::clusterFeatures(res.defects, res.clusters,
+    res.feats = anuvikar::clusterFeatures(res.defects, res.clusters,
                                           clusterSizeMap, info.latticeConst);
   int nDefects;
   std::tie(res.nDefects, res.inClusterFractionI, res.inClusterFractionV) =
-      csaransh::getNDefectsAndClusterFractions(res.defects);
+      anuvikar::getNDefectsAndClusterFractions(res.defects);
   std::tie(res.maxClusterSizeI, res.maxClusterSizeV) =
-      csaransh::getMaxClusterSizes(clusterSizeMap, res.clusters);
+      anuvikar::getMaxClusterSizes(clusterSizeMap, res.clusters);
   res.nClusters = res.clusters.size();
-  if (res.err == csaransh::ErrorStatus::noError) {
+  if (res.err == anuvikar::ErrorStatus::noError) {
     if (!isFirst) outfile << "\n,";
-    csaransh::printJson(outfile, info, extraInfo, res);
+    anuvikar::printJson(outfile, info, extraInfo, res);
   }
   return std::make_pair(fl, res.err);
 }

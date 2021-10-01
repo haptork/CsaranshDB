@@ -11,7 +11,7 @@
 #include <cluster2features.hpp>
 #include <helper.hpp>
 
-using Coords = csaransh::Coords;
+using Coords = anuvikar::Coords;
 
 // dot product of two vectors
 double dotv(const Coords &a, const Coords &b) {
@@ -34,8 +34,8 @@ auto crossProd(const Coords &v1, const Coords &v2) {
 // calculates angle between ba and ca
 auto calcAngle(Coords a, Coords b, Coords c) {
   Coords v1, v2;
-  using csaransh::invars::pi;
-  using csaransh::maxAngle;
+  using anuvikar::invars::pi;
+  using anuvikar::maxAngle;
   for (size_t i = 0; i < a.size(); ++i) {
     v1[i] = b[i] - a[i];
     v2[i] = c[i] - a[i];
@@ -45,16 +45,16 @@ auto calcAngle(Coords a, Coords b, Coords c) {
 }
 
 // histograms for angles, distances and adjacency for cluster characterization
-csaransh::featT csaransh::pairHists(const std::vector<std::array<double, 3>> &v,
+anuvikar::featT anuvikar::pairHists(const std::vector<std::array<double, 3>> &v,
                                     const std::vector<bool> &v2,
                                     double latConst) {
   using std::array;
   using std::vector;
-  using csaransh::distBins;
-  using csaransh::angleBins;
-  using csaransh::angleBinSize;
-  using csaransh::adjBins;
-  using csaransh::invars::epsilon;
+  using anuvikar::distBins;
+  using anuvikar::angleBins;
+  using anuvikar::angleBinSize;
+  using anuvikar::adjBins;
+  using anuvikar::invars::epsilon;
   constexpr auto maxDistAssumption = 1.0; //
   constexpr double distBinSize = maxDistAssumption / distBins;
   array<double, adjBins> adjacencyHistnn2{};

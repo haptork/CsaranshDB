@@ -3,8 +3,8 @@
  * implements an O(log(N)) algorithm for detecting defects given a
  * single frame file having xyz coordinates of all the atoms
  * */
-#ifndef XYZ2DEFECTS_CSARANSH_HPP
-#define XYZ2DEFECTS_CSARANSH_HPP
+#ifndef XYZ2DEFECTS_ANUVIKAR_HPP
+#define XYZ2DEFECTS_ANUVIKAR_HPP
 
 #include <string>
 #include <tuple>
@@ -14,7 +14,7 @@
 #include <xyzReader.hpp>
 #include <results.hpp>
 
-namespace csaransh {
+namespace anuvikar {
 
 // Gives next expected lattice site given a lattice site
 // in this way it enumerates all the lattice sites
@@ -40,6 +40,6 @@ DefectRes atoms2defectsFcc(std::pair<xyzFileStatus, std::vector<offsetCoords>> a
 
 DefectRes displacedAtoms2defects(std::pair<xyzFileStatus, std::array<std::vector<Coords>, 2>> d,
                            double lc);
-} // namespace csaransh
+} // namespace anuvikar
 
-#endif // XYZ2DEFECTS_CSARANSH_HPP
+#endif // XYZ2DEFECTS_ANUVIKAR_HPP

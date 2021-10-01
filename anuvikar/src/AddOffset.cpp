@@ -7,10 +7,10 @@
 #include <iostream>
 #include <helper.hpp>
 
-bool csaransh::AddOffset::_isUnitcell(double x, double y, double z, double l,
+bool anuvikar::AddOffset::_isUnitcell(double x, double y, double z, double l,
                                       std::array<double, 3> origin) {
   double pos[3] = {x, y, z};
-  using csaransh::invars::epsilon;
+  using anuvikar::invars::epsilon;
   for (int i = 0; i < 3; i++) {
     if (!(pos[i] >= (origin[i] * l - epsilon) &&
           pos[i] <= (origin[i] * l + l + epsilon)))
@@ -25,7 +25,7 @@ bool csaransh::AddOffset::_isUnitcell(double x, double y, double z, double l,
  * First one is at the origin of the bcc lattice and the other one is the body
  * centered atom of the first unitcell.
  * */
-void csaransh::AddOffset::_bccUnitcell() {
+void anuvikar::AddOffset::_bccUnitcell() {
   _sites.clear();
   _sites.emplace_back(std::array<long double, 3>{{0.0, 0.0, 0.0}});
   _sites.emplace_back(std::array<long double, 3>{{0.5, 0.5, 0.5}});
@@ -43,7 +43,7 @@ void csaransh::AddOffset::_bccUnitcell() {
  * after first four like we do in bcc. The complete unitcell is thus added.
  * TODO: Test thoroughly
  * */
-void csaransh::AddOffset::_fccUnitcell() {
+void anuvikar::AddOffset::_fccUnitcell() {
   _sites.clear();
   _sites.emplace_back(std::array<long double, 3>{{0.0, 0.0, 0.0}});
   _sites.emplace_back(std::array<long double, 3>{{0.5, 0.5, 0.0}});
@@ -62,7 +62,7 @@ void csaransh::AddOffset::_fccUnitcell() {
  * and mirror / through periodic boundary) is considered and information about
  * this is stored in the output parameter mirror.
  **/
-double csaransh::AddOffset::_calcDistMirror(std::array<long double, 3> a,
+double anuvikar::AddOffset::_calcDistMirror(std::array<long double, 3> a,
                                             std::array<long double, 3> b,
                                             long double size,
                                             std::array<int, 3> &mirror) {
@@ -80,7 +80,7 @@ double csaransh::AddOffset::_calcDistMirror(std::array<long double, 3> a,
   return std::sqrt(res);
 }
 
-csaransh::AddOffset::AddOffset(double latConst, std::string lattice,
+anuvikar::AddOffset::AddOffset(double latConst, std::string lattice,
                                std::array<double, 3> origin) {
   _origin = std::array<long double, 3>{{origin[0], origin[1], origin[2]}};
   _latConst = latConst;
@@ -102,7 +102,7 @@ template <class T> void print(std::array<T, 3> x) {
 
 // constexpr bool debug = false;
 std::tuple<std::array<double, 3>, double, std::array<double, 3>>
-csaransh::AddOffset::operator()(const std::array<double, 3> &c) {
+anuvikar::AddOffset::operator()(const std::array<double, 3> &c) {
   std::array<long double, 3> coords{{c[0], c[1], c[2]}};
   std::array<long double, 3> modCoords;
   std::array<long double, 3> divCoords;

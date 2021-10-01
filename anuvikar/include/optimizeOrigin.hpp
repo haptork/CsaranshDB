@@ -5,18 +5,18 @@
  * atoms
  * */
 
-#ifndef OPTIMIZEORIGIN_CSARANSH_HPP
-#define OPTIMIZEORIGIN_CSARANSH_HPP
+#ifndef OPTIMIZEORIGIN_ANUVIKAR_HPP
+#define OPTIMIZEORIGIN_ANUVIKAR_HPP
 
 #include <helper.hpp>
 
-namespace csaransh {
+namespace anuvikar {
 
-Coords correctOrigin(const std::vector<csaransh::Coords> &atoms,
-                     csaransh::Coords origin, double latConst);
+Coords correctOrigin(const std::vector<anuvikar::Coords> &atoms,
+                     anuvikar::Coords origin, double latConst);
 
-Coords estimateOrigin(const std::vector<csaransh::Coords> &atoms,
+Coords estimateOrigin(const std::vector<anuvikar::Coords> &atoms,
                       const double &latConst);
 
-} // namespace csaransh
+} // namespace anuvikar
 #endif

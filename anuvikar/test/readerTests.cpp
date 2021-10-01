@@ -2,7 +2,7 @@
 
 #include <infoReader.hpp>
 
-using namespace csaransh;
+using namespace anuvikar;
 using namespace std::string_literals;
 
 SCENARIO("The user only needs to give xyz file for all the atoms or displaced "
@@ -51,21 +51,21 @@ SCENARIO("The simulation code type should be detected from the input file tag "
          "[reader]") {
   SECTION("Positive cases: one of the simulation code tag is found") {
     REQUIRE(getSimulationCode("./data/parcas/005-md-10-1.in") ==
-            std::make_pair(csaransh::XyzFileType::parcasWithStdHeader, true));
+            std::make_pair(anuvikar::XyzFileType::parcasWithStdHeader, true));
     REQUIRE(getSimulationCode("data/lammps/Pos1.in") ==
-            std::make_pair(csaransh::XyzFileType::lammpsWithStdHeader, true));
+            std::make_pair(anuvikar::XyzFileType::lammpsWithStdHeader, true));
     REQUIRE(
         getSimulationCode("./data/disp/common_input.in") ==
-        std::make_pair(csaransh::XyzFileType::lammpsDisplacedCompute, true));
+        std::make_pair(anuvikar::XyzFileType::lammpsDisplacedCompute, true));
   }
   SECTION("Negative cases: no simulation code tag is found") {
     REQUIRE(getSimulationCode("./file/doesnt/exist") ==
-            std::make_pair(csaransh::XyzFileType{}, false));
+            std::make_pair(anuvikar::XyzFileType{}, false));
     REQUIRE(getSimulationCode("test/readerTest.cpp") ==
-            std::make_pair(csaransh::XyzFileType{},
+            std::make_pair(anuvikar::XyzFileType{},
                            false)); // exists but not tag in top 10 lines
     REQUIRE(getSimulationCode("test/catchUnitTests.cpp") ==
-            std::make_pair(csaransh::XyzFileType{},
+            std::make_pair(anuvikar::XyzFileType{},
                            false)); // exists but no tag at all
   }
 }
@@ -74,8 +74,8 @@ SCENARIO("The software should read required simulation info correctly from the "
          "input files and notify if incomplete information is present",
          "[reader]") {
   SECTION("Parcas complete information") {
-    csaransh::InputInfo lhs, rhs;
-    csaransh::ExtraInfo lhsExtra, rhsExtra;
+    anuvikar::InputInfo lhs, rhs;
+    anuvikar::ExtraInfo lhsExtra, rhsExtra;
     lhsExtra.substrate = "Fe";
     lhs.boxSize = 154.98;
     lhs.ncell = 54;
@@ -110,16 +110,16 @@ SCENARIO("The software should read required simulation info correctly from the "
     CHECK(lhsExtra.substrate == rhsExtra.substrate);
   }
   SECTION("Parcas incomplete information") {
-    csaransh::InputInfo rhs{};
-    csaransh::ExtraInfo rhsExtra{};
+    anuvikar::InputInfo rhs{};
+    anuvikar::ExtraInfo rhsExtra{};
     bool status = true;
     std::tie(rhs, rhsExtra, status) = extractInfoParcas(
         "./data/test/parcasIncomplete.err", "parcasIncomplete.err");
     REQUIRE(status == false);
   }
   SECTION("Lammps or disp complete information") {
-    csaransh::InputInfo lhs, rhs;
-    csaransh::ExtraInfo lhsExtra, rhsExtra;
+    anuvikar::InputInfo lhs, rhs;
+    anuvikar::ExtraInfo lhsExtra, rhsExtra;
     lhsExtra.substrate = "Fe";
     lhs.ncell = 10;
     lhsExtra.energy = 1;
@@ -140,16 +140,16 @@ SCENARIO("The software should read required simulation info correctly from the "
     CHECK(lhsExtra.substrate == rhsExtra.substrate);
   }
   SECTION("Lammps or disp incomplete information") {
-    csaransh::InputInfo rhs{};
-    csaransh::ExtraInfo rhsExtra{};
+    anuvikar::InputInfo rhs{};
+    anuvikar::ExtraInfo rhsExtra{};
     bool status = true;
     std::tie(rhs, rhsExtra, status) =
         extractInfoLammps("./data/test/lammpsIncomplete.err", "lammsIncomp");
     REQUIRE(status == false);
   }
   SECTION("Lammps invalid input") {
-    csaransh::InputInfo rhs{};
-    csaransh::ExtraInfo rhsExtra{};
+    anuvikar::InputInfo rhs{};
+    anuvikar::ExtraInfo rhsExtra{};
     bool status = true;
     std::tie(rhs, rhsExtra, status) =
         extractInfoLammps("./data/test/lammpsInvalid.err", "lammpsInvalid");
@@ -157,8 +157,8 @@ SCENARIO("The software should read required simulation info correctly from the "
   }
   SECTION("Edge cases") {
     // file doesn't exist
-    csaransh::InputInfo rhs{};
-    csaransh::ExtraInfo rhsExtra{};
+    anuvikar::InputInfo rhs{};
+    anuvikar::ExtraInfo rhsExtra{};
     bool status = true;
     std::tie(rhs, rhsExtra, status) =
         extractInfoLammps("file/not/found.err", "found");

@@ -4,15 +4,15 @@
  * functions to get the results and print them.
  * */
 
-#ifndef XYZREADER_CSARANSH_HPP
-#define XYZREADER_CSARANSH_HPP
+#ifndef XYZREADER_ANUVIKAR_HPP
+#define XYZREADER_ANUVIKAR_HPP
 
 #include <map>
 #include <string>
 
 #include <helper.hpp>
 
-namespace csaransh {
+namespace anuvikar {
 
 constexpr auto maxColumnsTry = 50;
 
@@ -20,18 +20,18 @@ enum class frameStatus : bool { prelude, inFrame };
 
 enum class lineStatus : int { garbage, coords, inFrameCoords, frameBorder };
 
-std::pair<csaransh::lineStatus, csaransh::Coords>
-getCoord(const std::string &line, const csaransh::frameStatus &fs,
-         const csaransh::InputInfo &info, const csaransh::ExtraInfo &ei);
+std::pair<anuvikar::lineStatus, anuvikar::Coords>
+getCoord(const std::string &line, const anuvikar::frameStatus &fs,
+         const anuvikar::InputInfo &info, const anuvikar::ExtraInfo &ei);
 
-std::pair<csaransh::lineStatus, csaransh::Coords>
-getCoordLammps(const std::string &line, const csaransh::frameStatus &fs, int);
+std::pair<anuvikar::lineStatus, anuvikar::Coords>
+getCoordLammps(const std::string &line, const anuvikar::frameStatus &fs, int);
 
-std::pair<csaransh::lineStatus, csaransh::Coords>
-getCoordParcas(const std::string &line, const csaransh::frameStatus &fs, int);
+std::pair<anuvikar::lineStatus, anuvikar::Coords>
+getCoordParcas(const std::string &line, const anuvikar::frameStatus &fs, int);
 
-std::pair<csaransh::lineStatus, std::array<csaransh::Coords, 2>>
+std::pair<anuvikar::lineStatus, std::array<anuvikar::Coords, 2>>
 getCoordDisplaced(const std::string &line);
 
-} // namespace csaransh
+} // namespace anuvikar
 #endif

@@ -27,16 +27,6 @@ function Sia(props) {
   );
 }
 
-function SiaDebug(props) {
-  console.log('sia debug', props.points);
-  return(
-      <Points>
-      <pointsMaterial size={props.size} vertexColors={true} attach="material" map={props.texture} sizeAttenuation={props.sa} />
-        {props.points.map((pointProps, i) => <Point key={i} {...pointProps} />)}
-      </Points>
-  );
-}
-
 function CompBoxed(props) {
  const [hovered, setHover] = useState(false);
  const [active, setActive] = useState(false);
@@ -255,7 +245,7 @@ function DrawClusters({meshProps}) {
 
     //<SiaBoxed texture={texture} points={sias} ar={pointsAr} boxProps={boxProps} sa={true} size={2}/>
 
-function DrawCanvas({coords, saviInfo, siavenu, clusters, clustersizes, camerapos, boxsize}) {
+function DrawCanvas({coords, saviInfo, siavenu, clusters, clustersizes, camerapos, boxsize, setLabel}) {
   const sias = [];
   const vacs = [];
   const infoSia = [];
@@ -264,8 +254,8 @@ function DrawCanvas({coords, saviInfo, siavenu, clusters, clustersizes, camerapo
       console.log("clicked" + index);
     //setLabel("clicked " +  index);
   }
-  const onClickFnSia = (event) => {
-    if (event.intersections.length == 0) return;
+  const onClickFn = (event) => {
+    if (event.intersections.length === 0) return;
     let minDist = event.intersections[0].distanceToRay;
     let minIndex = event.intersections[0].index;
     for (let i = 1; i < event.intersections; i++) {
@@ -274,19 +264,33 @@ function DrawCanvas({coords, saviInfo, siavenu, clusters, clustersizes, camerapo
         minIndex = event.intersections[i].index;
       }
     }
-    if (minDist < 1.0) showInfoOf(minIndex);
     event.stopPropagation();
+    if (minDist < 1.0) return minIndex;
+    return -1;
   }
+
+  const onClickFnSia = (event) => {
+    const i = onClickFn(event);
+    if (i < 0 || i >= sias.length) return;
+    setLabel("Sia at " + sias[i].position.join(', '));
+  }
+
+  const onClickFnVac = (event) => {
+    const i = onClickFn(event);
+    if (i < 0 || i >= sias.length) return;
+    setLabel("Vacancy at " + sias[i].position.join(', '));
+  }
+
   for (const c of coords) {
     //if (c[4] > 0) continue; // cluster
     if (c[4] != 0) continue; // cluster or triad
     if (c[3] == 1) {
       //nSingleSias++;
-      sias.push({position:[c[0], c[1], c[2]], color:[0.5, 0.5, 0.2], opacity:((c[5]==1)?0.9:0.4), onClick:onClickFnSia});
+      sias.push({position:[c[0], c[1], c[2]], color:[0.5, 0.5, 0.2], opacity:((c[5]===1)?0.9:0.4), onClick:onClickFnSia});
     }
     else {
       //nSingleVacs++;
-      vacs.push({position:[c[0], c[1], c[2]], color:[0.8, 0.8, 0.1], opacity:((c[5]==1)?0.9:0.4), onClick:onClickFnSia});
+      vacs.push({position:[c[0], c[1], c[2]], color:[0.8, 0.8, 0.1], opacity:((c[5]==1)?0.9:0.4), onClick:onClickFnVac});
     }
   }
   const onClickFnTriad = (event) => {
@@ -294,12 +298,13 @@ function DrawCanvas({coords, saviInfo, siavenu, clusters, clustersizes, camerapo
       onClickFnSia(event);
   }
   for (const triad of siavenu) {
-    const curColor = getPairColorOrient(triad[1]);
+    const curColor = (triad[0].length === 2) ? [0.5, 0.5, 0.2]  : getPairColorOrient(triad[1]);
     for (const cIndex of triad[0]) {
       const c = coords[cIndex];
       if (c[3] == 1) {
         //nSingleSias++;
         sias.push({position:[c[0], c[1], c[2]], color:curColor, opacity:((c[5]==1)?0.9:0.4), onClick:onClickFnTriad});
+        //infoSia.push()
       }
       else {
         //nSingleVacs++;

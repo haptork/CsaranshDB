@@ -2,7 +2,7 @@
 
 #include <helper.hpp>
 
-using namespace csaransh;
+using namespace anuvikar;
 TEST_CASE("distance calculation tests", "[calcDistTest]") {
   auto origin = Coords{{0, 0, 0}};
   auto a = Coords{{1.5, 0, 0}};

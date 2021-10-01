@@ -583,3 +583,11 @@ WIP:
 - Add info on mouse-hover.
 - Cluster comparison on click .
 - Finalize Viz.
+
+## 1st Oct:
+
+WIP:
+
+- ~~ignore more thresh.~~
+- ~~File-name in log error and warning.~~
+- ~~add to cdb script interface.~~

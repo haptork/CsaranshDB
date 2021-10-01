@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-using namespace csaransh;
+using namespace anuvikar;
 SCENARIO("Find nearest lattice site for a coordinate given lattice structure - "
          "Addoffset",
          "[defectsTest]") {
@@ -165,8 +165,8 @@ SCENARIO("Enumerate all lattice sites for a bcc in ascending order given min "
          "[defectsTest]") {
   SECTION("Normal Case - 1") {
     // case 1
-    auto origin = csaransh::Coords{{0., 0., 0.}};
-    auto max = csaransh::Coords{{2.5, 2.5, 2.5}};
+    auto origin = anuvikar::Coords{{0., 0., 0.}};
+    auto max = anuvikar::Coords{{2.5, 2.5, 2.5}};
     auto maxInitial = getInitialMax(origin, max);
     NextExpected ne{
         origin, max,
@@ -244,8 +244,8 @@ SCENARIO("Enumerate all lattice sites for a bcc in ascending order given min "
   }
   SECTION("Normal Case - 2") {
     // case 2
-    auto origin = csaransh::Coords{{0.25, 0.25, 0.25}};
-    auto max = csaransh::Coords{{2.75, 2.75, 2.75}};
+    auto origin = anuvikar::Coords{{0.25, 0.25, 0.25}};
+    auto max = anuvikar::Coords{{2.75, 2.75, 2.75}};
     auto maxInitial = getInitialMax(origin, max);
     NextExpected ne{
         origin, max,
@@ -323,8 +323,8 @@ SCENARIO("Enumerate all lattice sites for a bcc in ascending order given min "
   }
   SECTION("Edge Cases - 1") {
     // case 2
-    auto origin = csaransh::Coords{{0.5, 0.5, 0.5}};
-    auto max = csaransh::Coords{{2.00, 2.00, 2.00}};
+    auto origin = anuvikar::Coords{{0.5, 0.5, 0.5}};
+    auto max = anuvikar::Coords{{2.00, 2.00, 2.00}};
     auto maxInitial = getInitialMax(origin, max);
     NextExpected ne{origin, max, maxInitial};
     REQUIRE_FALSE(ne.allMax());
@@ -352,8 +352,8 @@ SCENARIO("Enumerate all lattice sites for a bcc in ascending order given min "
   }
   SECTION("Edge Cases - Almost invalid input - 1") {
     // case 1
-    auto origin = csaransh::Coords{{0.0, 0.0, 0.0}};
-    auto max = csaransh::Coords{
+    auto origin = anuvikar::Coords{{0.0, 0.0, 0.0}};
+    auto max = anuvikar::Coords{
         {2.00, 2.00, 2.00}}; // a valid max should have been 2.5, orign 0.0
     auto maxInitial = getInitialMax(origin, max);
     NextExpected ne{origin, max, maxInitial};
@@ -415,55 +415,55 @@ TEST_CASE("Read atom coordinates from a parcas xyz file line",
           "[defectsTest]") {
   SECTION("Normal cases") {
     Coords c;
-    csaransh::lineStatus ls;
+    anuvikar::lineStatus ls;
     // coords
-    std::tie(ls, c) = csaransh::getCoordParcas("Fe   -76.770403   +7.2e2   .7",
-                                               csaransh::frameStatus::inFrame, 0);
-    CHECK(ls == csaransh::lineStatus::coords);
+    std::tie(ls, c) = anuvikar::getCoordParcas("Fe   -76.770403   +7.2e2   .7",
+                                               anuvikar::frameStatus::inFrame, 0);
+    CHECK(ls == anuvikar::lineStatus::coords);
     CHECK(c == Coords{{-76.770403, 720, 0.7}});
     std::tie(ls, c) =
-        csaransh::getCoordParcas("what   +76.770403   -7.2e2   0.700 Frame",
-                                 csaransh::frameStatus::inFrame, 2);
-    CHECK(ls == csaransh::lineStatus::coords);
+        anuvikar::getCoordParcas("what   +76.770403   -7.2e2   0.700 Frame",
+                                 anuvikar::frameStatus::inFrame, 2);
+    CHECK(ls == anuvikar::lineStatus::coords);
     CHECK(c == Coords{{76.770403, -720, 0.7}});
-    std::tie(ls, c) = csaransh::getCoordParcas(
-        "  what 0.000000 +7.2e2 3f whatever  ", csaransh::frameStatus::inFrame, 2);
-    CHECK(ls == csaransh::lineStatus::coords);
+    std::tie(ls, c) = anuvikar::getCoordParcas(
+        "  what 0.000000 +7.2e2 3f whatever  ", anuvikar::frameStatus::inFrame, 2);
+    CHECK(ls == anuvikar::lineStatus::coords);
     CHECK(c == Coords{{0.0, 720, 3.0}});
     // garbage
     std::tie(ls, c) =
-        csaransh::getCoordParcas("53   +76.770403   -7.2e2   0.700 Frame",
-                                 csaransh::frameStatus::inFrame, 2);
-    CHECK(ls == csaransh::lineStatus::garbage);
+        anuvikar::getCoordParcas("53   +76.770403   -7.2e2   0.700 Frame",
+                                 anuvikar::frameStatus::inFrame, 2);
+    CHECK(ls == anuvikar::lineStatus::garbage);
     std::tie(ls, c) =
-        csaransh::getCoordParcas("garbage", csaransh::frameStatus::inFrame, 0);
-    CHECK(ls == csaransh::lineStatus::garbage);
-    std::tie(ls, c) = csaransh::getCoordParcas("-76.770403   +7.2e2   .7",
-                                               csaransh::frameStatus::inFrame, 1);
-    CHECK(ls == csaransh::lineStatus::coords);
+        anuvikar::getCoordParcas("garbage", anuvikar::frameStatus::inFrame, 0);
+    CHECK(ls == anuvikar::lineStatus::garbage);
+    std::tie(ls, c) = anuvikar::getCoordParcas("-76.770403   +7.2e2   .7",
+                                               anuvikar::frameStatus::inFrame, 1);
+    CHECK(ls == anuvikar::lineStatus::coords);
     CHECK(c == Coords{{-76.770403, +7.2e2, .7}});
     std::tie(ls, c) =
-        csaransh::getCoordParcas("what 34 2.5", csaransh::frameStatus::inFrame, 0);
-    CHECK(ls == csaransh::lineStatus::garbage);
-    std::tie(ls, c) = csaransh::getCoordParcas(
-        "-76.770403   +7.2e2   .7 garbage", csaransh::frameStatus::inFrame, 0);
-    CHECK(ls == csaransh::lineStatus::garbage);
-    std::tie(ls, c) = csaransh::getCoordParcas("what 34 2.5 garbage",
-                                               csaransh::frameStatus::inFrame, 0);
-    CHECK(ls == csaransh::lineStatus::garbage);
-    std::tie(ls, c) = csaransh::getCoordParcas("what Frame 2.5 garbage",
-                                               csaransh::frameStatus::inFrame, 0);
-    CHECK(ls == csaransh::lineStatus::garbage);
+        anuvikar::getCoordParcas("what 34 2.5", anuvikar::frameStatus::inFrame, 0);
+    CHECK(ls == anuvikar::lineStatus::garbage);
+    std::tie(ls, c) = anuvikar::getCoordParcas(
+        "-76.770403   +7.2e2   .7 garbage", anuvikar::frameStatus::inFrame, 0);
+    CHECK(ls == anuvikar::lineStatus::garbage);
+    std::tie(ls, c) = anuvikar::getCoordParcas("what 34 2.5 garbage",
+                                               anuvikar::frameStatus::inFrame, 0);
+    CHECK(ls == anuvikar::lineStatus::garbage);
+    std::tie(ls, c) = anuvikar::getCoordParcas("what Frame 2.5 garbage",
+                                               anuvikar::frameStatus::inFrame, 0);
+    CHECK(ls == anuvikar::lineStatus::garbage);
     // border
-    std::tie(ls, c) = csaransh::getCoordParcas("Frame 2.5 garbage",
-                                               csaransh::frameStatus::inFrame, 0);
-    CHECK(ls == csaransh::lineStatus::frameBorder);
+    std::tie(ls, c) = anuvikar::getCoordParcas("Frame 2.5 garbage",
+                                               anuvikar::frameStatus::inFrame, 0);
+    CHECK(ls == anuvikar::lineStatus::frameBorder);
     std::tie(ls, c) =
-        csaransh::getCoordParcas("Frame", csaransh::frameStatus::inFrame, 0);
-    CHECK(ls == csaransh::lineStatus::frameBorder);
-    std::tie(ls, c) = csaransh::getCoordParcas("  Frame 0.000000 +7.2e2 3f",
-                                               csaransh::frameStatus::inFrame, 0);
-    CHECK(ls == csaransh::lineStatus::frameBorder);
+        anuvikar::getCoordParcas("Frame", anuvikar::frameStatus::inFrame, 0);
+    CHECK(ls == anuvikar::lineStatus::frameBorder);
+    std::tie(ls, c) = anuvikar::getCoordParcas("  Frame 0.000000 +7.2e2 3f",
+                                               anuvikar::frameStatus::inFrame, 0);
+    CHECK(ls == anuvikar::lineStatus::frameBorder);
   }
 }
 
@@ -471,57 +471,57 @@ TEST_CASE("Read atom coordinates from a line from lammps xyz file",
           "[defectsTest]") {
   SECTION("Normal cases") {
     Coords c;
-    csaransh::lineStatus ls;
+    anuvikar::lineStatus ls;
     // coords
-    std::tie(ls, c) = csaransh::getCoordLammps("Fe   -76.770403   +7.2e2   .7",
-                                               csaransh::frameStatus::inFrame, 2);
-    CHECK(ls == csaransh::lineStatus::coords);
+    std::tie(ls, c) = anuvikar::getCoordLammps("Fe   -76.770403   +7.2e2   .7",
+                                               anuvikar::frameStatus::inFrame, 2);
+    CHECK(ls == anuvikar::lineStatus::coords);
     CHECK(c == Coords{{-76.770403, 720, 0.7}});
     std::tie(ls, c) =
-        csaransh::getCoordLammps("54   +76.770403   -7.2e2   0.700 ITEM:",
-                                 csaransh::frameStatus::inFrame, 2);
-    CHECK(ls == csaransh::lineStatus::coords);
+        anuvikar::getCoordLammps("54   +76.770403   -7.2e2   0.700 ITEM:",
+                                 anuvikar::frameStatus::inFrame, 2);
+    CHECK(ls == anuvikar::lineStatus::coords);
     CHECK(c == Coords{{76.770403, -720, 0.7}});
-    std::tie(ls, c) = csaransh::getCoordLammps(
-        "  what if 0.000000 +7.2e2 3f whatever  ", csaransh::frameStatus::inFrame, 3);
-    CHECK(ls == csaransh::lineStatus::coords);
+    std::tie(ls, c) = anuvikar::getCoordLammps(
+        "  what if 0.000000 +7.2e2 3f whatever  ", anuvikar::frameStatus::inFrame, 3);
+    CHECK(ls == anuvikar::lineStatus::coords);
     CHECK(c == Coords{{0.0, 720, 3.0}});
-    std::tie(ls, c) = csaransh::getCoordLammps(
-        "no  what if 0.000000 +7.2e2 3f 2.0 ", csaransh::frameStatus::inFrame, 0);
-    CHECK(ls == csaransh::lineStatus::coords);
+    std::tie(ls, c) = anuvikar::getCoordLammps(
+        "no  what if 0.000000 +7.2e2 3f 2.0 ", anuvikar::frameStatus::inFrame, 0);
+    CHECK(ls == anuvikar::lineStatus::coords);
     CHECK(c == Coords{{720, 3.0, 2.0}});
     // garbage
-    std::tie(ls, c) = csaransh::getCoordLammps(
-        "no  what if 0.000000 +7.2e2 3f 2.0 whatever  ", csaransh::frameStatus::inFrame, 0);
-    CHECK(ls == csaransh::lineStatus::garbage);
+    std::tie(ls, c) = anuvikar::getCoordLammps(
+        "no  what if 0.000000 +7.2e2 3f 2.0 whatever  ", anuvikar::frameStatus::inFrame, 0);
+    CHECK(ls == anuvikar::lineStatus::garbage);
     std::tie(ls, c) =
-        csaransh::getCoordLammps("garbage", csaransh::frameStatus::inFrame, 0);
-    CHECK(ls == csaransh::lineStatus::garbage);
-    std::tie(ls, c) = csaransh::getCoordLammps("-76.770403   +7.2e2   .7",
-                                               csaransh::frameStatus::inFrame, 2);
-    CHECK(ls == csaransh::lineStatus::garbage);
+        anuvikar::getCoordLammps("garbage", anuvikar::frameStatus::inFrame, 0);
+    CHECK(ls == anuvikar::lineStatus::garbage);
+    std::tie(ls, c) = anuvikar::getCoordLammps("-76.770403   +7.2e2   .7",
+                                               anuvikar::frameStatus::inFrame, 2);
+    CHECK(ls == anuvikar::lineStatus::garbage);
     std::tie(ls, c) =
-        csaransh::getCoordLammps("what 34 2.5", csaransh::frameStatus::inFrame, 0);
-    CHECK(ls == csaransh::lineStatus::garbage);
-    std::tie(ls, c) = csaransh::getCoordLammps(
-        "-76.770403   +7.2e2   .7 garbage", csaransh::frameStatus::inFrame, 0);
-    CHECK(ls == csaransh::lineStatus::garbage);
-    std::tie(ls, c) = csaransh::getCoordLammps("what 34 2.5 garbage",
-                                               csaransh::frameStatus::inFrame, 0);
-    CHECK(ls == csaransh::lineStatus::garbage);
-    std::tie(ls, c) = csaransh::getCoordLammps("what ITEM: 2.5 garbage",
-                                               csaransh::frameStatus::inFrame, 0);
-    CHECK(ls == csaransh::lineStatus::garbage);
+        anuvikar::getCoordLammps("what 34 2.5", anuvikar::frameStatus::inFrame, 0);
+    CHECK(ls == anuvikar::lineStatus::garbage);
+    std::tie(ls, c) = anuvikar::getCoordLammps(
+        "-76.770403   +7.2e2   .7 garbage", anuvikar::frameStatus::inFrame, 0);
+    CHECK(ls == anuvikar::lineStatus::garbage);
+    std::tie(ls, c) = anuvikar::getCoordLammps("what 34 2.5 garbage",
+                                               anuvikar::frameStatus::inFrame, 0);
+    CHECK(ls == anuvikar::lineStatus::garbage);
+    std::tie(ls, c) = anuvikar::getCoordLammps("what ITEM: 2.5 garbage",
+                                               anuvikar::frameStatus::inFrame, 0);
+    CHECK(ls == anuvikar::lineStatus::garbage);
     // border
-    std::tie(ls, c) = csaransh::getCoordLammps("ITEM: 2.5 garbage",
-                                               csaransh::frameStatus::inFrame, 0);
-    CHECK(ls == csaransh::lineStatus::frameBorder);
+    std::tie(ls, c) = anuvikar::getCoordLammps("ITEM: 2.5 garbage",
+                                               anuvikar::frameStatus::inFrame, 0);
+    CHECK(ls == anuvikar::lineStatus::frameBorder);
     std::tie(ls, c) =
-        csaransh::getCoordLammps("ITEM:", csaransh::frameStatus::inFrame, 0);
-    CHECK(ls == csaransh::lineStatus::frameBorder);
-    std::tie(ls, c) = csaransh::getCoordLammps("  ITEM: 0.000000 +7.2e2 3f",
-                                               csaransh::frameStatus::inFrame, 0);
-    CHECK(ls == csaransh::lineStatus::frameBorder);
+        anuvikar::getCoordLammps("ITEM:", anuvikar::frameStatus::inFrame, 0);
+    CHECK(ls == anuvikar::lineStatus::frameBorder);
+    std::tie(ls, c) = anuvikar::getCoordLammps("  ITEM: 0.000000 +7.2e2 3f",
+                                               anuvikar::frameStatus::inFrame, 0);
+    CHECK(ls == anuvikar::lineStatus::frameBorder);
   }
 }
 
@@ -530,46 +530,46 @@ TEST_CASE(
     "[defectsTest]") {
   SECTION("Normal cases") {
     std::array<Coords, 2> c;
-    csaransh::lineStatus ls;
+    anuvikar::lineStatus ls;
     // coords
     std::tie(ls, c) =
-        csaransh::getCoordDisplaced("1 -76.770403   +7.2e2   .7  +76.770403   "
+        anuvikar::getCoordDisplaced("1 -76.770403   +7.2e2   .7  +76.770403   "
                                     "-7.2e2   0.700 6891 112087 1 ");
-    CHECK(ls == csaransh::lineStatus::coords);
+    CHECK(ls == anuvikar::lineStatus::coords);
     CHECK(c == std::array<Coords, 2>{{Coords{{-76.770403, 720, 0.7}},
                                       Coords{{76.770403, -720, 0.7}}}});
-    std::tie(ls, c) = csaransh::getCoordDisplaced(
+    std::tie(ls, c) = anuvikar::getCoordDisplaced(
         "Fe +76.770403   -7.2e2   0.700 -76.770403  +7.2e2   .7  ");
-    CHECK(ls == csaransh::lineStatus::coords);
+    CHECK(ls == anuvikar::lineStatus::coords);
     CHECK(c == std::array<Coords, 2>{{Coords{{76.770403, -720, 0.7}},
                                       Coords{{-76.770403, 720, 0.7}}}});
-    std::tie(ls, c) = csaransh::getCoordDisplaced(
+    std::tie(ls, c) = anuvikar::getCoordDisplaced(
         "  Fe +76.770403f   -7.2e2d   0.700 -76.770403  +7.2e2   .7  ITEM:");
-    CHECK(ls == csaransh::lineStatus::coords);
+    CHECK(ls == anuvikar::lineStatus::coords);
     CHECK(c == std::array<Coords, 2>{{Coords{{76.770403, -720, 0.7}},
                                       Coords{{-76.770403, 720, 0.7}}}});
     // garbage
-    std::tie(ls, c) = csaransh::getCoordDisplaced("garbage");
-    CHECK(ls == csaransh::lineStatus::garbage);
-    std::tie(ls, c) = csaransh::getCoordDisplaced(
+    std::tie(ls, c) = anuvikar::getCoordDisplaced("garbage");
+    CHECK(ls == anuvikar::lineStatus::garbage);
+    std::tie(ls, c) = anuvikar::getCoordDisplaced(
         "Fe   -76.770403   +7.2e2 -76.770403   +7.2e2   .7");
-    CHECK(ls == csaransh::lineStatus::garbage);
-    std::tie(ls, c) = csaransh::getCoordDisplaced(
+    CHECK(ls == anuvikar::lineStatus::garbage);
+    std::tie(ls, c) = anuvikar::getCoordDisplaced(
         "Fe   -76.770403   +7.2e2-76.770403   +7.2e2   .7");
-    CHECK(ls == csaransh::lineStatus::garbage);
+    CHECK(ls == anuvikar::lineStatus::garbage);
     std::tie(ls, c) =
-        csaransh::getCoordDisplaced("what 34 2.5 3.5 whatever 3.0 3.5");
-    CHECK(ls == csaransh::lineStatus::garbage);
-    std::tie(ls, c) = csaransh::getCoordDisplaced("what ITEM: 2.5 garbage");
-    CHECK(ls == csaransh::lineStatus::garbage);
+        anuvikar::getCoordDisplaced("what 34 2.5 3.5 whatever 3.0 3.5");
+    CHECK(ls == anuvikar::lineStatus::garbage);
+    std::tie(ls, c) = anuvikar::getCoordDisplaced("what ITEM: 2.5 garbage");
+    CHECK(ls == anuvikar::lineStatus::garbage);
     // border
-    std::tie(ls, c) = csaransh::getCoordDisplaced("ITEM: ENTRIES 2.5 garbage");
-    CHECK(ls == csaransh::lineStatus::frameBorder);
-    std::tie(ls, c) = csaransh::getCoordDisplaced("ITEM: ENTRIES");
-    CHECK(ls == csaransh::lineStatus::frameBorder);
-    std::tie(ls, c) = csaransh::getCoordDisplaced(
+    std::tie(ls, c) = anuvikar::getCoordDisplaced("ITEM: ENTRIES 2.5 garbage");
+    CHECK(ls == anuvikar::lineStatus::frameBorder);
+    std::tie(ls, c) = anuvikar::getCoordDisplaced("ITEM: ENTRIES");
+    CHECK(ls == anuvikar::lineStatus::frameBorder);
+    std::tie(ls, c) = anuvikar::getCoordDisplaced(
         " ITEM: +76.770403   -7.2e2   0.700 -76.770403  +7.2e2   .7");
-    CHECK(ls == csaransh::lineStatus::garbage);
+    CHECK(ls == anuvikar::lineStatus::garbage);
   }
 }
 
@@ -580,8 +580,8 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
   SECTION("Normal cases") {
     SECTION("Single Dumbbell") {
       std::vector<std::tuple<Coords, double, Coords>> atoms;
-      auto origin = csaransh::Coords{{0.25, 0.25, 0.25}};
-      auto max = csaransh::Coords{{10.75, 10.75, 10.75}};
+      auto origin = anuvikar::Coords{{0.25, 0.25, 0.25}};
+      auto max = anuvikar::Coords{{10.75, 10.75, 10.75}};
       auto maxInitial = getInitialMax(origin, max);
       NextExpected ne{
           origin, max,
@@ -623,7 +623,7 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
       info.originY = origin[1];
       info.originZ = origin[2];
       ExtraInfo extraInfo;
-      auto fsAtoms = std::make_pair(csaransh::xyzFileStatus::reading, atoms);
+      auto fsAtoms = std::make_pair(anuvikar::xyzFileStatus::reading, atoms);
       auto ungroupedDefectsDumbbellPair = atoms2defects(fsAtoms, info, extraInfo, config);
       auto ungroupedDefects = std::get<2>(ungroupedDefectsDumbbellPair);
       REQUIRE(ungroupedDefects.size() == 4); // 2 interstitials, 2 vacancies
@@ -636,24 +636,24 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
                 2); // one cluster of three and other of one
         SECTION("Check ndefects and cluster sizes") {
           std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-              csaransh::getNDefectsAndClusterFractions(defects);
+              anuvikar::getNDefectsAndClusterFractions(defects);
           REQUIRE(nDefects == 1);
           REQUIRE(inClusterFractionI == Approx(100.0));
           REQUIRE(inClusterFractionV == Approx(100.0));
           ignoreSmallClusters(defects, clusterSizeMap);
           std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-              csaransh::getNDefectsAndClusterFractions(defects);
+              anuvikar::getNDefectsAndClusterFractions(defects);
           REQUIRE(nDefects == 1);
           REQUIRE(inClusterFractionI == Approx(0.0));
           REQUIRE(inClusterFractionV == Approx(0.0)); // changed
-          auto clusterIdMap = csaransh::clusterMapping(defects);
+          auto clusterIdMap = anuvikar::clusterMapping(defects);
           REQUIRE(clusterIdMap.size() == 0); // 1 dumbbell
           auto clusterIVMap =
-              csaransh::clusterIVType(clusterIdMap, clusterSizeMap);
+              anuvikar::clusterIVType(clusterIdMap, clusterSizeMap);
           REQUIRE(clusterIVMap.size() == 0);
           int maxClusterSizeI, maxClusterSizeV;
           std::tie(maxClusterSizeI, maxClusterSizeV) =
-              csaransh::getMaxClusterSizes(clusterSizeMap, clusterIdMap);
+              anuvikar::getMaxClusterSizes(clusterSizeMap, clusterIdMap);
           REQUIRE(maxClusterSizeI == 0);
           REQUIRE(maxClusterSizeV == 0);
           /*
@@ -665,7 +665,7 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
         */
 
           SECTION("Check cluster features") {
-            auto feats = csaransh::clusterFeatures(
+            auto feats = anuvikar::clusterFeatures(
                 defects, clusterIdMap, clusterSizeMap, latticeConst);
             REQUIRE(feats.size() == 0);
             /*
@@ -690,8 +690,8 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
     }       // End of Single Dumbbell test
     SECTION("big interstitial cluster") {
       std::vector<std::tuple<Coords, double, Coords>> atoms;
-      auto origin = csaransh::Coords{{0.5, 0.5, 0.5}};
-      auto max = csaransh::Coords{{6.0, 6.0, 6.0}};
+      auto origin = anuvikar::Coords{{0.5, 0.5, 0.5}};
+      auto max = anuvikar::Coords{{6.0, 6.0, 6.0}};
       auto maxInitial = getInitialMax(origin, max);
       NextExpected ne{
           origin, max,
@@ -736,40 +736,40 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
       info.originY = origin[1];
       info.originZ = origin[2];
       ExtraInfo extraInfo;
-      auto fsAtoms = std::make_pair(csaransh::xyzFileStatus::reading, atoms);
+      auto fsAtoms = std::make_pair(anuvikar::xyzFileStatus::reading, atoms);
       auto ungroupedDefectsDumbbellPair = atoms2defects(fsAtoms, info, extraInfo, config);
       auto ungroupedDefects = std::get<2>(ungroupedDefectsDumbbellPair);
       REQUIRE(ungroupedDefects.size() == 10);
       int nDefects;
       double inClusterFractionI, inClusterFractionV;
       std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-          csaransh::getNDefectsAndClusterFractions(ungroupedDefects);
+          anuvikar::getNDefectsAndClusterFractions(ungroupedDefects);
       SECTION("Check cluster grouping") {
         auto defects = groupDefects(ungroupedDefects, latticeConst);
         auto clusterSizeMap = clusterSizes(defects);
         REQUIRE(clusterSizeMap.size() == 5);
         SECTION("Check ndefects and cluster sizes") {
           std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-              csaransh::getNDefectsAndClusterFractions(defects);
+              anuvikar::getNDefectsAndClusterFractions(defects);
           REQUIRE(nDefects == 4);
           REQUIRE(inClusterFractionI == Approx(100.0));
           REQUIRE(inClusterFractionV == Approx(100.0));
           ignoreSmallClusters(defects, clusterSizeMap);
           std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-              csaransh::getNDefectsAndClusterFractions(defects);
+              anuvikar::getNDefectsAndClusterFractions(defects);
           REQUIRE(nDefects == 4);
           REQUIRE(inClusterFractionI == Approx(100.0));
           REQUIRE(inClusterFractionV == Approx(0.0)); // changed
-          auto clusterIdMap = csaransh::clusterMapping(defects);
+          auto clusterIdMap = anuvikar::clusterMapping(defects);
           REQUIRE(clusterIdMap.size() == 1); // 1 interstitial cluster
           REQUIRE(std::begin(clusterIdMap)->second.size() == 6);
           auto clusterIVMap =
-              csaransh::clusterIVType(clusterIdMap, clusterSizeMap);
+              anuvikar::clusterIVType(clusterIdMap, clusterSizeMap);
           REQUIRE(clusterIVMap.size() == 1);
           REQUIRE(std::begin(clusterIVMap)->second == 4); // surviving
           int maxClusterSizeI, maxClusterSizeV;
           std::tie(maxClusterSizeI, maxClusterSizeV) =
-              csaransh::getMaxClusterSizes(clusterSizeMap, clusterIdMap);
+              anuvikar::getMaxClusterSizes(clusterSizeMap, clusterIdMap);
           REQUIRE(maxClusterSizeI == 4);
           REQUIRE(maxClusterSizeV == 0);
         } // ndefects and cluster sizes
@@ -777,8 +777,8 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
     }
     SECTION("Interstitial and Vacancy in two big clusters") {
       std::vector<std::tuple<Coords, double, Coords>> atoms;
-      auto origin = csaransh::Coords{{0.0, 0.0, 0.0}};
-      auto max = csaransh::Coords{{4.5, 4.5, 4.5}};
+      auto origin = anuvikar::Coords{{0.0, 0.0, 0.0}};
+      auto max = anuvikar::Coords{{4.5, 4.5, 4.5}};
       auto maxInitial = getInitialMax(origin, max);
       NextExpected ne{
           origin, max,
@@ -821,14 +821,14 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
       info.originY = origin[1];
       info.originZ = origin[2];
       ExtraInfo extraInfo;
-      auto fsAtoms = std::make_pair(csaransh::xyzFileStatus::reading, atoms);
+      auto fsAtoms = std::make_pair(anuvikar::xyzFileStatus::reading, atoms);
       auto ungroupedDefectsDumbbellPair = atoms2defects(fsAtoms, info, extraInfo, config);
       auto ungroupedDefects = std::get<2>(ungroupedDefectsDumbbellPair);
       CHECK(ungroupedDefects.size() == 200);
       int nDefects;
       double inClusterFractionI, inClusterFractionV;
       std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-          csaransh::getNDefectsAndClusterFractions(ungroupedDefects);
+          anuvikar::getNDefectsAndClusterFractions(ungroupedDefects);
       SECTION("Check cluster grouping") {
         auto defects = groupDefects(ungroupedDefects, latticeConst);
         /*
@@ -842,17 +842,17 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
         REQUIRE(clusterSizeMap.size() == 2);  // TODO:  unimportant! check again
         SECTION("Check ndefects and cluster sizes") {
           std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-              csaransh::getNDefectsAndClusterFractions(defects);
+              anuvikar::getNDefectsAndClusterFractions(defects);
           REQUIRE(nDefects == 99);
           REQUIRE(inClusterFractionI == Approx(100.0));
           REQUIRE(inClusterFractionV == Approx(100.0));
           ignoreSmallClusters(defects, clusterSizeMap);
           std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-              csaransh::getNDefectsAndClusterFractions(defects);
+              anuvikar::getNDefectsAndClusterFractions(defects);
           REQUIRE(nDefects == 99);
           REQUIRE(inClusterFractionI == Approx(100.0));
           REQUIRE(inClusterFractionV == Approx(100.0));
-          auto clusterIdMap = csaransh::clusterMapping(defects);
+          auto clusterIdMap = anuvikar::clusterMapping(defects);
           REQUIRE(clusterIdMap.size() == 2); // 1 interstitial and 1 vacancy cluster
           auto it = std::begin(clusterIdMap);
           // REQUIRE((it->second.size() == 98 || it->second.size() == 104));
@@ -860,7 +860,7 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
           it++;
           CHECK(it->second.size() == 101);
           auto clusterIVMap =
-              csaransh::clusterIVType(clusterIdMap, clusterSizeMap);
+              anuvikar::clusterIVType(clusterIdMap, clusterSizeMap);
           REQUIRE(clusterIVMap.size() == 2);
           auto jt = std::begin(clusterIVMap);
           REQUIRE(std::abs(jt->second) == 99); // surviving
@@ -868,7 +868,7 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
           REQUIRE(std::abs(jt->second) == 99); // surviving
           int maxClusterSizeI, maxClusterSizeV;
           std::tie(maxClusterSizeI, maxClusterSizeV) =
-              csaransh::getMaxClusterSizes(clusterSizeMap, clusterIdMap);
+              anuvikar::getMaxClusterSizes(clusterSizeMap, clusterIdMap);
           REQUIRE(maxClusterSizeI == 99);
           REQUIRE(maxClusterSizeV == 99);
         } // ndefects and cluster sizes
@@ -880,8 +880,8 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
         "One atom kicked out of the box : unwrapped coordinates are invalid") {
       std::vector<std::tuple<Coords, double, Coords>> atoms;
 
-      auto origin = csaransh::Coords{{0.25, 0.25, 0.25}};
-      auto max = csaransh::Coords{{10.75, 10.75, 10.75}};
+      auto origin = anuvikar::Coords{{0.25, 0.25, 0.25}};
+      auto max = anuvikar::Coords{{10.75, 10.75, 10.75}};
       auto maxInitial = getInitialMax(origin, max);
       NextExpected ne{
           origin, max,
@@ -916,7 +916,7 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
       info.originY = origin[1];
       info.originZ = origin[2];
       ExtraInfo extraInfo;
-      auto fsAtoms = std::make_pair(csaransh::xyzFileStatus::reading, atoms);
+      auto fsAtoms = std::make_pair(anuvikar::xyzFileStatus::reading, atoms);
       auto ungroupedDefectsDumbbellPair = atoms2defects(fsAtoms, info, extraInfo, config);
       auto ungroupedDefects = std::get<2>(ungroupedDefectsDumbbellPair);
       // it should have been 4 but now alot more defects are counted as the
@@ -940,8 +940,8 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
   SECTION("Edge cases") {
     SECTION("Perfect lattice") {
       std::vector<std::tuple<Coords, double, Coords>> atoms;
-      auto origin = csaransh::Coords{{0.0, 0.0, 0.0}};
-      auto max = csaransh::Coords{{1.5, 1.5, 1.5}};
+      auto origin = anuvikar::Coords{{0.0, 0.0, 0.0}};
+      auto max = anuvikar::Coords{{1.5, 1.5, 1.5}};
       auto maxInitial = getInitialMax(origin, max);
       NextExpected ne{
           origin, max,
@@ -960,14 +960,14 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
       info.originY = origin[1];
       info.originZ = origin[2];
       ExtraInfo extraInfo;
-      auto fsAtoms = std::make_pair(csaransh::xyzFileStatus::reading, atoms);
+      auto fsAtoms = std::make_pair(anuvikar::xyzFileStatus::reading, atoms);
       auto ungroupedDefectsDumbbellPair = atoms2defects(fsAtoms, info, extraInfo, config);
       REQUIRE(std::get<2>(ungroupedDefectsDumbbellPair).empty());
     }
     SECTION("slightly shaken lattice") {
       std::vector<std::tuple<Coords, double, Coords>> atoms;
-      auto origin = csaransh::Coords{{0.0, 0.0, 0.0}};
-      auto max = csaransh::Coords{{1.5, 1.5, 1.5}};
+      auto origin = anuvikar::Coords{{0.0, 0.0, 0.0}};
+      auto max = anuvikar::Coords{{1.5, 1.5, 1.5}};
       auto maxInitial = getInitialMax(origin, max);
       NextExpected ne{
           origin, max,
@@ -991,7 +991,7 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
       info.originX = origin[0];
       info.originY = origin[1];
       info.originZ = origin[2];
-      auto fsAtoms = std::make_pair(csaransh::xyzFileStatus::reading, atoms);
+      auto fsAtoms = std::make_pair(anuvikar::xyzFileStatus::reading, atoms);
       auto ungroupedDefectsDumbbellPair = atoms2defects(fsAtoms, info, extraInfo, config);
       REQUIRE(std::get<2>(ungroupedDefectsDumbbellPair).empty());
     }
@@ -1004,7 +1004,7 @@ SCENARIO("Given xyz coordinates of all the displaced atoms, output only the "
          "[defectsTest]") {
   SECTION("Normal cases") {
     SECTION("Ring") {
-      std::vector<std::array<csaransh::Coords, 2>> displacedOld{
+      std::vector<std::array<anuvikar::Coords, 2>> displacedOld{
           {{Coords{{-155.886, 2.3739, -32.4433}},
             Coords{{-155.652, 1.48622, -33.0678}}}},
           {{Coords{{-154.304, 3.9565, -30.8607}},
@@ -1031,12 +1031,12 @@ SCENARIO("Given xyz coordinates of all the displaced atoms, output only the "
             Coords{{-152.263, 1.98476, -36.8897}}}},
           {{Coords{{-163.799, -113.156, 19.7825}},
             Coords{{-151.98, 3.48003, -34.8472}}}}};
-      std::array<std::vector<csaransh::Coords>, 2> displaced;
+      std::array<std::vector<anuvikar::Coords>, 2> displaced;
       for (const auto &x : displacedOld) {
         displaced[0].emplace_back(std::move(x[0]));
         displaced[1].emplace_back(std::move(x[1]));
       }
-      auto fs = csaransh::xyzFileStatus::reading;
+      auto fs = anuvikar::xyzFileStatus::reading;
       auto fsDisplaced = std::make_pair(fs, displaced);
       auto latticeConst = 3.165;
       auto ungroupedDefectsDumbbellPair =
@@ -1046,7 +1046,7 @@ SCENARIO("Given xyz coordinates of all the displaced atoms, output only the "
       int nDefects;
       double inClusterFractionI, inClusterFractionV;
       std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-          csaransh::getNDefectsAndClusterFractions(ungroupedDefects);
+          anuvikar::getNDefectsAndClusterFractions(ungroupedDefects);
       /*
       std::sort(std::begin(ungroupedDefects), std::end(ungroupedDefects), [](const auto &a, const auto &b) {
         if (std::get<0>(a)[0] == std::get<0>(b)[0]) return std::get<0>(a)[1] < std::get<0>(b)[1];
@@ -1092,30 +1092,30 @@ SCENARIO("Given xyz coordinates of all the displaced atoms, output only the "
         REQUIRE(clusterSizeMap.size() == 4);
         SECTION("Check ndefects and cluster sizes") {
           std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-              csaransh::getNDefectsAndClusterFractions(defects);
+              anuvikar::getNDefectsAndClusterFractions(defects);
           REQUIRE(nDefects == 3);
           REQUIRE(inClusterFractionI == Approx(100.0));
           REQUIRE(inClusterFractionV == Approx(100.0));
           ignoreSmallClusters(defects, clusterSizeMap);
           std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-              csaransh::getNDefectsAndClusterFractions(defects);
+              anuvikar::getNDefectsAndClusterFractions(defects);
           REQUIRE(inClusterFractionI == Approx(100.0));
           REQUIRE(inClusterFractionV == Approx(0.0));
-          auto clusterIdMap = csaransh::clusterMapping(defects);
+          auto clusterIdMap = anuvikar::clusterMapping(defects);
           REQUIRE(clusterIdMap.size() == 1); // 1 interstitial cluster ring
           auto it = std::begin(clusterIdMap);
           REQUIRE(it->second.size() == 23);
           auto clusterIVMap =
-              csaransh::clusterIVType(clusterIdMap, clusterSizeMap);
+              anuvikar::clusterIVType(clusterIdMap, clusterSizeMap);
           REQUIRE(clusterIVMap.size() == 1);
           REQUIRE(std::abs(std::begin(clusterIVMap)->second) == 3); // surviving
           int maxClusterSizeI, maxClusterSizeV;
           std::tie(maxClusterSizeI, maxClusterSizeV) =
-              csaransh::getMaxClusterSizes(clusterSizeMap, clusterIdMap);
+              anuvikar::getMaxClusterSizes(clusterSizeMap, clusterIdMap);
           REQUIRE(maxClusterSizeI == 3);
           REQUIRE(maxClusterSizeV == 0);
           SECTION("Check cluster features") {
-            auto feats = csaransh::clusterFeatures(
+            auto feats = anuvikar::clusterFeatures(
                 defects, clusterIdMap, clusterSizeMap, latticeConst);
             REQUIRE(feats.size() == 1);
             const auto &distFeat = std::get<0>(std::begin(feats)->second);

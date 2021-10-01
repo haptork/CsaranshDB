@@ -16,7 +16,7 @@
 auto getConfig(int argc, char *argv[]) {
   using clipp::option;
   using clipp::value;
-  csaransh::Config config;
+  anuvikar::Config config;
   std::vector<std::string> files;
   int &logMode = config.logMode;
   auto help = false;
@@ -63,24 +63,24 @@ auto getConfig(int argc, char *argv[]) {
                                "name / path."),
        option("-lf") &
            value("log file", config.logFilePath)
-               .doc("log (default log-csaransh-pp-cpp.txt): file name"),
+               .doc("log (default log-anuvikar-cpp.txt): file name"),
        option("-ld")
-           .set(logMode, logMode | csaransh::LogMode::debug)
+           .set(logMode, logMode | anuvikar::LogMode::debug)
            .doc("log: Enable logging for debug"),
        option("-li")
-           .set(logMode, logMode | csaransh::LogMode::info)
+           .set(logMode, logMode | anuvikar::LogMode::info)
            .doc("log: Enable logging for info"),
        option("-lw")
-           .set(logMode, logMode | csaransh::LogMode::warning)
+           .set(logMode, logMode | anuvikar::LogMode::warning)
            .doc("log: Enable logging for warning"),
        option("-le")
-           .set(logMode, logMode | csaransh::LogMode::error)
+           .set(logMode, logMode | anuvikar::LogMode::error)
            .doc("log: Enable logging for error"),
        option("-ln")
-           .set(logMode, csaransh::LogMode::none | csaransh::LogMode::none)
+           .set(logMode, anuvikar::LogMode::none | anuvikar::LogMode::none)
            .doc("log: Disable logging"),
        option("-la")
-           .set(logMode, csaransh::LogMode::all | csaransh::LogMode::all)
+           .set(logMode, anuvikar::LogMode::all | anuvikar::LogMode::all)
            .doc("log: enable all "),
        clipp::any_other(files), option("-help").set(help));
   if (clipp::parse(argc, argv, cli) && !help && !files.empty()) {
@@ -97,9 +97,9 @@ auto getConfig(int argc, char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-  using csaransh::Logger;
-  // Logger::inst().mode(csaransh::LogMode::warning | csaransh::LogMode::error);
-  csaransh::Config config;
+  using anuvikar::Logger;
+  // Logger::inst().mode(anuvikar::LogMode::warning | anuvikar::LogMode::error);
+  anuvikar::Config config;
   std::vector<std::string> files;
   bool isConfigParse;
   std::tie(config, files, isConfigParse) =
@@ -114,7 +114,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
   outfile << "{\"meta\": {\n";
-  csaransh::configToKeyValue(outfile, config);
+  anuvikar::configToKeyValue(outfile, config);
   outfile << "}\n, \"data\": [\n";
   std::cout << "Total files to process: " << (files.size()) << '\n'
             << std::flush;
@@ -123,20 +123,20 @@ int main(int argc, char *argv[]) {
   Logger::inst().log_info("Started writing to output file \"" + outpath + "\"");
   auto success = 0;
   int curIndex = 0;
-  csaransh::InputInfo info;
-  csaransh::ExtraInfo extraInfo;
+  anuvikar::InputInfo info;
+  anuvikar::ExtraInfo extraInfo;
   auto isInfo = false;
   for (const auto &file : files) {
     std::cout << "\rCurrently processing file " << curIndex + 1 << std::flush;
     Logger::inst().log_info("Started processing file \"" + file + "\"");
-    csaransh::ErrorStatus ret;
+    anuvikar::ErrorStatus ret;
     int curSuccess = 0;
     std::tie(ret, curSuccess) = processFileTimeCmd(file, outfile, config, success, info, extraInfo, isInfo);
-    if (csaransh::ErrorStatus::inputFileMissing == ret) {
-      std::tie(info, extraInfo, isInfo) = csaransh::infoFromStdIn();
+    if (anuvikar::ErrorStatus::inputFileMissing == ret) {
+      std::tie(info, extraInfo, isInfo) = anuvikar::infoFromStdIn();
       std::tie(ret, curSuccess) = processFileTimeCmd(file, outfile, config, success, info, extraInfo, isInfo);
     }
-    if (csaransh::ErrorStatus::noError != ret) {
+    if (anuvikar::ErrorStatus::noError != ret) {
       std::cerr << "\nError in processing file " << file << '\n';
       std::cerr << errToStr(ret) << '\n';
       Logger::inst().log_error("Error in processing file \"" + file + "\" " +

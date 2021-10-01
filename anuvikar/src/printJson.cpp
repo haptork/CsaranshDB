@@ -9,7 +9,7 @@ void printClusterIds(const std::unordered_map<int, std::vector<int>> clusters,
   for (const auto &it : clusters) {
     outfile << '"' << it.first << "\":";
     outfile << "[";
-    csaransh::writeVector(it.second, outfile);
+    anuvikar::writeVector(it.second, outfile);
     outfile << "]";
     if (i != clusters.size() - 1) outfile << ", ";
     outfile << "\n";
@@ -29,24 +29,24 @@ void printClusterIVs(const std::unordered_map<int, int> clusters,
   }
 }
 
-void printSingleFeat(const csaransh::featT &feats, std::ostream &outfile) {
+void printSingleFeat(const anuvikar::featT &feats, std::ostream &outfile) {
   outfile << "\"dist\": ";
   outfile << "[";
-  csaransh::writeStdAr(std::get<0>(feats), outfile);
+  anuvikar::writeStdAr(std::get<0>(feats), outfile);
   outfile << "],\n";
   outfile << "\"angle\": ";
   outfile << "[";
-  csaransh::writeStdAr(std::get<1>(feats), outfile);
+  anuvikar::writeStdAr(std::get<1>(feats), outfile);
   /*
   outfile << "],\n";
   outfile << "\"adjNn2\": ";
   outfile << "[";
-  csaransh::writeStdAr(std::get<2>(feats), outfile);
+  anuvikar::writeStdAr(std::get<2>(feats), outfile);
   */
   outfile << "]\n";
 }
 
-void printFeats(const std::unordered_map<int, csaransh::featT> &feats,
+void printFeats(const std::unordered_map<int, anuvikar::featT> &feats,
                 std::ostream &outfile) {
   size_t count = 0;
   for (const auto &it : feats) {
@@ -59,37 +59,37 @@ void printFeats(const std::unordered_map<int, csaransh::featT> &feats,
   }
 }
 
-auto strSimulationCode(csaransh::XyzFileType code) {
-  return (code == csaransh::XyzFileType::cascadesDbLikeCols)
+auto strSimulationCode(anuvikar::XyzFileType code) {
+  return (code == anuvikar::XyzFileType::cascadesDbLikeCols)
              ? "cascadesDbLikeCols"
-             : (code == csaransh::XyzFileType::lammpsWithStdHeader)
+             : (code == anuvikar::XyzFileType::lammpsWithStdHeader)
                    ? "lammpsWithStdHeader"
-                   : (code == csaransh::XyzFileType::parcasWithStdHeader)
+                   : (code == anuvikar::XyzFileType::parcasWithStdHeader)
                       ? "parcasWithStdHeader"
-                      : (code == csaransh::XyzFileType::lammpsDisplacedCompute)
+                      : (code == anuvikar::XyzFileType::lammpsDisplacedCompute)
                         ? "lammpsDisp"
                         : "generic-XYZ";
 }
 
-std::string errorStr(csaransh::ErrorStatus err) {
-  if (err == csaransh::ErrorStatus::inputFileMissing) {
+std::string errorStr(anuvikar::ErrorStatus err) {
+  if (err == anuvikar::ErrorStatus::inputFileMissing) {
     return "Could not read input file";
-  } else if (err == csaransh::ErrorStatus::inputFileMissing) {
+  } else if (err == anuvikar::ErrorStatus::inputFileMissing) {
     return "Could not read input file";
-  } else if (err == csaransh::ErrorStatus::InputFileincomplete) {
+  } else if (err == anuvikar::ErrorStatus::InputFileincomplete) {
     return "Input file doesn't have all the info";
-  } else if (err == csaransh::ErrorStatus::unknownSimulator) {
+  } else if (err == anuvikar::ErrorStatus::unknownSimulator) {
     return "Input file doesn't have LAMMPS/PARCAS/DISPLACED simulation input "
            "type";
-  } else if (err == csaransh::ErrorStatus::xyzFileDefectsProcessingError) {
+  } else if (err == anuvikar::ErrorStatus::xyzFileDefectsProcessingError) {
     return "XYZ file has too many defects or zero atoms";
   }
   return "";
 }
 
-void csaransh::resToKeyValue(std::ostream &outfile,
-                             const csaransh::resultsT &res) {
-  auto printDefects = [&outfile](const csaransh::DefectVecT &d) {
+void anuvikar::resToKeyValue(std::ostream &outfile,
+                             const anuvikar::resultsT &res) {
+  auto printDefects = [&outfile](const anuvikar::DefectVecT &d) {
     size_t count = 0;
     for (const auto &x : d) {
       outfile << "[" << std::get<0>(x)[0] << ", " << std::get<0>(x)[1] << ", "
@@ -128,13 +128,13 @@ void csaransh::resToKeyValue(std::ostream &outfile,
   outfile << "}";
   outfile << ",\n";
   outfile << "\"coDefects\": [";
-  csaransh::writeVector(res.coDefects, outfile);
+  anuvikar::writeVector(res.coDefects, outfile);
   outfile << "]\n";
 }
 
-void csaransh::infoToKeyValue(std::ostream &outfile,
-                              const csaransh::InputInfo &i,
-                              const csaransh::ExtraInfo &ei) {
+void anuvikar::infoToKeyValue(std::ostream &outfile,
+                              const anuvikar::InputInfo &i,
+                              const anuvikar::ExtraInfo &ei) {
   outfile << "\"xyzFilePath\": \"" << i.xyzFilePath << "\",\n"
           << "\"id\": \"" << ei.id << "\",\n"
           << "\"substrate\": \"" << ei.substrate << "\",\n"
@@ -161,8 +161,8 @@ void csaransh::infoToKeyValue(std::ostream &outfile,
           << "\"originType\":" << i.originType; // << ",\n";
 }
 
-void csaransh::configToKeyValue(std::ostream &outfile,
-                                const csaransh::Config &c) {
+void anuvikar::configToKeyValue(std::ostream &outfile,
+                                const anuvikar::Config &c) {
   outfile << "\"version\": \"" << "0.4" << "\",\n"
           << "\"onlyDefects\": \"" << c.onlyDefects << "\",\n"
           << "\"isFindDistribution\": \"" << c.isFindDistribAroundPKA << "\",\n"
@@ -177,13 +177,13 @@ void csaransh::configToKeyValue(std::ostream &outfile,
           << "\"outputJSONFilePath\": \"" << c.outputJSONFilePath << "\""; // << ",\n";
 }
 
-void csaransh::printJson(std::ostream &outfile, const csaransh::InputInfo &i,
-                         const csaransh::ExtraInfo &ei,
-                         const csaransh::resultsT &res) {
+void anuvikar::printJson(std::ostream &outfile, const anuvikar::InputInfo &i,
+                         const anuvikar::ExtraInfo &ei,
+                         const anuvikar::resultsT &res) {
   outfile << "{";
-  csaransh::infoToKeyValue(outfile, i, ei);
+  anuvikar::infoToKeyValue(outfile, i, ei);
   outfile << ",\n";
-  csaransh::resToKeyValue(outfile, res);
+  anuvikar::resToKeyValue(outfile, res);
   outfile << "}\n";
 }
 // const char * c = outfile.str().c_str();

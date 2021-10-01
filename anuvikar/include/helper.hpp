@@ -3,8 +3,8 @@
  * helper functions for general usage
  * */
 
-#ifndef HELPER_CSARANSH_HPP
-#define HELPER_CSARANSH_HPP
+#ifndef HELPER_ANUVIKAR_HPP
+#define HELPER_ANUVIKAR_HPP
 
 #include <algorithm>
 #include <array>
@@ -15,7 +15,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace csaransh {
+namespace anuvikar {
 namespace invars {
   // static constexpr double kB = 8.6173303e-5;
   static constexpr double epsilon = 1e-6;
@@ -104,8 +104,8 @@ struct Config {
   bool safeRunChecks{true};
   double thresholdFactor{0.345};
   double extraDefectsSafetyFactor{50.0};
-  int logMode{csaransh::LogMode::warning | csaransh::LogMode::error};
-  std::string logFilePath{"log-csaransh-pp-cpp.txt"};
+  int logMode{anuvikar::LogMode::warning | anuvikar::LogMode::error};
+  std::string logFilePath{"log-anuvikar-cpp.txt"};
   std::string outputJSONFilePath{"cascades-data.json"};
 };
 
@@ -119,7 +119,7 @@ static inline double calcDistSqr(Coords a, Coords b) {
   return dist;
 }
 
-static inline double calcDist(csaransh::Coords a, csaransh::Coords b) {
+static inline double calcDist(anuvikar::Coords a, anuvikar::Coords b) {
   return std::sqrt(calcDistSqr(a, b));
 }
 
@@ -192,5 +192,5 @@ template <typename T, size_t s> auto strAr(std::array<T, s> ar) {
   return res;
 }
 
-} // namespace csaransh
+} // namespace anuvikar
 #endif

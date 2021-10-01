@@ -1,8 +1,8 @@
 #include <NextExpected.hpp>
 #include <iostream>
 
-const csaransh::Coords &csaransh::NextExpected::increment() {
-  csaransh::Coords &c = _cur;
+const anuvikar::Coords &anuvikar::NextExpected::increment() {
+  anuvikar::Coords &c = _cur;
   constexpr auto epsilon = 1e-4;
   for (auto i : {2, 1, 0}) {
     //std::cout << "i is " << i << '\n';
@@ -53,8 +53,8 @@ const csaransh::Coords &csaransh::NextExpected::increment() {
   return c;
 }
 
-const csaransh::Coords &csaransh::NextExpected::incrementFcc() {
-  csaransh::Coords &c = _cur;
+const anuvikar::Coords &anuvikar::NextExpected::incrementFcc() {
+  anuvikar::Coords &c = _cur;
   constexpr auto epsilon = 1e-4;
   //for (auto i : {2, 1, 0}) {
     if (c[2] < (_maxCur[2] - epsilon)) {

@@ -3,12 +3,12 @@
  * helper functions for general usage
  * */
 
-#ifndef NEXTEXPECTED_CSARANSH_HPP
-#define NEXTEXPECTED_CSARANSH_HPP
+#ifndef NEXTEXPECTED_ANUVIKAR_HPP
+#define NEXTEXPECTED_ANUVIKAR_HPP
 
 #include <helper.hpp>
 
-namespace csaransh {
+namespace anuvikar {
 struct NextExpected {
 private:
   Coords _min, _max, _minCur, _maxCur, _maxFinal;
@@ -38,5 +38,5 @@ public:
   const Coords &incrementFcc();
   int mode{0};
 };
-} // namespace csaransh
+} // namespace anuvikar
 #endif
