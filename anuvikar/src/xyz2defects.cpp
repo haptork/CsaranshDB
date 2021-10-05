@@ -592,7 +592,7 @@ anuvikar::DefectRes anuvikar::atoms2defects(
   }
   */
   int extraDefects = 0;
-  int maxExtraDefects = interstitials.size() * 3;
+  int maxExtraDefects = interstitials.size() * 2;
   if (maxExtraDefects > interThresh.size())
     maxExtraDefects = interThresh.size();
   std::nth_element(begin(interThresh), begin(interThresh) + maxExtraDefects,
