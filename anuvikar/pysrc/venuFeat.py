@@ -8,7 +8,7 @@ import sys
 import math
 import seaborn as sns
 import matplotlib.pyplot as plt
-from .geo import Point, Line, use_degrees, Plane
+from .geo import Point, Line, use_degrees, Plane, abs2
 import json
 use_degrees()
 angular_unit = 180.0/math.pi
@@ -185,9 +185,16 @@ def forceAlign(line):
     milDir = np.rint(milBasic * milMult)
     milFam = tuple(sorted([abs(int(x)) for x in milDir]))
     p1 = Point(line.r)
-    lineN = Line(p1, Point(p1.r - milDir))
-    angles = getSymmetricPlaneAngle(lineN)
-    angErr = line.angle_to(lineN)
+    pMil = Point(p1.r - milDir)
+    if abs2(p1.r - pMil.r) > 0.0001: 
+      lineN = Line(p1, pMil)
+      angles = [0.0, 0.0, 0.0]
+      angErr = line.angle_to(lineN)
+    else:
+      #print("Error in force align")
+      lineN = line
+      angles = 0.0
+      angErr = 0.0
     rawDir = tuple(map(lambda x: round(x,2), sorted(abs(milBasic))[:-1]))
     return {"type": milFam, 'type1': milFamOne, 'dir': rawDir, 'eq':lineN, 'angles': angles, 'err': (perfect, milErrSum, milErrMax, angErr)}
 
@@ -251,6 +258,9 @@ def findSubLine(cascade, cid, line, vacsOrig):
     otherPReal = cascade['coords'][cascade['clusters'][cid][otherP]][:3]
     err = vacs[0][0]#line['vacErr'][1]
     err += vacs[1][0]
+    if abs2(np.array(mainPReal) - np.array(otherPReal)) < 0.00001: return None
+    # print("Error in def. subline")
+    # print(mainPReal, otherPReal)
     subLine = Line(Point(mainPReal), Point(otherPReal))
     subLinePs = list()    
     subLinePs.append((0.0, mainPIndex))
@@ -344,7 +354,7 @@ def addCollinearToTriadsAgain(cascade, cid, lines, coordIndexMap, linesT, coordI
     latConst = cascade['latticeConst']
     distTolErr = 0.10
     distTol = [0.30 + distTolErr, 0.50 + distTolErr, 0.70 + (distTolErr * 2)]#latConst * 0.3
-    nn = NearestNeighbors(5, latConst * 2.0)
+    nn = NearestNeighbors(n_neighbors=5, radius=latConst * 2.0)
     tIs = []
     tIsMap = {}
     for line in linesT:
@@ -432,7 +442,7 @@ def addCollinearToTriads(cascade, cid, lines, coordIndexMap, linesT, coordIndexM
     angleTol = [15, 27]
     distTolErr = 0.10
     distTol = [0.30 + distTolErr, 0.50 + distTolErr, 0.70 + (distTolErr * 2)]#latConst * 0.3
-    nn = NearestNeighbors(5, latConst * 2.0)
+    nn = NearestNeighbors(n_neighbors=5, radius=latConst * 2.0)
     nn.fit(cascade['eigen_features'][cid]['coords'])
     allFreeVs = []
     allLines = lines + linesT
@@ -475,7 +485,7 @@ def addCollinearToTriads(cascade, cid, lines, coordIndexMap, linesT, coordIndexM
                         for y in otherLine['points']:
                             coordIndexMap[y] = line['id']
                         if not isCheckSubLine: isCheckSubLine = otherLine['isVac'] != 2
-                        subLineVacs.append((dist, line['points'][1]))
+                        subLineVacs.append((dist, otherLine['points'][1]))
                 elif neighIndex in coordIndexMapT:
                     otherLine = linesT[coordIndexMapT[neighIndex]- len(lines)]
                     #(neighIndex, line['id'])

@@ -55,6 +55,7 @@ dbToJsonMap = {
   'ncell': 'ncell',
   'energy': 'energy',
   'latticeconst': 'latticeConst',
+  'structure': 'structure',
   'temperature': 'temperature',
   'simulationtime': 'simulationTime',
   'infile': 'infile',
@@ -94,6 +95,7 @@ dbToJsonMap2 = (
   ('ncell', 'ncell'),
   ('energy', 'energy'),
   ('latticeconst', 'latticeConst'),
+  ('structure', 'structure'),
   ('temperature', 'temperature'),
   ('simulationtime', 'simulationTime'),
   ('infile', 'infile'),
@@ -134,6 +136,7 @@ dbTypes = {
   'energy': 'integer',
   'boxsize': 'real',
   'latticeconst': 'real',
+  'structure': 'string',
   'temperature': 'real',
   'simulationtime': 'integer',
   'infile': 'string',
@@ -195,7 +198,7 @@ def cookCascadesDbTuple(cascades):
 def addCascadesTable(cascades, cur):
   cur.execute('''create table cascades
                (id text Primary key, cascadeid text unique, ncell integer, energy integer, latticeconst real not null,
-                temperature real, simulationtime real, infile string, xyzfilepath string not null,
+                structure string, temperature real, simulationtime real, infile string, xyzfilepath string not null,
                 substrate sring, simulationcode string, potentialused string, author string,
                 es integer, tags text, ndefects integer, nclusters integer,
                 maxclustersize integer, maxclustersizei integer, maxclustersizev integer,
@@ -357,12 +360,12 @@ def validateArchive(srcDir, extractionDir, metaFiles, overwriteJson, overwriteDb
       else:
         cascades += curCascades
         #return [isSuccess, msg]
-    cascades = stageDwiMl(cascades)
-    writeMlResultsToJSON(cascades, config)
   else:
     f = open(config['outputJSONFilePath'], 'r')
     cascades = json.load(f)
     f.close()
+  writeMlResultsToJSON(cascades, config)
+  cascades = stageDwiMl(cascades)
   if not(os.path.exists(config['outputDbPath'])) or overwriteDb:
     if os.path.exists(config['outputDbPath']):
       os.remove(config['outputDbPath'])
@@ -385,7 +388,8 @@ if __name__ == "__main__":
     else:
         srcDir = sys.argv[1]
         extractionDir = sys.argv[2]
-        overwriteJson = True
+        #overwriteJson = True
+        overwriteJson = False
         overwriteDb = True
         #overwriteJson = (sys.argv[3] == "1")
         #overwriteDb = (sys.argv[4] == "1")

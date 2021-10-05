@@ -10,6 +10,7 @@ const dbToJsonMap = {
   'ncell': 'ncell',
   'energy': 'energy',
   'latticeconst': 'latticeConst',
+  'structure': 'structure',
   'temperature': 'temperature',
   'simulationtime': 'simulationTime',
   'infile': 'infile',

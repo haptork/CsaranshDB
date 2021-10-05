@@ -299,8 +299,10 @@ def clusterClasses(data, feat, tag):
     show_dim = []
     if len(feat) == 0: return False
     rndSeed = 42
+    #reduced_dim = umap.UMAP(n_components=2, n_neighbors=6, min_dist=0.40,
+    #                        metric=quad, random_state=rndSeed).fit_transform(feat).tolist()
     reduced_dim = umap.UMAP(n_components=2, n_neighbors=6, min_dist=0.40,
-                            metric=quad, random_state=rndSeed).fit_transform(feat).tolist()
+                            random_state=rndSeed).fit_transform(feat).tolist()
     preId = -1
     for (tcas, tcid), dim in zip(tag,reduced_dim):
         cascade = data[tcas]

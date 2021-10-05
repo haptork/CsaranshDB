@@ -6,6 +6,7 @@ exports.up = async function(knex, Promise) {
       t.integer('ncell');
       t.integer('energy');
       t.float('latticeconst').notNullable();
+      t.float('structure').notNullable();
       t.float('temperature');
       t.integer('simulationtime');
       t.string('infile');

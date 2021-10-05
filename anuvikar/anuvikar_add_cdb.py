@@ -130,9 +130,9 @@ def cookNewComparison(oldFt, feat, tag):
   quadDist = quadCustom(0.0, 1.0)
   quadBoth = quad
   defaultK = topsize * 3 if topsize * 3 < len(feat) else len(feat) - 1
-  neigh[keys[0]] = NearestNeighbors(defaultK, metric=quadAngle)
-  neigh[keys[1]] = NearestNeighbors(defaultK, metric=quadDist)
-  neigh[keys[2]] = NearestNeighbors(defaultK, metric=quadBoth)
+  neigh[keys[0]] = NearestNeighbors(n_neighbors = defaultK, metric=quadAngle)
+  neigh[keys[1]] = NearestNeighbors(n_neighbors = defaultK, metric=quadDist)
+  neigh[keys[2]] = NearestNeighbors(n_neighbors = defaultK, metric=quadBoth)
   dists = {}
   neighbours = {}
   allFeat = oldFt['feat'] + feat

@@ -600,8 +600,23 @@ WIP:
 - Finalizing script interfaces.
 
 
-## 3rd Oct:
+## 4rd Oct:
 
 WIP:
 
-- 
+- Fix class names in savi.
+
+## 5th Oct:
+
+WIP:
+
+- Updated environment.yml for conda with updated python packages and made changes as per new library interfaces.
+- Fixed runtime warning for division by zero when creating subline.
+- Added structure parameter to db.
+
+TODO:
+
+- Test validate script for Fe and Cu.
+- Correct on click for vacancy in savimorph.
+- Add structure to csaransh columns.
+

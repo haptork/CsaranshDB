@@ -141,6 +141,7 @@ void anuvikar::infoToKeyValue(std::ostream &outfile,
           << "\"simulationCode\": \"" << strSimulationCode(i.xyzFileType)
           << "\",\n"
           << "\"energy\":" << ei.energy << ",\n"
+          << "\"structure\": \"" << i.structure << "\",\n"
           << "\"simulationTime\":" << ei.simulationTime << ",\n"
           << "\"ncell\":" << i.ncell << ",\n"
           << "\"boxSize\":" << i.boxSize << ",\n"

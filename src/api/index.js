@@ -12,6 +12,7 @@ module.exports = () => {
     'temperature': 'range',
     'simulationtime': 'range',
     'infile': 'text',
+    'structure': "text",
     'xyzfilepath': "text",
     'substrate': 'text',
     'potentialused': 'text',
@@ -119,7 +120,7 @@ module.exports = () => {
         outline[label].push(row[label])
       }
     }
-    rows.select("id", "ndefects", "substrate", "energy", "temperature", "maxclustersize", "maxclustersizei", "maxclustersizev", "inclusteri", "inclusterv", "hullvol", "hulldensity", "potentialused", "es", "author");
+    rows.select("id", "ndefects", "substrate", "energy", "temperature", "structure", "maxclustersize", "maxclustersizei", "maxclustersizev", "inclusteri", "inclusterv", "hullvol", "hulldensity", "potentialused", "es", "author");
     const cascades =  await rows;
     //console.log(cascades[0])
     res.send({'data':cascades, 'outline':outline});

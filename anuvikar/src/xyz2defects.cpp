@@ -20,7 +20,9 @@
 #include <iostream>
 
 auto getThresh(const anuvikar::InputInfo &info, const double &factor) {
-  return factor * info.latticeConst;
+  auto tempFactor = 1.0 + (info.temperature - 900)/10000;
+  if (tempFactor < 1.0) tempFactor = 1.0;
+  return (factor * info.latticeConst) * tempFactor ;
 }
 
 // tells if two coordinates are equal within epsilon = 1e-6 range
