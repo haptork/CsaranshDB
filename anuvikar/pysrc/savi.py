@@ -568,6 +568,8 @@ def calcCentComps(components):
     if total != 0: res /= total
     return res
 
+nameNums = {'parallel': 1, 'ring': 2, 'parallelAndRing': 3, 'other': 4}
+
 def findComponentClass(attrs, labels, components, lines, ringFreeIs):
     sizesMain = np.array([len(list(filter(lambda y: y[0], x))) for x in components])
     centComps = calcCentComps(components)
@@ -581,47 +583,47 @@ def findComponentClass(attrs, labels, components, lines, ringFreeIs):
     nLineTol = 15
     #print(centComps)
     #print(sizesMain)
+    orients = [x[1]['verdict'] for x in allParSizes]
     if onlyParallel:
+        orientV = orients[0]
         alone = (sizesMain[0] == 1 or allParSizes[1][0] / allParSizes[0][0] < 0.2 and allParSizes[1][0] < 6)
         if alone:
             if ringFreeIs > 0:
-                if allParSizes[0][0] < 20: return (2, "c", "||@") # TODO check type of ring
-            orientV = allParSizes[0][1]['verdict']
-            if orientV == 3: return (1, "a", "||")
-            if orientV == 1: return (1, "b", "||-!")
-            return (4, "a", "#")
-        return (1, "c", "||//")
+                if allParSizes[0][0] < 10: return (3, "||:", [orientV]) # TODO check type of ring
+            allAlone = (sizesMain[0] == 1 and allParSizes[0][0] > 1 and centComps[0] > 0.95)
+            if allAlone: return (1, "||", [orientV])
+            return (1, "||-!", [orientV])
+        return (1, "||//", orients)
     sizesAny = np.array([len(x) for x in components[0:3]])
     maxRingSize = 0 if len(allRingSizes) == 0 else allRingSizes[0]
     maxRandomSize = 0 if len(allRandomSizes) == 0 else allRandomSizes[0]
     #print(centComps)
-    if ringFreeIs > 0 and attrs['nMain'] < 3: return (3, "a", "@")
+    if ringFreeIs > 0 and attrs['nMain'] < 3: return (2, "@", [])
     if centComps[1] > 0.4:
         #print("cent ring:", centComps[0], centComps[1], sum(centComps[2:]))
-        if centComps[1] < 0.75 and centComps[0] > sum(centComps[2:]): return (3, "b", "@||")
-        if centComps[1] < 0.75 and sum(sizesAny[2:]) >= 3: return (3, "c", "@#")
-        return (3, "a", "@")
+        if centComps[1] < 0.75 and centComps[0] > sum(centComps[2:]): return (3, "@||", orients[0])
+        if centComps[1] < 0.75 and sum(sizesAny[2:]) >= 3: return (5, "@#", [])
+        return (2, "@", [])
     #print('mxP', maxParSize)
     if centComps[0] > 0.4 and allParSizes[0][0] > 2:
         #print("cent par:", centComps[0], centComps[1], centComps[2], sum(centComps[3:]))
-        if (ringFreeIs > 0 and sum(centComps[2:]) < 0.2) or centComps[1] > 0.2 or maxRingSize > 2:
-            return (2, "c", "||@")
+        if (ringFreeIs > 0 and sum(centComps[2:]) < 0.1) or centComps[1] > 0.3 or maxRingSize > 2:
+            return (3, "||@", orients)
         stillParallel = len(allParSizes) > 0 and maxRingSize / allParSizes[0][0] < 0.4
         stillParallel = stillParallel and maxRandomSize / allParSizes[0][0] < 0.4 and allParSizes[0][0] > 3
         stillParallel = maxRandomSize < 5 and maxRingSize < 3
         if stillParallel:
-            if centComps[2] > 0.5 and sizesMain[2] > 0: return (4, "c", "||#")
-            if sizesMain[0] > 1: return (1, "c", "||//")
-            orient = allParSizes[0][1]['verdict']
-            if orient == 1: return (1, "b", "||-!")
-            if orient == 3: return (1, "a", "||")        
-            return (4, "c", "||#")            
-        if (sizesAny[1] > 0) and centComps[1] <= 0.2:  return (2, "c", "||#")
-    if (centComps[0] < 0.2 or allParSizes[0][0] <= 2) and sizesMain[1] == 0 and ringFreeIs == 0: return (4, "a", "#")
-    if sizesAny[1] > 0 or ringFreeIs > 0: return (4, "b", "#@")
-    if sizesMain[0] == 1:  return (4, "c", "||#")
-    if sizesMain[0] > 1: return (1, "c", "||//")
-    return (5, "a", "?")
+            if centComps[2] > 0.5 and sizesMain[2] > 0: return (5, "||#", orients)
+            if sizesMain[0] > 1: return (1, "||//", orients)
+            allAlone = (sizesMain[0] == 1 and centComps[0] > 0.95)
+            if allAlone: return (1, "||", [orients[0]])
+            return (1, "||-!", [orients[0]])
+        if (sizesAny[1] > 0) and centComps[1] <= 0.2:  return (5, "||#", orients)
+    if (centComps[0] < 0.2 or allParSizes[0][0] <= 2) and sizesMain[1] == 0 and ringFreeIs == 0: return (4, "#", [])
+    if sizesAny[1] > 0 or ringFreeIs > 0: return (5, "#@", [])
+    if sizesMain[0] == 1:  return (5, "||#", orients)
+    if sizesMain[0] > 1: return (1, "||//", orients)
+    return (6, "?", orients)
 
 def findComponentClassOld(attrs, labels, components, lines, ringFreeIs):
     sizesMain = np.array([len(list(filter(lambda y: y[0], x))) for x in components])
@@ -720,6 +722,7 @@ def makeSerializable(result2):
         li[2] = li[2].tolist()
     return result2
 
+orientName = {0:'', 1:'100', 2:'110', 3: '111', 4: ''}
 def addFullComponentInfo(cascade, cid, triads, pairs):
     if cascade['clusterSizes'][cid] < 2: return
     linesData = lineFeatsForCluster(cascade, cid, triads, pairs)
@@ -730,7 +733,8 @@ def addFullComponentInfo(cascade, cid, triads, pairs):
     for comp in components[1][0]:
         comp.append(findDislocationDirection(comp, linesData['lines']))
     curClass = findComponentClass(attrs, *components)
-    curClassName = '-'.join([str(x) for x in curClass])
+    curClassName = str(curClass[0])+'-'+curClass[1]
+    if curClass[0] == 1: curClassName += '-'+'|'.join([orientName[x] for x in set(curClass[2])])
     addComponentInfo(lineFeat, components[1], components[2], curClassName, cascade, cid)
 
 def getSaviDetails(cascade, cid):

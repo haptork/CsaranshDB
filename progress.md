@@ -591,3 +591,17 @@ WIP:
 - ~~ignore more thresh.~~
 - ~~File-name in log error and warning.~~
 - ~~add to cdb script interface.~~
+
+## 2nd Oct:
+
+WIP:
+
+- Readme documentation.
+- Finalizing script interfaces.
+
+
+## 3rd Oct:
+
+WIP:
+
+- 

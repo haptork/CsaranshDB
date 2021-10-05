@@ -20,7 +20,7 @@ from pandas import DataFrame
 import xmltodict
 pathToAnuvikar = "."
 sys.path.append(pathToAnuvikar)
-from anuvikarhelper import getDefaultConfig, writeResultsToJSON
+from pysrc.anuvikar_cdb_helper import getDefaultConfig, writeResultsToJSON
 buildDirs = []
 buildDirs.append(os.path.join(pathToAnuvikar, "_build"))
 buildDirs.append(os.path.join(pathToAnuvikar, "build"))
@@ -39,8 +39,8 @@ if libPath == '':
   print("If built successfully, edit this source and correct build directory & lib file (so / dylib / dll) path.")
   exit(1)
 
-from anuvikarhelper import processXyzFilesInDirGivenMetaFile, _unzipFile
-from anuvikar_ml_cdb import validateForCdb
+from pysrc.anuvikar_cdb_helper import processXyzFilesInDirGivenMetaFile, _unzipFile
+from pysrc.anuvikar_ml import validateForCdb
 
 def stageEkaCpp(metaFilePath, xyzDir, config):
     isSuccess, cascades = processXyzFilesInDirGivenMetaFile(metaFilePath, xyzDir, config)

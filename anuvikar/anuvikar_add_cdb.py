@@ -29,7 +29,7 @@ import umap
 
 pathToAnuvikar = "."
 sys.path.append(pathToAnuvikar)
-from anuvikarhelper import getDefaultConfig, writeResultsToJSON
+from pysrc.anuvikar_cdb_helper import getDefaultConfig, writeResultsToJSON
 buildDirs = []
 buildDirs.append(os.path.join(pathToAnuvikar, "_build"))
 buildDirs.append(os.path.join(pathToAnuvikar, "build"))
@@ -98,6 +98,7 @@ def clusterClassData(data):
     tag = []
     for i, x in enumerate(data):
         for y in x['features']:
+            #feat.append(x['features'][y]['angle'] + x['features'][y]['dist'])
             feat.append(x['features'][y]['angle'] + x['features'][y]['dist'])
             tag.append((x['id'], y, i))
     return (feat, tag)
@@ -183,7 +184,8 @@ def mergeCascadeDbs(dbNew, dataPath, dest, dbOld = None, oldFtPath=None):
   feat, tag = clusterClassData(data)
   oldFt = {"feat":[], "tag":[], "reducer": None}
   rndSeed = 42
-  reducer = umap.UMAP(n_components=2, n_neighbors=6, min_dist=0.45, metric=quad, random_state=rndSeed)
+  #reducer = umap.UMAP(n_components=2, n_neighbors=6, min_dist=0.45, metric=quad, random_state=rndSeed)
+  reducer = umap.UMAP(n_components=2, n_neighbors=6, min_dist=0.45, random_state=rndSeed)
   dims = None
   if (oldFtPath and os.path.exists(oldFtPath)):
     ftFile = open(oldFtPath, 'rb')
@@ -194,7 +196,8 @@ def mergeCascadeDbs(dbNew, dataPath, dest, dbOld = None, oldFtPath=None):
   else:
     dims = reducer.fit_transform(feat).tolist()
   additions, addrefs, allFeat, allTags = cookNewComparison(oldFt, feat, tag)
-  reducer = umap.UMAP(n_components=2, n_neighbors=6, min_dist=0.45, metric=quad, random_state=rndSeed).fit(allFeat)
+  #reducer = umap.UMAP(n_components=2, n_neighbors=6, min_dist=0.45, metric=quad, random_state=rndSeed).fit(allFeat)
+  reducer = umap.UMAP(n_components=2, n_neighbors=6, min_dist=0.45, random_state=rndSeed).fit(allFeat)
   #print(updates)
   #print(additions['all'])
   #print(allTags)
@@ -271,8 +274,8 @@ def getComparisonPairs(data, cmp, cur):
   return json.dumps(pairs)
 
 if __name__ == "__main__":
-  if len(sys.argv) < 4:
-    print("please provide new output dir, destination db path, existing added db path (optional).")
+  if len(sys.argv) < 3:
+    print("please provide dir. with new data (having output from anuvikar validate script), destination db path, existing added db path (optional).")
 
   else:
     newPath = sys.argv[1]
@@ -281,7 +284,7 @@ if __name__ == "__main__":
     data = os.path.join(newPath, "cascades.json")
     dbOld = None
     nnOld = None
-    if len(sys.argv) > 2: 
+    if len(sys.argv) > 3: 
       dbOld = sys.argv[3]
       nnOld = sys.argv[3] + "_tree.pickle"
     mergeCascadeDbs(dbNew, data, dest, dbOld, nnOld)

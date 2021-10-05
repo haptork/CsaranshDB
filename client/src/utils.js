@@ -32,9 +32,9 @@ export const getAllCol = () => {
     { value: 'recphi', label: 'PKA angle - phi', isShow: false, filterType: "range" , type: "input", parseFn: ac.roundOff},
     */
     { value: 'ndefects', label: 'Defects Count', isShow: true },
-    { value: 'max_cluster_size', label: 'Max cluster size', isShow: false },
-    { value: 'in_cluster', label: '% defects in cluster', isShow: false },
-    { value: 'n_clusters', label: 'Clusters Count', isShow: false },
+    { value: 'maxclustersize', label: 'Max cluster size', isShow: false },
+    { value: 'incluster', label: '% defects in cluster', isShow: false },
+    { value: 'nclusters', label: 'Clusters Count', isShow: false },
     /*
     { value: 'twod', label: 'Planarity', isShow: false, parseFn: parseInt, "accessor": ac.accessorTwod },
     { value: 'subc', label: 'Subcascades', isShow: false, parseFn: parseInt, "accessor": ac.accessorSubc },

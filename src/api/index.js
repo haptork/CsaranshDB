@@ -101,10 +101,10 @@ module.exports = () => {
     let query3 = rows.clone();
     let query4 = rows.clone();
     //console.log(rows.toSQL().toNative());
-    query1.select(knex.raw("DISTINCT substrate"));
-    query2.select(knex.raw("DISTINCT energy"));
-    query3.select(knex.raw("DISTINCT potentialused"));
-    query4.select(knex.raw("DISTINCT temperature"));
+    query1.select(dbhandle.raw("DISTINCT substrate"));
+    query2.select(dbhandle.raw("DISTINCT energy"));
+    query3.select(dbhandle.raw("DISTINCT potentialused"));
+    query4.select(dbhandle.raw("DISTINCT temperature"));
     
     //"energy", "temperature", "maxclustersize", "maxclustersizei", "maxclustersizev", "inclusteri", "inclusterv", "hullvol", "hulldensity", "potentialused", "es", "author");
     let out = {};
@@ -121,6 +121,7 @@ module.exports = () => {
     }
     rows.select("id", "ndefects", "substrate", "energy", "temperature", "maxclustersize", "maxclustersizei", "maxclustersizev", "inclusteri", "inclusterv", "hullvol", "hulldensity", "potentialused", "es", "author");
     const cascades =  await rows;
+    //console.log(cascades[0])
     res.send({'data':cascades, 'outline':outline});
   });
   
@@ -259,7 +260,7 @@ module.exports = () => {
     //rows.select("clusters.id", "savimorph", "hdbpoint");
     rows.where("savimorph", "!=", "7-?")
     rows.groupBy("savimorph");
-    rows.select("savimorph as name", knex.raw("GROUP_CONCAT(clusters.id) as id"), knex.raw("GROUP_CONCAT(hdbx) as x"), knex.raw("GROUP_CONCAT(hdby) as y"));
+    rows.select("savimorph as name", dbhandle.raw("GROUP_CONCAT(clusters.id) as id"), dbhandle.raw("GROUP_CONCAT(hdbx) as x"), dbhandle.raw("GROUP_CONCAT(hdby) as y"));
     let traces = await rows;
     let ditraces = {};
     let i = 0;
@@ -300,7 +301,7 @@ module.exports = () => {
       rows.groupBy(column);
       rows.select(column);
     }
-    rows.select("savimorph as name", knex.raw("COUNT(DISTINCT(clusters.cascadeid)) as ncascades"), knex.raw("TOTAL(size) as npoints"), knex.raw("COUNT(*) as nclusters"), knex.raw("GROUP_CONCAT(size) as sizeLi"))
+    rows.select("savimorph as name", dbhandle.raw("COUNT(DISTINCT(clusters.cascadeid)) as ncascades"), dbhandle.raw("TOTAL(size) as npoints"), dbhandle.raw("COUNT(*) as nclusters"), dbhandle.raw("GROUP_CONCAT(size) as sizeLi"))
     let rowsres =  await rows;
     for (let row of rowsres) {
       row.sizeLi= row.sizeLi.split(",");
