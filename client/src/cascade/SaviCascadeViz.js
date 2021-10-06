@@ -14,8 +14,8 @@ const getPairColorOrient = x => {
 }
 
 function Sia(props) {
-  console.log(props.points.length);
-  console.log(props.points.length);
+  //console.log(props.points.length);
+  //console.log(props.points.length);
   return(
       <Points 
        limit={10000} 
@@ -29,21 +29,44 @@ function Sia(props) {
 
 function CompBoxed(props) {
  const [hovered, setHover] = useState(false);
- const [active, setActive] = useState(false);
-  return(
+ //const [active, setActive] = useState(false);
+ const active = (props.sel === props.info.label)
+  return (
       <mesh 
       position={props.position}
-      scale={active ? 1.5 : 1}
-      onClick={(e)=> setActive(!active) }
-      onPointerOver={(e)=> setHover(true) }
-      onPointerOut={(e)=> setHover(false) }
+      scale={active? 1.5 : 1}
+      onClick={(e)=> {props.selectFn(e, props.info);}}
+      onPointerOver={(e)=> {setHover(true); /*props.infoFn(e);*/} }
+      onPointerOut={(e)=> {setHover(false); /*props.infoFn();*/} }
       >
-        <boxGeometry args={props.size} />
-        <MeshDistortMaterial speed={1.9} distort={0.5} transparent={true} opacity={hovered || active ? 0.6 : 0.2} color={props.color} />
+        <boxGeometry args={props.size}/>
+        <MeshDistortMaterial speed={1.9} distort={0.5} transparent={true} opacity={hovered ? 0.6 : (active ? 0.5 : 0.2)} color={props.color} />
       </mesh>
   );
 }
         //<meshLambertMaterial transparent={true} opacity={hovered || active ? 0.6 : 0.2} color={props.color} />
+
+
+function CompSphere(props) {
+ const [hovered, setHover] = useState(false);
+ //const [active, setActive] = useState(false);
+ const active = (props.sel === props.info.label)
+ const radius = Math.min(...props.size);
+  return (
+      <mesh 
+      position={props.position}
+      scale={active? 1.5 : 1}
+      onClick={(e)=> {props.selectFn(e, props.info);}}
+      onPointerOver={(e)=> {setHover(true); /*props.infoFn(e);*/} }
+      onPointerOut={(e)=> {setHover(false); /*props.infoFn();*/} }
+      >
+        <sphereGeometry args={[radius, 32, 32]} />
+        <meshStandardMaterial transparent={true} opacity={hovered ? 0.6 : (active ? 0.5 : 0.2)} color={props.color} />
+      </mesh>
+  );
+}
+        //<meshLambertMaterial transparent={true} opacity={hovered || active ? 0.6 : 0.2} color={props.color} />
+        /*
 function CompSphere(props) {
  const [hovered, setHover] = useState(false);
  const [active, setActive] = useState(false);
@@ -61,78 +84,78 @@ function CompSphere(props) {
       </mesh>
   );
 }
+*/
 
 function CompDistort1(props) {
  const [hovered, setHover] = useState(false);
- const [active, setActive] = useState(false);
+ //const [active, setActive] = useState(false);
+ const active = (props.sel === props.info.label)
  const radius = Math.min(...props.size);
-  return(
+  return (
       <mesh 
       position={props.position}
-      scale={active ? 1.5 : 1}
-      onClick={(e)=> setActive(!active) }
-      onPointerOver={(e)=> setHover(true) }
-      onPointerOut={(e)=> setHover(false) }
+      scale={active? 1.5 : 1}
+      onClick={(e)=> {props.selectFn(e, props.info);}}
+      onPointerOver={(e)=> {setHover(true); /*props.infoFn(e);*/} }
+      onPointerOut={(e)=> {setHover(false); /*props.infoFn();*/} }
       >
         <icosahedronGeometry args={[radius, 4, 4]} />
-        <MeshDistortMaterial speed={1.0} distort={0.6} transparent={true} opacity={hovered || active ? 0.6 : 0.2} color={props.color} />
+        <MeshDistortMaterial speed={1.0} distort={0.6} transparent={true} opacity={hovered ? 0.6 : (active ? 0.5 : 0.2)} color={props.color} />
       </mesh>
   );
 }
 
 function CompDistort2(props) {
  const [hovered, setHover] = useState(false);
- const [active, setActive] = useState(false);
- //console.log("shpere", props)
- //const radius = Math.min(...props.size);
- //console.log("shpere", props, radius)
-  return(
+ const active = (props.sel === props.info.label)
+  return (
       <mesh 
       position={props.position}
-      scale={active ? 1.5 : 1}
-      onClick={(e)=> setActive(!active) }
-      onPointerOver={(e)=> setHover(true) }
-      onPointerOut={(e)=> setHover(false) }
+      scale={active? 1.5 : 1}
+      onClick={(e)=> {props.selectFn(e, props.info);}}
+      onPointerOver={(e)=> {setHover(true); /*props.infoFn(e);*/} }
+      onPointerOut={(e)=> {setHover(false); /*props.infoFn();*/} }
       >
         <boxGeometry args={props.size} />
-        <MeshDistortMaterial speed={0.0} distort={0.6} transparent={true} opacity={hovered || active ? 0.6 : 0.2} color={props.color} />
+        <MeshDistortMaterial speed={0.0} distort={0.6} transparent={true} opacity={hovered ? 0.6 : (active ? 0.5 : 0.2)} color={props.color} />
       </mesh>
   );
 }
 
 function CompVac(props) {
  const [hovered, setHover] = useState(false);
- const [active, setActive] = useState(false);
- console.log("shpere", props)
+ const active = (props.sel === props.info.label)
+ //console.log("shpere", props)
  let radius = Math.min(...props.size);
  if (radius < 2) radius *= 2.0;
  if (radius > 20) radius *= 0.8;
- console.log("shpere", props, radius)
+ //console.log("shpere", props, radius)
  const curColor = [0.9, 0.8, 0.1];
- const clickFn = (e) => {
-   console.log("clicked vlabel", props.label)
-   setActive(!active)
- };
   return(
       <mesh 
       position={props.position}
       scale={active ? 1.2 : 1.0}
-      onClick={clickFn}
+      onClick={(e)=> {props.selectFn(e, props.info);}}
       onPointerOver={(e)=> setHover(true) }
       onPointerOut={(e)=> setHover(false) }
       >
         <icosahedronGeometry args={[radius]} />
-        <meshLambertMaterial transparent={true} opacity={hovered || active ? 0.6 : 0.2} color={curColor} />
+        <meshLambertMaterial transparent={true} opacity={hovered ? 0.6 : (active ? 0.5 : 0.2)} color={curColor} />
       </mesh>
   );
 }
         //<cylinderGeometry args={[radius, radius, radius , 6]} />
 
-function defectItems(coords, lines, allComps, sias, vacs, meshProps, label) {
+function defectItems(coords, lines, allComps, sias, vacs, meshProps, meshInfo, label) {
   //const sias = [];
   //const vacs = [];
   //const meshProps = [];
   let i = 0;
+  const allCompInfo = [];
+  let totalCents = 0;
+  const typeName= ["||", "@", "#", "#||"]
+  const orientName= ["", "100", "110", "111", ""]
+  let totalPoints = 0;
   for (const comps of allComps) { // TODO pointsI and pointsV
     for (const comp of comps) {
       const points = [];
@@ -152,13 +175,24 @@ function defectItems(coords, lines, allComps, sias, vacs, meshProps, label) {
         for (const cIndex of line.main) {
           const c = coords[cIndex];
           if (i < 4) points.push(c[0]); points.push(c[1]); points.push(c[2]);
-          if (c[3] == 1) {
-            sias.push({position:[c[0], c[1], c[2]], color:curColor, opacity:((c[5]==1)?0.7:0.4)});
-          } else {
+          if (c[3] == 0) {
             vacs.push({position:[c[0], c[1], c[2]], color:curColor, opacity:((c[5]==1)?0.7:0.4)});
+          } else {
+            sias.push({position:[c[0], c[1], c[2]], color:curColor, opacity:((c[5]==1)?0.7:0.4)});
+          }
+        }
+        const sub = ('sub' in line) ? line.sub : [];
+        for (const cIndex of sub) {
+          const c = coords[cIndex];
+          if (i < 4) points.push(c[0]); points.push(c[1]); points.push(c[2]);
+          if (c[3] == 0) {
+            vacs.push({position:[c[0], c[1], c[2]], color:curColor, opacity:((c[5]==1)?0.7:0.4)});
+          } else {
+            sias.push({position:[c[0], c[1], c[2]], color:curColor, opacity:((c[5]==1)?0.7:0.4)});
           }
         }
       }
+      totalPoints += points.length/3;
       if (i < 4 && points.length >0) {
         totalColor[0] /= comp[2].length;
         totalColor[1] /= comp[2].length;
@@ -170,23 +204,45 @@ function defectItems(coords, lines, allComps, sias, vacs, meshProps, label) {
         const boxProps = {position:[midOf('x'), midOf('y'), midOf('z')], size:[diffOf('x'), diffOf('y'), diffOf('z')]};
         //console.log(pointsAr);
         //console.log(boxExtent);
+        //meshInfo[i].push({cent:Math.ceil(points.length*100/clusters[label].length), otherComps:allCompInfo})
+        //allCompInfo.push({cent:Math.ceil(points.length*100/clusters[label].length), type: i})
+        const curCent = points.length/3;
+        const compInfo = {cent:curCent, name: typeName[i], type:i}
+        if (i === 0 && comp.length > 3) compInfo.name += " - <" + orientName[comp[3].verdict] + ">";
+        totalCents += curCent
+        meshInfo[i].push({"index": allCompInfo.length, 'label': label})
+        allCompInfo.push(compInfo)
         meshProps[i].push({...boxProps, color:totalColorVal})
       }
     }
-    for (const cIndex of lines.pointsV) {
-      const c = coords[cIndex];
-      vacs.push({position:[c[0], c[1], c[2]], color:[0.1, 0.1, 0.1], opacity:((c[5]==1)?0.9:0.4)});
-    }
-    for (const cIndex of lines.pointsI) {
-      const c = coords[cIndex];
-      sias.push({position:[c[0], c[1], c[2]], color:[0.1, 0.1, 0.1], opacity:((c[5]==1)?0.9:0.4)});
-    }
     i++;
+  }
+  for (const cIndex of lines.pointsV) {
+    const c = coords[cIndex];
+    totalPoints += 1;
+    vacs.push({position:[c[0], c[1], c[2]], color:[0.1, 0.1, 0.1], opacity:((c[5]==1)?0.9:0.4)});
+  }
+  for (const cIndex of lines.pointsI) {
+    const c = coords[cIndex];
+    totalPoints += 1;
+    sias.push({position:[c[0], c[1], c[2]], color:[0.1, 0.1, 0.1], opacity:((c[5]==1)?0.9:0.4)});
+  }
+  const msgAr = [] 
+  for (let comp of allCompInfo) msgAr.push(comp.name + ": " + Math.ceil(comp.cent/totalPoints*100) + "% ");
+  //const msg = msgAr.join(", ");
+  //let extraMsg = ""
+  //if (totalCents < 98) extraMsg = ", ~: " + (100 - totalCents);
+  for (const cmesh of meshInfo) {
+    for (let minfo of cmesh) {
+      if ('defect' in minfo) continue;
+      minfo.defect = msgAr;
+      //minfo.extra = extraMsg;
+    }
   }
   //return [sias, vacs, meshProps]
 }
 
-function vacClusters(coords, clusterPoints, sias, vacs, meshProps, label) {
+function vacClusters(coords, clusterPoints, sias, vacs, meshProps, meshInfo, label) {
   const points = [];
   /*
   if (label == 75) {
@@ -203,10 +259,6 @@ function vacClusters(coords, clusterPoints, sias, vacs, meshProps, label) {
       vacs.push({position:[c[0], c[1], c[2]], color:curColor, opacity:((c[5]==1)?0.9:0.4)});
     }
   }
-  if (label == 75) {
-      console.log(points);
-      console.log(vacs.length);
-  }
   if (points.length < 2) return;
   const pointsAr = new Float32Array(points);
   const boxExtent = new THREE.Box3().setFromArray(pointsAr);
@@ -214,18 +266,49 @@ function vacClusters(coords, clusterPoints, sias, vacs, meshProps, label) {
   const midOf = (key) => (boxExtent.max[key] + boxExtent.min[key])/2.0;
   const boxProps = {label: label, position:[midOf('x'), midOf('y'), midOf('z')], size:[diffOf('x'), diffOf('y'), diffOf('z')]};
   meshProps.push(boxProps)
+  meshInfo.push({label:label});
 }
 
-function DrawClusters({meshProps}) {
+function DrawClusters({handleCmp, meshProps, meshInfo, setLabel}) {
   // TODO use type info in meshProps for different shapes
   // TODO use meshInstance.
+  /*
+  const infoFn = (event) => {
+      setLabel('mesh info');
+  }
+  */
+  const [selectedDefect, setDefect] = useState(-1);
+  //const [isShow, setShow] = useState(false);
+  const selectFn = (event, info) => {
+      if (info.label === selectedDefect) {
+        setDefect(-1);
+        setLabel("Click a defect to show info.");
+      } else {
+        setDefect(info.label);
+        setLabel(info.defect.join(","));
+        handleCmp(info.label);
+      }
+      event.stopPropagation();
+  }
+  const selectFnVac = (event, info) => {
+      if (info.label === selectedDefect) {
+        setDefect(-1);
+        setLabel("Click a defect to show info.");
+      } else {
+        setDefect(info.label);
+        setLabel("Vacancy cluster");
+        handleCmp(info.label);
+      }
+      event.stopPropagation();
+  }
+
   return(
    <>
-    {meshProps[0].map((p, i) => <CompBoxed key={i} {...p} />)}
-    {meshProps[1].map((p, i) => <CompSphere key={i} {...p} />)}
-    {meshProps[2].map((p, i) => <CompDistort1 key={i} {...p} />)}
-    {meshProps[3].map((p, i) => <CompDistort2 key={i} {...p} />)}
-    {meshProps[4].map((p, i) => <CompVac key={i} {...p} />)}
+    {meshProps[0].map((p, i) => <CompBoxed key={i} sel={selectedDefect} info={meshInfo[0][i]} {...p}  selectFn={selectFn} />)}
+    {meshProps[1].map((p, i) => <CompSphere key={i} sel={selectedDefect} info={meshInfo[1][i]} {...p}  selectFn={selectFn} />)}
+    {meshProps[2].map((p, i) => <CompDistort1 key={i} sel={selectedDefect} info={meshInfo[2][i]} {...p}  selectFn={selectFn} />)}
+    {meshProps[3].map((p, i) => <CompDistort2 key={i} sel={selectedDefect} info={meshInfo[3][i]} {...p}  selectFn={selectFn} />)}
+    {meshProps[4].map((p, i) => <CompVac key={i} sel={selectedDefect} info={meshInfo[4][i]} {...p}  selectFn={selectFnVac} />)}
     </>
   );
   /*
@@ -245,13 +328,13 @@ function DrawClusters({meshProps}) {
 
     //<SiaBoxed texture={texture} points={sias} ar={pointsAr} boxProps={boxProps} sa={true} size={2}/>
 
-function DrawCanvas({coords, saviInfo, siavenu, clusters, clustersizes, camerapos, boxsize, setLabel}) {
+function DrawCanvas({handleCmp, coords, saviInfo, siavenu, clusters, clustersizes, camerapos, boxsize, setLabel}) {
   const sias = [];
   const vacs = [];
   const infoSia = [];
   const infoVac = [];
   const showInfoOf = (index) => {
-      console.log("clicked" + index);
+      //console.log("clicked" + index);
     //setLabel("clicked " +  index);
   }
   const onClickFn = (event) => {
@@ -269,16 +352,18 @@ function DrawCanvas({coords, saviInfo, siavenu, clusters, clustersizes, camerapo
     return -1;
   }
 
-  const onClickFnSia = (event) => {
+  const onClickFnSia = (event, extraMsg) => {
     const i = onClickFn(event);
     if (i < 0 || i >= sias.length) return;
-    setLabel("Sia at " + sias[i].position.join(', '));
+    const eMsg = (extraMsg) ? extraMsg : "";
+    setLabel(eMsg + "SIA at " + sias[i].position.join(', '));
   }
 
-  const onClickFnVac = (event) => {
+  const onClickFnVac = (event, extraMsg) => {
     const i = onClickFn(event);
-    if (i < 0 || i >= sias.length) return;
-    setLabel("Vacancy at " + sias[i].position.join(', '));
+    if (i < 0 || i >= vacs.length) return;
+    const eMsg = (extraMsg) ? extraMsg : "";
+    setLabel(eMsg + "Vacancy site at " + vacs[i].position.join(', '));
   }
 
   for (const c of coords) {
@@ -293,9 +378,11 @@ function DrawCanvas({coords, saviInfo, siavenu, clusters, clustersizes, camerapo
       vacs.push({position:[c[0], c[1], c[2]], color:[0.8, 0.8, 0.1], opacity:((c[5]==1)?0.9:0.4), onClick:onClickFnVac});
     }
   }
-  const onClickFnTriad = (event) => {
-      console.log("triad");
-      onClickFnSia(event);
+  const onClickFnTriadSia = (event) => {
+      onClickFnSia(event, 'Dumbbell/crowdion. ');
+  }
+  const onClickFnTriadVac = (event) => {
+      onClickFnVac(event, 'Dumbbell/crowdion. ');
   }
   for (const triad of siavenu) {
     const curColor = (triad[0].length === 2) ? [0.5, 0.5, 0.2]  : getPairColorOrient(triad[1]);
@@ -303,12 +390,12 @@ function DrawCanvas({coords, saviInfo, siavenu, clusters, clustersizes, camerapo
       const c = coords[cIndex];
       if (c[3] == 1) {
         //nSingleSias++;
-        sias.push({position:[c[0], c[1], c[2]], color:curColor, opacity:((c[5]==1)?0.9:0.4), onClick:onClickFnTriad});
+        sias.push({position:[c[0], c[1], c[2]], color:curColor, opacity:((c[5]==1)?0.9:0.4), onClick:onClickFnTriadSia});
         //infoSia.push()
       }
       else {
         //nSingleVacs++;
-        vacs.push({position:[c[0], c[1], c[2]], color:curColor, opacity:((c[5]==1)?0.9:0.4), onClick:onClickFnTriad});
+        vacs.push({position:[c[0], c[1], c[2]], color:curColor, opacity:((c[5]==1)?0.9:0.4), onClick:onClickFnTriadVac});
       }
 
     }
@@ -316,12 +403,13 @@ function DrawCanvas({coords, saviInfo, siavenu, clusters, clustersizes, camerapo
   //console.log("vacs size", vacs.length);
   // clusters
   const meshProps = [[], [], [], [], []];
+  const meshInfo = [[], [], [], [], []];
   for (const clusterLabel in saviInfo) {
-    defectItems(coords, saviInfo[clusterLabel].venu, saviInfo[clusterLabel].samuh, sias, vacs, meshProps, clusterLabel);
+    defectItems(coords, saviInfo[clusterLabel].venu, saviInfo[clusterLabel].samuh, sias, vacs, meshProps, meshInfo, clusterLabel);
   }
   for (const clusterLabel in clusters) {
     if (clustersizes[clusterLabel] > -1) continue;
-    vacClusters(coords, clusters[clusterLabel], sias, vacs, meshProps[4], clusterLabel);
+    vacClusters(coords, clusters[clusterLabel], sias, vacs, meshProps[4], meshInfo[4], clusterLabel);
   }
   const [texture1, texture2] = useTexture(["textures/metalatom.png", "textures/vacancy.png"])
   const camPos = [camerapos[0], camerapos[1], camerapos[2] - boxsize/1.6];
@@ -337,7 +425,7 @@ function DrawCanvas({coords, saviInfo, siavenu, clusters, clustersizes, camerapo
     <pointLight position={[150, 150, 150]} intensity={0.55} />
     <Sia texture={texture1} points={sias} sa={true} size={2}/>
     <Sia texture={texture2} points={vacs} sa={true} size={2}/>
-    <DrawClusters meshProps={meshProps}/>
+    <DrawClusters handleCmp={handleCmp} meshProps={meshProps} meshInfo={meshInfo} setLabel={setLabel}/>
     <box3Helper args={[box, 0x4090a0]}/>
     <axesHelper args={[10]}/>
     <OrbitControls target={camerapos}/>
@@ -352,7 +440,7 @@ export default function SaviCascadeViz(props) {
    return (
     <div style={{height:"360px"}} >
     <React.Suspense fallback={null}>
-   {props.coords && <DrawCanvas setLabel={setLabel} {...props} />}
+   {props.coords && <DrawCanvas handleCmp={props.handleCmp} setLabel={setLabel} {...props} />}
     </React.Suspense>
     <p>
       {label}

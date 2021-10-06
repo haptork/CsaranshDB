@@ -500,7 +500,6 @@ WIP:
 - simulation wireframe box and camera setting.
 - axis helper.
 - buttons for configuration: if needed.
-- buttons for configuration: if needed.
 
 TODO:
 
@@ -620,3 +619,28 @@ TODO:
 - Correct on click for vacancy in savimorph.
 - Add structure to csaransh columns.
 
+## 6th Oct:
+
+WIP:
+
+- ~~Correct on click for vacancy in savimorph viz.~~
+- On click for meshes in savimorph viz.
+
+TODO:
+
+- !!Legend for orientations, mesh shapes etc.
+- !!Add log for python.
+- !!fix wrong row count on excluding a single row from the statistics using the second action button.
+- !!Testing on Cu data and all the cascadesDb data.
+
+----- Deploy at IAEA server
+
+- !Another script for giving input from cmd line.
+- !Add svg save to threejs and plotly plots.
+- !fix: logo moving on table open/close.
+- !Table for cascade info with download links.
+- !Corrent input file and xyzfilepath.
+- buttons for configuration: if needed.
+- Landing page with filters.
+- About page.
+- Same min-max in contour plot.
