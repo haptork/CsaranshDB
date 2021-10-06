@@ -120,7 +120,7 @@ module.exports = () => {
         outline[label].push(row[label])
       }
     }
-    rows.select("id", "ndefects", "substrate", "energy", "temperature", "structure", "maxclustersize", "maxclustersizei", "maxclustersizev", "inclusteri", "inclusterv", "hullvol", "hulldensity", "potentialused", "es", "author");
+    rows.select("id", "ndefects", "substrate", "energy", "infile", "temperature", "structure", "maxclustersize", "maxclustersizei", "maxclustersizev", "inclusteri", "inclusterv", "hullvol", "hulldensity", "potentialused", "es", "author");
     const cascades =  await rows;
     //console.log(cascades[0])
     res.send({'data':cascades, 'outline':outline});
@@ -289,6 +289,7 @@ module.exports = () => {
         rows.where(column, "<", filters[column][1]);
       }
     }
+    rows.where("savimorph", "!=", "7-?")
     const groupStr = req.query.groupby;
     //console.log(groupStr);
     const groupColumns = (groupStr) ? groupStr.split(",") : [];

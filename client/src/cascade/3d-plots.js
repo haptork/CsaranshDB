@@ -574,6 +574,7 @@ const cookDataClasses = (ogTraces) => {
       mode: 'markers',
       type: 'scatter', 
       name: trace.name,
+      visible: (trace.name[0] != '4' && trace.name[0] != '9') ? true : "legendonly",
       marker: {
           color: (trace.name == "noise") ? 'rgb(220,220,220)' : getColor(i),
           opacity: 0.5

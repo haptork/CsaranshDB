@@ -6,10 +6,10 @@ import urllib.request
 from pathlib import Path
 import shutil
 import sys
+import logging
 
 # utilities
 # -------------------------------------------------
-
 
 def _downloadFile(fileUrl, dirPath, fileName):
     if not os.path.exists(dirPath) or not os.path.isdir(dirPath):
@@ -215,13 +215,20 @@ def _downloadAndUnzipXyzFiles(metaFilePath, dirPath):
     meta = xmlFileToDict(metaFilePath)
     archiveName = meta['cdbml']['cdbrecord']['data']['archive_name']
     baseUrl = "https://cascadesdb.org/data/cdb/"
+    #baseUrl = "https://cascadesdb.iaea.org/data/cdb/"
     archiveUrl = baseUrl + archiveName
     expectedDir = os.path.join(dirPath, archiveName.split('.')[0])
     if (os.path.isdir(expectedDir) and os.path.exists(expectedDir)):
         print("Directory " + expectedDir +
               " already exists. Continuing without download & unzip.")
         return expectedDir
-    filePath = _downloadFile(archiveUrl, dirPath, archiveName)
+    print("for metaFile: ", metaFilePath)
+    filePath = ''
+    try:
+      filePath = _downloadFile(archiveUrl, dirPath, archiveName)
+    except:
+      print('error downloading')
+    #return filePath
     return _unzipFile(dirPath, filePath, archiveName)
 
 # helper functions
@@ -594,7 +601,7 @@ def processXyzFilesInDirGivenMetaFile(metaFilePath, xyzDir, config, idStartIndex
     meta = xmlFileToDict(metaFilePath)
     metaInfo = meta['cdbml']['cdbrecord']
     if not _validateMetaInfo(metaInfo):
-        return False, metaFilePath + ": anuvikar does not yet support processing corresponding cascades (only supports perfect, not surface bccs)"
+        return False, metaFilePath + ": anuvikar does not yet support processing corresponding cascades (only supports perfect, not surface bcc/fcc)"
     xyzFiles = _getAllFilesWithPrefixSuffix(
         xyzDir, prefix, suffix, excludePrefix, excludeSuffix)
     print(str(len(xyzFiles)) + " xyz files corresponding to meta file " + metaFilePath)

@@ -20,10 +20,10 @@ export const getAllCol = () => {
     { value: 'author', label: 'Author', isShow: false, filterType: "select", type: "input", parseFn: ac.noParse},
     { value: 'potentialused', label: 'Potential Used', isShow: true, filterType: "select", type: "input" , parseFn: ac.noParse},
     { value: 'es', label: 'Electronic Stopping', isShow: false, filterType: "select", type: "input" , parseFn: ac.noParse},
+    { value: 'infile', label: 'Input File', isShow: false, filterType: "text" , type: "input", parseFn: ac.noParse},
     /*
     { value: 'xyzfilepath', label: 'Xyz file path', isShow: false, filterType: "text" , type: "input", parseFn: ac.noParse},
     { value: 'xyzfilename', label: 'Xyz file name', isShow: false, filterType: "text" , type: "input", accessor: ac.accessorDefault("xyzFilePath"), parseFn: ac.parseFileName},
-    { value: 'infile', label: 'Input File', isShow: false, filterType: "text" , type: "input", parseFn: ac.noParse},
     { value: 'infilename', label: 'Input File Name', isShow: false, filterType: "text" , type: "input", accessor: ac.accessorDefault("infile"), parseFn: ac.parseFileName},
     { value: 'tags', label: 'Tags', isShow: false, filterType: "text" , type: "input", parseFn: ac.noParse},
     */

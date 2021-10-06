@@ -589,7 +589,7 @@ def findComponentClass(attrs, labels, components, lines, ringFreeIs):
         alone = (sizesMain[0] == 1 or allParSizes[1][0] / allParSizes[0][0] < 0.2 and allParSizes[1][0] < 6)
         if alone:
             if ringFreeIs > 0:
-                if allParSizes[0][0] < 10: return (3, "||:", [orientV]) # TODO check type of ring
+                if allParSizes[0][0] < 10: return (1, "||-!", [orientV]) # TODO check type of ring
             allAlone = (sizesMain[0] == 1 and allParSizes[0][0] > 1 and centComps[0] > 0.95)
             if allAlone: return (1, "||", [orientV])
             return (1, "||-!", [orientV])
@@ -722,13 +722,26 @@ def makeSerializable(result2):
         li[2] = li[2].tolist()
     return result2
 
+def getTotalLines(clusterLines):
+    totalLines = 0
+    for i, line in enumerate(clusterLines):
+        if 'parent' in line or 'del' in line: continue
+        totalLines += 1
+    return totalLines
+ 
+
 orientName = {0:'', 1:'100', 2:'110', 3: '111', 4: ''}
 def addFullComponentInfo(cascade, cid, triads, pairs):
-    if cascade['clusterSizes'][cid] < 2: return
+    if cascade['clusterSizes'][cid] < 2: return False
     linesData = lineFeatsForCluster(cascade, cid, triads, pairs)
+    if len(linesData['lines']) > 1400: return False
+    #print(cascade['id'], cid, len(linesData['lines']), len(linesData['linesT']))
     #cascade['features'][cid]['lines'] = di
     lineFeat = getLineFeat(linesData, cascade['clusters'][cid])
-    attrs = cookLineAttrs(cascade, cid, linesData['allLines'], linesData['pointsI'])
+    totalLines = getTotalLines(linesData['allLines'])
+    #if totalLines > 700: attrs = cookLineAttrs(cascade, cid, linesData['lines'], linesData['pointsI'], totalLines)
+    #else attrs = cookLineAttrs(cascade, cid, linesData['allLines'], linesData['pointsI'], totalLines)
+    attrs = cookLineAttrs(cascade, cid, linesData['lines'], linesData['pointsI'], totalLines)
     components = findComponents(attrs, cascade)
     for comp in components[1][0]:
         comp.append(findDislocationDirection(comp, linesData['lines']))
@@ -736,11 +749,13 @@ def addFullComponentInfo(cascade, cid, triads, pairs):
     curClassName = str(curClass[0])+'-'+curClass[1]
     if curClass[0] == 1: curClassName += '-'+'|'.join([orientName[x] for x in set(curClass[2])])
     addComponentInfo(lineFeat, components[1], components[2], curClassName, cascade, cid)
+    return True
 
 def getSaviDetails(cascade, cid):
     if cascade['clusterSizes'][cid] < 2: return
     linesData = lineFeatsForCluster(cascade, cid)
-    attrs = cookLineAttrs(cascade, cid, linesData['allLines'], linesData['pointsI'])
+    totalLines = getTotalLines(linesData['allLines'])
+    attrs = cookLineAttrs(cascade, cid, linesData['allLines'], linesData['pointsI'], totalLines)
     components = findComponents(attrs, cascade)
     for comp in components[1][0]:
         comp.append(findDislocationDirection(comp, linesData['lines']))
@@ -838,11 +853,8 @@ for x in names:
     classData[x]['classes'].append({'name': 'line-hist', 'data': classesDataToSave(forms[x]['class'], classData[x]['show_dim'], classData[x]['tags'])})
 """
 
-def cookLineAttrs(cascade, cid, clusterLines, freeIs):
-    totalLines = 0
-    for i, line in enumerate(clusterLines):
-        if 'parent' in line or 'del' in line: continue
-        totalLines += 1
+def cookLineAttrs(cascade, cid, clusterLines, freeIs, totalLines):
+   #print(totalLines)
     """
     res = {}
     if totalLines < 1:

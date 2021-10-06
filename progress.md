@@ -624,12 +624,15 @@ TODO:
 WIP:
 
 - ~~Correct on click for vacancy in savimorph viz.~~
-- On click for meshes in savimorph viz.
+- ~~On click for meshes in savimorph viz.~~
+- Testing of Fe and W data.
+  - TODO: Check why 7? are not showing. Don't show 0 size anyway.
+- Add log for python.
+- Add flags for c++ and python.
 
 TODO:
 
 - !!Legend for orientations, mesh shapes etc.
-- !!Add log for python.
 - !!fix wrong row count on excluding a single row from the statistics using the second action button.
 - !!Testing on Cu data and all the cascadesDb data.
 

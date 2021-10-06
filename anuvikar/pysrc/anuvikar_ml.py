@@ -306,7 +306,8 @@ def clusterClasses(data, feat, tag):
     preId = -1
     for (tcas, tcid), dim in zip(tag,reduced_dim):
         cascade = data[tcas]
-        if cascade['clusterSizes'][tcid] < 2 or len(cascade['clusters'][tcid]) > 3000: 
+        if cascade['clusterSizes'][tcid] < 2: 
+        #if cascade['clusterSizes'][tcid] < 2 or len(cascade['clusters'][tcid]) > 3000: 
           compLabel = "7-?"
           if cascade['clusterSizes'][tcid] < 0: compLabel = "9-v"
           #else: print("-- ignoring", cascade['id'], cascade['xyzFilePath'], tcid, cascade['clusterSizes'][tcid], cascade['infile'], len(cascade['clusters'][tcid]), cascade['n_defects'])
@@ -320,7 +321,12 @@ def clusterClasses(data, feat, tag):
             if 'siavenu' not in cascade:
               cascade['siavenu'] = getPointDefectLines(cascade, triads, pairs)
           #print("adding savi info for", cascade['id'], cascade['xyzFilePath'], tcid, cascade['clusterSizes'][tcid], cascade['infile'], len(cascade['clusters'][tcid]))
-          addFullComponentInfo(cascade, tcid, triads, pairs)
+          isSuccess = addFullComponentInfo(cascade, tcid, triads, pairs)
+          if not isSuccess:
+            compLabel = "7-?"
+            if not 'clusterClasses' in cascade: cascade['clusterClasses'] = {}
+            if not 'savi' in cascade['clusterClasses']: cascade['clusterClasses']['savi'] = {}
+            cascade['clusterClasses']['savi'][tcid] = {"morph":compLabel}
           #print(cascade['clusterClasses']['savi'][tcid]['morph'])
         cascade['clusterClasses']['savi'][tcid]['hdbpoint'] = dim
     for cascade in data:

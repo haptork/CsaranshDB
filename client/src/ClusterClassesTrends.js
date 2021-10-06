@@ -109,13 +109,15 @@ const ClusterClassesEnergyBar1 = props => {
     })
   }
   const layout = {
-     margin: { l: 40, r: 20, b: 40, t: 20, pad: 1 },
+     margin: { l: 40, r: 20, b: 100, t: 20, pad: 1 },
      //barmode: 'stack',
+     /*
      xaxis: {
        title: {
          text: "class labels"
        }
      },
+     */
      yaxis: {
        title: {
          text: "avg. fraction of clusters per cascade"
@@ -129,7 +131,7 @@ const ClusterClassesEnergyBar1 = props => {
   );
 }
 
-const ClusterClassesEnergyLine = props => {
+const DefectSizeBoxPlot = props => {
   const { data } = props;
   let morphs = [];
   let labels = []
@@ -293,7 +295,7 @@ export class ClusterClassesTrends extends React.Component {
          </GridItem>
          <GridItem xs={12} sm={12} md={4}>
             <Paper>
-            <ClusterClassesEnergyLine data={this.state.classData} groupingLabels={groupingLabels}/>
+            <DefectSizeBoxPlot data={this.state.classData} groupingLabels={groupingLabels}/>
             </Paper>
           </GridItem>
          </Grid>

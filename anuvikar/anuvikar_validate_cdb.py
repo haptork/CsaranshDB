@@ -41,10 +41,13 @@ if libPath == '':
 
 from pysrc.anuvikar_cdb_helper import processXyzFilesInDirGivenMetaFile, _unzipFile
 from pysrc.anuvikar_ml import validateForCdb
+import logging
 
 def stageEkaCpp(metaFilePath, xyzDir, config):
     isSuccess, cascades = processXyzFilesInDirGivenMetaFile(metaFilePath, xyzDir, config)
-    return [isSuccess, isSuccess, cascades]
+    msg = ''
+    if not isSuccess: msg = cascades
+    return [isSuccess, msg, cascades]
 
 def stageDwiMl(cascades):
   return validateForCdb(cascades)
@@ -351,16 +354,26 @@ def validateArchive(srcDir, extractionDir, metaFiles, overwriteJson, overwriteDb
       archiveName = meta['cdbml']['cdbrecord']['data']['archive_name']
       archivePath = os.path.join(srcDir, archiveName)
       #archiveName = os.path.basename(archivePath)
+      if not os.path.exists(archivePath):
+        logging.error("Archive missing from the source directory: " + archivePath)
+        print("Archive missing from the source directory: " + archivePath)
+        continue
       xyzDir = _unzipFile(extractionDir, archivePath, archiveName)
-      if len(xyzDir) == 0: return [False, "Error in unzipping the file.", {}]
+      if len(xyzDir) == 0: 
+        logging.error("Error in unzipping the file: " + archivePath)
+        print("Error in unzipping the file: " + archivePath)
+        continue
       print("processing: ", archiveName)
       isSuccess, msg, curCascades = stageEkaCpp(metaFilePath, xyzDir, config)
       if not isSuccess: 
-        print("Error in ", metaFilePath, msg)
+        logging.error("Error in cpp processing of file: " + metaFilePath + ": " + msg)
+        print("Error in cpp processing of file: " + metaFilePath + ": " + msg)
       else:
         cascades += curCascades
         #return [isSuccess, msg]
   else:
+    print("Using existing processed json file. To carry out fresh analysis delete/move cascades.json from extraction dir.")
+    logging.warning("Processed json file 'cascades.json' already exists. Using it for further processing.")
     f = open(config['outputJSONFilePath'], 'r')
     cascades = json.load(f)
     f.close()
@@ -385,13 +398,20 @@ def  summarizeLog(config):
 if __name__ == "__main__":
     if len(sys.argv) < 3:
         print("please provide srcdir, extractiondir, metaFiles")
-    else:
-        srcDir = sys.argv[1]
-        extractionDir = sys.argv[2]
-        #overwriteJson = True
-        overwriteJson = False
-        overwriteDb = True
-        #overwriteJson = (sys.argv[3] == "1")
-        #overwriteDb = (sys.argv[4] == "1")
-        metaFiles = [x for x in sys.argv[3:]]
-        validateArchive(srcDir, extractionDir, metaFiles, overwriteJson, overwriteDb)
+        exit(1)
+    srcDir = sys.argv[1]
+    extractionDir = sys.argv[2]
+    if not(os.path.exists(srcDir)):
+      print("Source directory path is not accessible.")
+      exit(1)
+    if not(os.path.exists(extractionDir)):
+      print("Extraction directory path is not accessible.")
+      exit(1)
+    #overwriteJson = True
+    overwriteJson = False
+    overwriteDb = True
+    #overwriteJson = (sys.argv[3] == "1")
+    #overwriteDb = (sys.argv[4] == "1")
+    metaFiles = [x for x in sys.argv[3:]]
+    logging.basicConfig(filename=os.path.join(extractionDir, "py.log"), level=logging.WARNING, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+    validateArchive(srcDir, extractionDir, metaFiles, overwriteJson, overwriteDb)

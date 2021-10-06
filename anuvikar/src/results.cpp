@@ -22,7 +22,8 @@ anuvikar::DefectVecT anuvikar::groupDefects(const anuvikar::DefectVecT &defects,
   auto pred = [nn2sqr, nn4sqr](const anuvikar::DefectT &a,
                          const anuvikar::DefectT &b) {
     using namespace DefectTWrap;
-    if ((isVacancy(a) && isVacancy(b)) || (isSurviving(a) || isSurviving(b))) { // both vacancies and surviving
+    if ((isVacancy(a) && isVacancy(b) && (isSurviving(a) && isSurviving(b))) || 
+        (isInterstitial(a) && isInterstitial(b) && (isSurviving(a) && isSurviving(b)))) { // both vacancies and surviving
       return calcDistSqr(coords(a), coords(b)) < nn4sqr;
     } 
     return calcDistSqr(coords(a), coords(b)) < nn2sqr;
