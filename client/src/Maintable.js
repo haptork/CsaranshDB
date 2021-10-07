@@ -303,6 +303,8 @@ export class MainTable extends React.Component {
                     return (
                       <Select
                         name={id}
+                        className='maintable-select-container'
+                        classNamePrefix='maintable-select'
                         value={filter ? filter.value : ""}
                         closeOnSelect={false}
                         isMulti

@@ -43,45 +43,45 @@ Dependencies:
 
 ### Basic Validation:
 
-#### Running anuvikar_validate_cdb.py
+#### Running av_validate_cdb.py
 
-- `python anuvikar_validate_cdb.py $pathToXyzArchiveDir $pathToOutputDir ...pathToXmlMetafiles`.
+- `python av_validate_cdb.py $pathToXyzArchiveDir $pathToOutputDir ...pathToXmlMetafiles`.
 - The first argument is a path to the directory that has arhived xyz files as downloaded / stored in CascadesDB. The directory can have many archives but only the ones that correspond to the metafiles given in argument three onwards will be analysed.
-- The second argument is path to the output directory. Archives will be extracted to this directory. Also, the processed files `cascades.json`, `cascades.db` and `log.txt` will be stored here. Since the output files have same name, please take care that outputs are not overwritten by multiple runs.
+- The second argument is path to the output directory. Archives will be extracted to this directory. Also, the processed files `anuvikar.json`, `anuvikar.db` and `log.txt` will be stored here. Since the output files have same name, please take care that outputs are not overwritten by multiple runs.
 - The third argument onwards can be multiple Xml metafiles to process. These can by given as `pathToMetaFileDir/*.xml`.
 - This command may take some time, you can ignore the warnings and runtimewarnings on the output console. There can be errors like corrupt archive, unable to unzip etc. 
 - Go through log.txt in the output directory. Search for errors and warnings. Files with errors are not analysed. These can be looked upon and discussed with the author before adding to Cdb.
 
 #### Examples
 
-- An example run command: `python anuvikar_validate_cdb /data/W/newEntries/ /data/W/newEntries /data/W/newEntries/*xml`. Here we have archives and xml files in the same directory and we want output files to be written in the same directory.
-- Another example run command: `python anuvikar_validate_cdb /data/W/allArchives/ /data/W/newEntries /data/W/newEntries/*xml`. Here we have storing all the old and new archives in the same directory `allArchives`. Directory for new xml files and output files to be written are  the same.
+- An example run command: `python av_validate_cdb /data/W/newEntries/ /data/W/newEntries /data/W/newEntries/*xml`. Here we have archives and xml files in the same directory and we want output files to be written in the same directory.
+- Another example run command: `python av_validate_cdb /data/W/allArchives/ /data/W/newEntries /data/W/newEntries/*xml`. Here we have storing all the old and new archives in the same directory `allArchives`. Directory for new xml files and output files to be written are  the same.
 
 ### Adding to Database
 
-- Run `python anuvikar_add_cdb.py $new_output_dir $destination_db_path $existing_database_path:
-- First argument: Provide the output directory of the `anuvikar_validate_cdb.py` which has cascades.json and cascades.db files for the cascades that you wish to add to the database.
-- Second argument: File path for the output sqlite3 db.
-- Third argument: File path for the existing sqlite3 db if exists.
-- The destination db path (second argument) is the database file that can be copied to project_dir/src/db/dev.sqlite3.db to view the updated database.
-- The command generates another file which is destination_db_path+'_tree.pickle' which needs to be kept with the db file. This will be used by anuvikar_add_cdb.py while further adding more data (when passing this new db as the third argument).
+- Run `python av_add_cdb.py $new_output_dir $destination_db_path $existing_database_path`:
+- First argument: Provide the output directory of the `av_validate_cdb.py` which has `anuvikar.json` and `anuvikar.db` files for the cascades that you wish to add to the database.
+- Second argument: File path for the output db.
+- Third argument: File path for the existing db if exists.
+- The destination db path (second argument) is the database file that can be copied to `$csaransh_dir$/src/db/dev.csaransh.db` to view the updated database.
+- The command generates another file which is `destination_db_path+_tree.pickle` which needs to be kept with the db file. This will be used by av_add_cdb.py while further adding more data (when passing this new db as the third argument).
 
 #### Examples and Use Cases
 
 1. Fresh database:
 
-- Run anuvikar_validate_cdb for the archives and corrensponding meta files. Provide the output directory of this command to anuvikar_add_cdb. For example:
-  - `python anuvikar_validate_cdb /data/W/newEntries/ /data/W/newEntries /data/W/newEntries/*xml`
-  - `python anuvikar_add_cdb /data/W/newEntries/ /data/W/newEntries/toview.db`
-  - `cp /data/W/newEntries/toview.db ./src/db/dev.sqlite3.db`
+- Run av_validate_cdb for the archives and corrensponding meta files. Provide the output directory of this command to av_add_cdb. For example:
+  - `python av_validate_cdb /data/W/newEntries/ /data/W/newEntries /data/W/newEntries/*xml`
+  - `python av_add_cdb /data/W/newEntries/ /data/W/newEntries/csaransh.db`
+  - `cp /data/W/newEntries/csaransh.db ./src/db/dev.csaransh.db`
   - Now you can open the webpage (directions given later in this readme) to view your new entries on csaransh-webapp.
 
 2. Adding new data to the earlier processed db:
 
   - Let us say that you want to add new data to the db we created in the last step.
-  - `python anuvikar_validate_cdb /data/W/newerEntries/ /data/W/newerEntries /data/W/newerEntries/*xml`
-  - `python anuvikar_add_cdb /data/W/newerEntries/ /data/W/newerEntries/toview.db /data/W/newEntries/toview.db`
-  - `cp /data/W/newerEntries/toview.db ./src/db/dev.sqlite3.db`
+  - `python av_validate_cdb /data/W/newerEntries/ /data/W/newerEntries /data/W/newerEntries/*xml`
+  - `python av_add_cdb /data/W/newerData/ /data/W/newerData/csaransh.db /data/W/newEntries/csaransh.db`
+  - `cp /data/W/newerEntries/csaransh.db ./src/db/dev.csaransh.db`
   - Now you can open the webpage (directions given later in this readme) to view your newer entries along with the new entries added earlier.
 
 ### Starting the development server for the web-app
@@ -97,3 +97,7 @@ Dependencies:
   - `npm run start`
   - This will start the server at port 3000.
   - One can use pm2.js or any other process manager to start the npm server as a daemon whenever system starts.
+
+## Using the Web-app
+
+TODO

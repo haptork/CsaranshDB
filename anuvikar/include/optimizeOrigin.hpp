@@ -10,13 +10,13 @@
 
 #include <helper.hpp>
 
-namespace anuvikar {
+namespace av {
 
-Coords correctOrigin(const std::vector<anuvikar::Coords> &atoms,
-                     anuvikar::Coords origin, double latConst);
+Coords correctOrigin(const std::vector<av::Coords> &atoms,
+                     av::Coords origin, double latConst);
 
-Coords estimateOrigin(const std::vector<anuvikar::Coords> &atoms,
+Coords estimateOrigin(const std::vector<av::Coords> &atoms,
                       const double &latConst);
 
-} // namespace anuvikar
+} // namespace av
 #endif

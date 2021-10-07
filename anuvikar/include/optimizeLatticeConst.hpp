@@ -10,14 +10,14 @@
 
 #include <helper.hpp>
 
-namespace anuvikar {
+namespace av {
 
 constexpr auto atomsToIgnore = 1000LL;
 
-double optimizeForOffset(std::vector<anuvikar::Coords> &atoms,
+double optimizeForOffset(std::vector<av::Coords> &atoms,
                          double minLatConst, double maxLatConst, double step);
 
-double optimizeLatConst(std::vector<anuvikar::Coords> &atoms, double latConst);
+double optimizeLatConst(std::vector<av::Coords> &atoms, double latConst);
 
-} // namespace anuvikar
+} // namespace av
 #endif

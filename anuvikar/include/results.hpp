@@ -14,7 +14,7 @@
 #include <cluster2features.hpp>
 #include <helper.hpp>
 
-namespace anuvikar {
+namespace av {
 
 // coords, isInterstitial, ClusterId, isSurviving
 using DefectT = std::tuple<std::array<double, 3>, bool, int, bool>;
@@ -86,22 +86,22 @@ ClusterIVMapT clusterIVType(const ClusterIdMapT &, ClusterSizeMapT &);
 
 // number of defects and fraction of interstitials and vacancies in cluster
 std::tuple<int, double, double>
-getNDefectsAndClusterFractions(const anuvikar::DefectVecT &defects);
+getNDefectsAndClusterFractions(const av::DefectVecT &defects);
 
 using ClusterFeatMapT = std::unordered_map<int, featT>;
 
 // cluster features based on pair distances, triad angles and neighbourhood
 // count
-ClusterFeatMapT clusterFeatures(const anuvikar::DefectVecT &defects,
-                                const anuvikar::ClusterIdMapT &clusters,
-                                anuvikar::ClusterSizeMapT &clusterCounts,
+ClusterFeatMapT clusterFeatures(const av::DefectVecT &defects,
+                                const av::ClusterIdMapT &clusters,
+                                av::ClusterSizeMapT &clusterCounts,
                                 double latticeConst);
 
 // maximum of surviving defects among all of clusters
 // (interstitial and vacancy cluster separately)
 std::tuple<int, int>
-getMaxClusterSizes(anuvikar::ClusterSizeMapT &clusterCounts,
-                   const anuvikar::ClusterIdMapT &clusters);
+getMaxClusterSizes(av::ClusterSizeMapT &clusterCounts,
+                   const av::ClusterIdMapT &clusters);
 
-} // namespace anuvikar
+} // namespace av
 #endif // ANUVIKAR_RESULTS_HPP

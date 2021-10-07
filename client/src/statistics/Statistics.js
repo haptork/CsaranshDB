@@ -116,12 +116,13 @@ export class Statistics extends React.Component {
       "max vac size":{"id":"maxclustersizev"}, 
       "int in cluster":{"id":"inclusteri"}, 
       "vac in cluster":{"id":"inclusterv"}, 
-      "volume":{"id":"hullvol"}, 
+      "hull-volume":{"id":"hullvol"}, 
       //"hull area":{"id":"hull_area"}, 
       //"hull nvert":{"id":"hull_nvertices"}, 
       "density":{"id":"hulldensity"}, 
       //"planarity":{"id":"planarity", "accessor":accessorTwod }, 
-      //"subcascades":{"id":"subc", "accessor":accessorSubc }, 
+      "damage-spots":{"id":"ndclustv"}, 
+      "% in clusters":{"id":"incluster"}, 
       //"subcascade impact":{"id":"dclust_sec_impact"},
       //"hull nsimpl":{"id":"hull_nsimplices"}, 
       "energy":{"id":"energy", "type":"no-box"}
@@ -132,7 +133,8 @@ export class Statistics extends React.Component {
       { value: 'temperature', label: 'Temperature' },
       { value: 'potentialused', label: 'Potential' },
       { value: 'es', label: 'Electronic stopping' },
-      { value: 'author', label: 'Author' }
+      { value: 'author', label: 'Author' },
+      { value: 'structure', label: 'Structure'}
       //{ value: 'tags', label: 'Tags' },
     ];
     this.defaultGroupingLabels = this.options.slice(0, 2);

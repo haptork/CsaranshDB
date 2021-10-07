@@ -14,15 +14,15 @@
 #include <helper.hpp>
 #include <results.hpp>
 
-namespace anuvikar {
+namespace av {
 
-std::pair<anuvikar::xyzFileStatus, anuvikar::ErrorStatus> processTimeFile(anuvikar::InputInfo &info,
-                                     anuvikar::ExtraInfo &extraInfo,
-                                     const anuvikar::Config &config, std::istream &infile, anuvikar::frameStatus &fs, std::ostream &outfile, bool isFirst);
+std::pair<av::xyzFileStatus, av::ErrorStatus> processTimeFile(av::InputInfo &info,
+                                     av::ExtraInfo &extraInfo,
+                                     const av::Config &config, std::istream &infile, av::frameStatus &fs, std::ostream &outfile, bool isFirst);
 
-std::pair<anuvikar::ErrorStatus,int> processFileTimeCmd(std::string xyzfileName,
+std::pair<av::ErrorStatus,int> processFileTimeCmd(std::string xyzfileName,
                                             std::ostream &outfile,
-                                            const Config &config, int id, const anuvikar::InputInfo&, const anuvikar::ExtraInfo&, bool);
+                                            const Config &config, int id, const av::InputInfo&, const av::ExtraInfo&, bool);
  
 }
 #endif

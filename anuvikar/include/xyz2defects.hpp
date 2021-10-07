@@ -14,7 +14,7 @@
 #include <xyzReader.hpp>
 #include <results.hpp>
 
-namespace anuvikar {
+namespace av {
 
 // Gives next expected lattice site given a lattice site
 // in this way it enumerates all the lattice sites
@@ -40,6 +40,6 @@ DefectRes atoms2defectsFcc(std::pair<xyzFileStatus, std::vector<offsetCoords>> a
 
 DefectRes displacedAtoms2defects(std::pair<xyzFileStatus, std::array<std::vector<Coords>, 2>> d,
                            double lc);
-} // namespace anuvikar
+} // namespace av
 
 #endif // XYZ2DEFECTS_ANUVIKAR_HPP

@@ -26,6 +26,7 @@ from sklearn.metrics.cluster import adjusted_rand_score
 from sklearn.metrics.cluster import adjusted_mutual_info_score
 from sklearn.neighbors import NearestNeighbors
 import umap
+import logging
 
 pathToAnuvikar = "."
 sys.path.append(pathToAnuvikar)
@@ -177,7 +178,7 @@ def cookNewComparison(oldFt, feat, tag):
   ##      (dists[key][index][x[1]], tag[neighbours[key][index][x[1]]][0], tag[neighbours[key][index][x[1]]][1]) for x in lenDiff[:topsize]]
 
 def mergeCascadeDbs(dbNew, dataPath, dest, dbOld = None, oldFtPath=None):
-  if (not os.path.exists(dataPath)): return False
+  if (not os.path.exists(dataPath)): return (False, "Can not access: " + dataPath)
   dataFile = open(dataPath, 'r')
   data = json.load(dataFile)
   dataFile.close()
@@ -226,6 +227,9 @@ def mergeCascadeDbs(dbNew, dataPath, dest, dbOld = None, oldFtPath=None):
   con.commit()
   for (t, z) in zip(tag, dims):
     cur.execute("UPDATE clusters set hdbx=?, hdby=? where cascadeid = ? and name = ?", (z[0], z[1], t[0], t[1]))
+  con.commit()
+  con.close()
+  return (True, "")
   #store
   #updateComparison(db2Path, updates)
   #cpDb(db1Path, db2Path)
@@ -276,15 +280,17 @@ def getComparisonPairs(data, cmp, cur):
 if __name__ == "__main__":
   if len(sys.argv) < 3:
     print("please provide dir. with new data (having output from anuvikar validate script), destination db path, existing added db path (optional).")
-
   else:
     newPath = sys.argv[1]
     dest = sys.argv[2]
-    dbNew = os.path.join(newPath, "cascades.db")
-    data = os.path.join(newPath, "cascades.json")
+    dbNew = os.path.join(newPath, "anuvikar.db")
+    data = os.path.join(newPath, "anuvikar.json")
     dbOld = None
     nnOld = None
     if len(sys.argv) > 3: 
       dbOld = sys.argv[3]
       nnOld = sys.argv[3] + "_tree.pickle"
-    mergeCascadeDbs(dbNew, data, dest, dbOld, nnOld)
+    isSuccess, msg = mergeCascadeDbs(dbNew, data, dest, dbOld, nnOld)
+    if (isSuccess):
+      print("New database written to ", dest)
+      print("Copy this file to Csaransh src/db/dev.csaransh.db to view with Csaransh")

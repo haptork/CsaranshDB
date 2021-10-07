@@ -12,7 +12,7 @@
 #include <memory>
 #include <string>
 
-namespace anuvikar {
+namespace av {
 
 enum class LogMode : int {
   none = 0x00,
@@ -131,5 +131,5 @@ public:
 
   const LogModeT &mode() const { return _logMode; }
 };
-} // namespace anuvikar
+} // namespace av
 #endif

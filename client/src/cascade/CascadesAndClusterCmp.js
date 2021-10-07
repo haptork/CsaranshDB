@@ -87,7 +87,7 @@ class CascadeViews1 extends React.Component {
                   )
                 },
                 {
-                  tabName: "Mesh-Subcascades",
+                  tabName: "Damage spots",
                   tabIcon: MeshIcon,
                   tabContent: (
                  <ClusterPlot row={row}/>

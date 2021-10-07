@@ -39,7 +39,7 @@ export class NDefectsPlot extends React.Component {
               zeroline: false
           },
           boxmode: "group",
-          margin: { l: 30, r: 10, b: 35, t: 30, pad: 1 },
+          margin: { l: 30, r: 10, b: 120, t: 30, pad: 1 },
          updatemenus: [{
         y: 1.05,
         x: 0.11,

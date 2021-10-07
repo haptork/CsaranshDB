@@ -9,7 +9,7 @@ void printClusterIds(const std::unordered_map<int, std::vector<int>> clusters,
   for (const auto &it : clusters) {
     outfile << '"' << it.first << "\":";
     outfile << "[";
-    anuvikar::writeVector(it.second, outfile);
+    av::writeVector(it.second, outfile);
     outfile << "]";
     if (i != clusters.size() - 1) outfile << ", ";
     outfile << "\n";
@@ -29,24 +29,24 @@ void printClusterIVs(const std::unordered_map<int, int> clusters,
   }
 }
 
-void printSingleFeat(const anuvikar::featT &feats, std::ostream &outfile) {
+void printSingleFeat(const av::featT &feats, std::ostream &outfile) {
   outfile << "\"dist\": ";
   outfile << "[";
-  anuvikar::writeStdAr(std::get<0>(feats), outfile);
+  av::writeStdAr(std::get<0>(feats), outfile);
   outfile << "],\n";
   outfile << "\"angle\": ";
   outfile << "[";
-  anuvikar::writeStdAr(std::get<1>(feats), outfile);
+  av::writeStdAr(std::get<1>(feats), outfile);
   /*
   outfile << "],\n";
   outfile << "\"adjNn2\": ";
   outfile << "[";
-  anuvikar::writeStdAr(std::get<2>(feats), outfile);
+  av::writeStdAr(std::get<2>(feats), outfile);
   */
   outfile << "]\n";
 }
 
-void printFeats(const std::unordered_map<int, anuvikar::featT> &feats,
+void printFeats(const std::unordered_map<int, av::featT> &feats,
                 std::ostream &outfile) {
   size_t count = 0;
   for (const auto &it : feats) {
@@ -59,37 +59,37 @@ void printFeats(const std::unordered_map<int, anuvikar::featT> &feats,
   }
 }
 
-auto strSimulationCode(anuvikar::XyzFileType code) {
-  return (code == anuvikar::XyzFileType::cascadesDbLikeCols)
+auto strSimulationCode(av::XyzFileType code) {
+  return (code == av::XyzFileType::cascadesDbLikeCols)
              ? "cascadesDbLikeCols"
-             : (code == anuvikar::XyzFileType::lammpsWithStdHeader)
+             : (code == av::XyzFileType::lammpsWithStdHeader)
                    ? "lammpsWithStdHeader"
-                   : (code == anuvikar::XyzFileType::parcasWithStdHeader)
+                   : (code == av::XyzFileType::parcasWithStdHeader)
                       ? "parcasWithStdHeader"
-                      : (code == anuvikar::XyzFileType::lammpsDisplacedCompute)
+                      : (code == av::XyzFileType::lammpsDisplacedCompute)
                         ? "lammpsDisp"
                         : "generic-XYZ";
 }
 
-std::string errorStr(anuvikar::ErrorStatus err) {
-  if (err == anuvikar::ErrorStatus::inputFileMissing) {
+std::string errorStr(av::ErrorStatus err) {
+  if (err == av::ErrorStatus::inputFileMissing) {
     return "Could not read input file";
-  } else if (err == anuvikar::ErrorStatus::inputFileMissing) {
+  } else if (err == av::ErrorStatus::inputFileMissing) {
     return "Could not read input file";
-  } else if (err == anuvikar::ErrorStatus::InputFileincomplete) {
+  } else if (err == av::ErrorStatus::InputFileincomplete) {
     return "Input file doesn't have all the info";
-  } else if (err == anuvikar::ErrorStatus::unknownSimulator) {
+  } else if (err == av::ErrorStatus::unknownSimulator) {
     return "Input file doesn't have LAMMPS/PARCAS/DISPLACED simulation input "
            "type";
-  } else if (err == anuvikar::ErrorStatus::xyzFileDefectsProcessingError) {
+  } else if (err == av::ErrorStatus::xyzFileDefectsProcessingError) {
     return "XYZ file has too many defects or zero atoms";
   }
   return "";
 }
 
-void anuvikar::resToKeyValue(std::ostream &outfile,
-                             const anuvikar::resultsT &res) {
-  auto printDefects = [&outfile](const anuvikar::DefectVecT &d) {
+void av::resToKeyValue(std::ostream &outfile,
+                             const av::resultsT &res) {
+  auto printDefects = [&outfile](const av::DefectVecT &d) {
     size_t count = 0;
     for (const auto &x : d) {
       outfile << "[" << std::get<0>(x)[0] << ", " << std::get<0>(x)[1] << ", "
@@ -128,13 +128,13 @@ void anuvikar::resToKeyValue(std::ostream &outfile,
   outfile << "}";
   outfile << ",\n";
   outfile << "\"coDefects\": [";
-  anuvikar::writeVector(res.coDefects, outfile);
+  av::writeVector(res.coDefects, outfile);
   outfile << "]\n";
 }
 
-void anuvikar::infoToKeyValue(std::ostream &outfile,
-                              const anuvikar::InputInfo &i,
-                              const anuvikar::ExtraInfo &ei) {
+void av::infoToKeyValue(std::ostream &outfile,
+                              const av::InputInfo &i,
+                              const av::ExtraInfo &ei) {
   outfile << "\"xyzFilePath\": \"" << i.xyzFilePath << "\",\n"
           << "\"id\": \"" << ei.id << "\",\n"
           << "\"substrate\": \"" << ei.substrate << "\",\n"
@@ -162,8 +162,8 @@ void anuvikar::infoToKeyValue(std::ostream &outfile,
           << "\"originType\":" << i.originType; // << ",\n";
 }
 
-void anuvikar::configToKeyValue(std::ostream &outfile,
-                                const anuvikar::Config &c) {
+void av::configToKeyValue(std::ostream &outfile,
+                                const av::Config &c) {
   outfile << "\"version\": \"" << "0.4" << "\",\n"
           << "\"onlyDefects\": \"" << c.onlyDefects << "\",\n"
           << "\"isFindDistribution\": \"" << c.isFindDistribAroundPKA << "\",\n"
@@ -178,13 +178,13 @@ void anuvikar::configToKeyValue(std::ostream &outfile,
           << "\"outputJSONFilePath\": \"" << c.outputJSONFilePath << "\""; // << ",\n";
 }
 
-void anuvikar::printJson(std::ostream &outfile, const anuvikar::InputInfo &i,
-                         const anuvikar::ExtraInfo &ei,
-                         const anuvikar::resultsT &res) {
+void av::printJson(std::ostream &outfile, const av::InputInfo &i,
+                         const av::ExtraInfo &ei,
+                         const av::resultsT &res) {
   outfile << "{";
-  anuvikar::infoToKeyValue(outfile, i, ei);
+  av::infoToKeyValue(outfile, i, ei);
   outfile << ",\n";
-  anuvikar::resToKeyValue(outfile, res);
+  av::resToKeyValue(outfile, res);
   outfile << "}\n";
 }
 // const char * c = outfile.str().c_str();

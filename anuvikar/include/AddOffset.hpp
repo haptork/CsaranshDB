@@ -10,7 +10,7 @@
 #include <tuple>
 #include <vector>
 
-namespace anuvikar {
+namespace av {
 
 using offsetCoords = std::tuple<std::array<double, 3>, double, std::array<double, 3>>;
 
@@ -33,6 +33,6 @@ private:
   long double _latConst;
   long double roundOffTo = 10000.0;
 };
-} // namespace anuvikar
+} // namespace av
 
 #endif // ADDOFFSET_ANUVIKAR_HPP

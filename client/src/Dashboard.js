@@ -70,7 +70,7 @@ const overallStats = outline => {
   if (elemStr.length > 25) elemStr = elemStr.substr(0, 25) + " ... ";
   let energyStr = "From " + Math.min(...outline.energy) + " to " + Math.max(...outline.energy) + "keV";
   if (outline.energy.length == 1) energyStr = "" + outline.energy + "keV";
-  let temperatureStr = "From " + Math.min(...outline.temperature) + " to " + Math.max(...outline.energy) + "keV";
+  let temperatureStr = "From " + Math.min(...outline.temperature) + " to " + Math.max(...outline.temperature) + "keV";
   if (outline.temperature.length == 1) temperatureStr = "" + outline.temperature + "K";
   let potStr = outline.potentialused.join(", ");
   if (potStr.length > 25) potStr = potStr.substr(0, 25) + " ... ";

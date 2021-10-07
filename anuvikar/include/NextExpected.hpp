@@ -8,7 +8,7 @@
 
 #include <helper.hpp>
 
-namespace anuvikar {
+namespace av {
 struct NextExpected {
 private:
   Coords _min, _max, _minCur, _maxCur, _maxFinal;
@@ -38,5 +38,5 @@ public:
   const Coords &incrementFcc();
   int mode{0};
 };
-} // namespace anuvikar
+} // namespace av
 #endif
