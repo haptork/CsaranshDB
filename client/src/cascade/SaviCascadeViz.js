@@ -3,6 +3,11 @@ import React, { useState } from 'react';
 import { OrbitControls, useTexture, MeshDistortMaterial} from '@react-three/drei';
 import { Points, Point } from './SaviCascadeVizHelper';
 import { Canvas} from '@react-three/fiber';
+import Button from '@material-ui/core/Button';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+import InfoIcon from '@material-ui/icons/Info';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 
 
 const getPairColorOrient = x => {
@@ -435,16 +440,41 @@ function DrawCanvas({handleCmp, coords, saviInfo, siavenu, clusters, clustersize
     //
 }
 
+const HtmlTooltip = withStyles((theme) => ({
+  tooltip: {
+    backgroundColor: '#f5f5f9',
+    color: 'rgba(0, 0, 0, 0.87)',
+    maxWidth: 220,
+    fontSize: theme.typography.pxToRem(12),
+    border: '1px solid #dadde9',
+  },
+}))(Tooltip);
+
+
 export default function SaviCascadeViz(props) {
-   const [label, setLabel] = useState("shunyam");
+   const [label, setLabel] = useState("Click a defect to show its info");
    return (
-    <div style={{height:"360px"}} >
+    <div style={{height:"360px", position:'relative'}} >
+    <div style={{position:'absolute', top:0, right:0}}>
+    <HtmlTooltip
+        title={
+          <React.Fragment>
+            <Typography color="inherit">Plot Legend</Typography>
+            <em>{"TODO"}</em> <b>{'glyphs, '}</b>
+            {"orientations and colors"}
+          </React.Fragment>
+        }
+      >
+        <InfoIcon/>
+      </HtmlTooltip>
+    </div>
     <React.Suspense fallback={null}>
    {props.coords && <DrawCanvas handleCmp={props.handleCmp} setLabel={setLabel} {...props} />}
     </React.Suspense>
     <p>
       {label}
     </p>
+
     </div>
    );
 }

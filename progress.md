@@ -654,7 +654,7 @@ WIP:
 - ~~Add logging flags for c++.~~
 - Legend for orientations, mesh shapes etc.
 - ~~Add more columns to maintable.~~
-- Deploy to Aws.
+- ~~Deploy to Aws.~~
 
 TODO:
 

@@ -8,7 +8,7 @@ import CardIcon from "../components/Card/CardIcon.js";
 import ElemIcon from "@material-ui/icons/Grain";
 import EnergyIcon from "@material-ui/icons/FlashOn";
 import PlanarIcon from "@material-ui/icons/FilterBAndW";
-import ClassesIcon from '@material-ui/icons/Category';
+import ClassesIcon from '@material-ui/icons/WbSunny';
 
 const Item = props => {
   const classes = props.classes;
