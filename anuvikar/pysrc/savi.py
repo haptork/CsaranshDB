@@ -16,6 +16,7 @@ from scipy.sparse.csgraph import minimum_spanning_tree
 from sklearn.neighbors import NearestNeighbors
 from collections import Counter
 from scipy.sparse import csr_matrix, lil_matrix
+import logging
 
 from .venuFeat import getLineFeat ,getLinesDataOnly, getAllAttrs, getAllHistAttrs, addLinesData, lineFeatsForCluster
 # In[1098]:
@@ -729,12 +730,14 @@ def getTotalLines(clusterLines):
         totalLines += 1
     return totalLines
  
-
 orientName = {0:'', 1:'100', 2:'110', 3: '111', 4: ''}
+MAX_LINES = 1400 # TODO put in config
 def addFullComponentInfo(cascade, cid, triads, pairs):
     if cascade['clusterSizes'][cid] < 2: return False
     linesData = lineFeatsForCluster(cascade, cid, triads, pairs)
-    if len(linesData['lines']) > 1400: return False
+    if len(linesData['lines']) > MAX_LINES: 
+        logging.warning("Too big defect, skipping savi analysis for " + cascade['xyzFilePath'] + " - " + cascade['infile'] + ": " + str(cid))
+        return False
     #print(cascade['id'], cid, len(linesData['lines']), len(linesData['linesT']))
     #cascade['features'][cid]['lines'] = di
     lineFeat = getLineFeat(linesData, cascade['clusters'][cid])
@@ -760,7 +763,8 @@ def getSaviDetails(cascade, cid):
     for comp in components[1][0]:
         comp.append(findDislocationDirection(comp, linesData['lines']))
     curClass = findComponentClass(attrs, *components)
-    curClassName = '-'.join([str(x) for x in curClass])
+    curClassName = str(curClass[0])+'-'+curClass[1]
+    if curClass[0] == 1: curClassName += '-'+'|'.join([orientName[x] for x in set(curClass[2])])
     return linesData, attrs, components, curClass, curClassName
 
 

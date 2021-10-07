@@ -173,6 +173,9 @@ getAtomsTime(anuvikar::InputInfo &info, anuvikar::ExtraInfo &extraInfo,
           res.first = anuvikar::xyzFileStatus::reading;
           break;
         }
+        if (!atoms.empty()) {
+          anuvikar::Logger::inst().log_warning(info.xyzFilePath + ", " + extraInfo.infile + ": " + " Multiple frames in file. Reading last one.");
+        }
         atoms.clear();
       }
       fs = anuvikar::frameStatus::inFrame;
@@ -180,8 +183,9 @@ getAtomsTime(anuvikar::InputInfo &info, anuvikar::ExtraInfo &extraInfo,
     }
   }
   if (atoms.empty()) return res;
-  // assuming bcc structure TODO: for fcc
-  info.ncell = std::round(std::cbrt(atoms.size() / 2.0));
+  // assuming bcc /fcc structure and perfect initial. TODO: for imperfect skip
+  if (info.structure[0] == 'b') info.ncell = std::round(std::cbrt(atoms.size() / 2.0));
+  else if (info.structure[0] == 'f') info.ncell = std::round(std::cbrt(atoms.size() / 4.0));
   auto secLatConst = (info.boxSize > 0.0) ? info.boxSize / info.ncell : -1.0;
   if (secLatConst > 0.0 && std::fabs(info.latticeConst - secLatConst) < 1e-3) {
     secLatConst = -1.0;
@@ -234,6 +238,17 @@ getAtomsTime(anuvikar::InputInfo &info, anuvikar::ExtraInfo &extraInfo,
         if (std::get<3>(combos[i]) < leastInterThresh) {
           leastIndex = i;
           leastInterThresh = std::get<3>(combos[i]);
+        }
+      }
+    }
+    if (combos.size() > 1 && info.originType == 1 &&  // estimated origin but two lattice constants, one given, one from boxdimensions & unit-cells
+         (secLatConst > 0.0 && std::fabs(info.latticeConst - secLatConst) > 1e-2)) {
+      auto mx = std::max(std::get<3>(combos[0]), std::get<3>(combos[1]));
+      if (mx / std::get<3>(combos[leastIndex]) > 1.2) {
+        const std::string msgPre = (leastIndex == 0) ? "given value of box-size might not be exact." : "given value of lattice constant might not be exact";
+        if (leastIndex == 0) {
+          anuvikar::Logger::inst().log_warning(info.xyzFilePath + ", " + extraInfo.infile + ": " + msgPre + "Difference in given lattice constant & box-size based lattice constant caused difference in"
+               "displaced atom values: " + std::to_string(std::get<3>(combos[0])) + ", " + std::to_string(std::get<3>(combos[0])));
         }
       }
     }
@@ -410,7 +425,7 @@ anuvikar::DefectRes anuvikar::atoms2defects(
   const auto &extraFactor = config.extraDefectsSafetyFactor;
   std::string errMsg = "";
   if (!(Logger::inst().mode() & LogMode::info))
-    errMsg = "from \"" + info.xyzFilePath + "\": ";
+    errMsg = "from \"" + info.xyzFilePath + "\", \"" + extraInfo.infile + "\": ";
   for (const auto &row : atoms) {
     Coords ar = get<0>(row);
     double curOffset = get<1>(row);
@@ -499,7 +514,7 @@ anuvikar::DefectRes anuvikar::atoms2defects(
     }
     if (interThresh.size() > extraFactor * interstitials.size()) {
       Logger::inst().log_error(errMsg + 
-          "not processing since interThresh is too big, this may be due to "
+          "not processing since number of theshold based displaced atoms are excessive, this may be due to "
           "inputs like latticeConst, boxDim or corrupt xyz file.  (i, v, "
           "interThresh): " +
           std::to_string(interstitials.size()) + ", " +
@@ -511,14 +526,14 @@ anuvikar::DefectRes anuvikar::atoms2defects(
       if ((int(interstitials.size()) / int(vacancies.size())) > extraFactor) {
 
         anuvikar::Logger::inst().log_warning(errMsg +
-            "interstitails and vacancies have different sizes (i, v, "
+            "sia and vacancy counts are different (i, v, "
             "interTresh): " +
             std::to_string(interstitials.size()) + ", " +
             std::to_string(vacancies.size()) + ", " +
             std::to_string(interThresh.size()));
       } else {
         anuvikar::Logger::inst().log_debug(
-            "interstitails and vacancies have different sizes (i, v, "
+            "sia and vacancy counts are different (i, v, "
             "interThresh): " +
             std::to_string(interstitials.size()) + ", " +
             std::to_string(vacancies.size()) + ", " +
@@ -528,7 +543,7 @@ anuvikar::DefectRes anuvikar::atoms2defects(
           vacancies.size() * (extraFactor / 10) < interstitials.size()) {
 
         anuvikar::Logger::inst().log_error(errMsg+
-            "not processing since the difference is too big (i, v, "
+            "not processing since the difference in sia and vacancy is too big (i, v, "
             "interThresh): " +
             std::to_string(interstitials.size()) + ", " +
             std::to_string(vacancies.size()) + ", " +
@@ -685,7 +700,7 @@ anuvikar::DefectRes anuvikar::atoms2defectsFcc(
   const auto &extraFactor = config.extraDefectsSafetyFactor;
   std::string errMsg = "";
   if (!(Logger::inst().mode() & LogMode::info))
-    errMsg = "from \"" + info.xyzFilePath + "\": ";
+    errMsg = "from \"" + info.xyzFilePath + "\", \"" + extraInfo.infile + "\": ";
   for (const auto &row : atoms) {
     Coords ar = get<0>(row);
     double curOffset = get<1>(row);

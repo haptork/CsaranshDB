@@ -323,6 +323,7 @@ def writeMlResultsToSqliteDb(cascades, config, isOverwrite=True):
     con = sqlite3.connect(config['outputDbPath'])
   except sqlite3.Error as e:
     print(e)
+    logging.error("Error in saving db file: " + str(e))
     if con: con.close()
     return False
   cur = con.cursor()
@@ -377,17 +378,19 @@ def validateArchive(srcDir, extractionDir, metaFiles, overwriteJson, overwriteDb
     f = open(config['outputJSONFilePath'], 'r')
     cascades = json.load(f)
     f.close()
-  writeMlResultsToJSON(cascades, config)
+  writeResultsToJSON(cascades, config)
+  print("Analysis results written to JSON: " + config['outputJSONFilePath'])
   cascades = stageDwiMl(cascades)
   if not(os.path.exists(config['outputDbPath'])) or overwriteDb:
     if os.path.exists(config['outputDbPath']):
       os.remove(config['outputDbPath'])
     writeMlResultsToSqliteDb(cascades, config)
+    print("Analysis results written to sqlite3db: " + config['outputDbPath'])
   summarizeLog(config)
   # saved cascades.json, cascades.db, log-summary.md, log.txt
   return [True, ""]
 
-def writeMlResultsToJSON(res, config):
+def writeResultsToJSON(res, config):
     f = open(config['outputJSONFilePath'], "w")
     json.dump(res, f)
     f.close()

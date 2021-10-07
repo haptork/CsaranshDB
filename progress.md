@@ -619,31 +619,40 @@ TODO:
 - Correct on click for vacancy in savimorph.
 - Add structure to csaransh columns.
 
-## 6th Oct:
+## 6th Oct
 
 WIP:
 
 - ~~Correct on click for vacancy in savimorph viz.~~
 - ~~On click for meshes in savimorph viz.~~
-- Testing of Fe and W data.
+- ~~Testing of Fe and W data.~~
   - TODO: Check why 7? are not showing. Don't show 0 size anyway.
-- Add log for python.
-- Add flags for c++ and python.
+- ~~Add log for python.~~
 
 TODO:
 
+- ~~Add logging flags for c++.~~
 - !!Legend for orientations, mesh shapes etc.
 - !!fix wrong row count on excluding a single row from the statistics using the second action button.
 - !!Testing on Cu data and all the cascadesDb data.
-
 ----- Deploy at IAEA server
-
 - !Another script for giving input from cmd line.
 - !Add svg save to threejs and plotly plots.
 - !fix: logo moving on table open/close.
 - !Table for cascade info with download links.
 - !Corrent input file and xyzfilepath.
+- Add partial support for imperfect initial crystals.
 - buttons for configuration: if needed.
 - Landing page with filters.
 - About page.
 - Same min-max in contour plot.
+
+## 7th Oct
+
+WIP:
+
+- ~~Add logging flags for c++.~~
+- Legend for orientations, mesh shapes etc.
+- Add more columns to maintable.
+- fix wrong row count on excluding a single row from the statistics using the second action button.
+- Deploy to Aws.

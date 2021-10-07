@@ -15,6 +15,7 @@ import os
 import numba
 import umap
 import hdbscan
+import logging
 
 from pysrc.venuFeat import getPointDefectLines, linesForCascade, makeLatticeGroups
 from pysrc.savi import addFullComponentInfo
@@ -367,6 +368,7 @@ def checkIds(cascades):
     uniqueIdCount = len(set([cascade['id'] for cascade in cascades]))
     if uniqueIdCount == len(cascades): return
     print("Duplicate Ids found. Resetting all ids...")
+    logging.warning("Duplicate Ids found. Resetting all ids...")
     for i in range(len(cascades)):
         cascades[i]['id'] = i + 1
 
@@ -393,7 +395,10 @@ def validateForCdb(cascades, isInit=True, isAddClusterComparison=False, isAddCla
     if isAddClassification:
       print("Defect morphology identification & classification...")
       isSuccess = clusterClasses(cascades, feat, tag)
-      if (isSuccess): print("finished.")
-      else: print("finished with error!")
+      if (isSuccess): 
+          print("finished.")
+      else: 
+          logging.error("Finished with error!")
+          print("finished with error!")
       sys.stdout.flush()
     return cascades

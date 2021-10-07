@@ -241,8 +241,13 @@ def _sanitizeCppRes(res):
 
 
 def _validateMetaInfo(metaInfo):
-    return metaInfo['has_surface'] == 'false' and metaInfo['initially_perfect'] == 'true' and (metaInfo['material']['structure'] == 'bcc' or metaInfo['material']['structure'] == 'fcc')
-
+    if metaInfo['has_surface'] == 'false' and metaInfo['initially_perfect'] == 'true' and (metaInfo['material']['structure'] == 'bcc' or metaInfo['material']['structure'] == 'fcc'):
+        return (True, "")
+    if metaInfo['has_surface'] == 'true':
+        return (False, "Anuvikar currently does not analyse cascades with 'has_surface' true value i.e. with surface defects.")
+    if metaInfo['initially_perfect'] == 'false':
+        return (False, "Anuvikar currently does not analyse cascades with 'initially_perfect' false value.")
+    return (False, "Anuvikar currently only analyses bcc/fcc while this cascade is " + metaInfo['material']['structure'])
 
 def _validateInfo(info, extraInfo):
     validXyzFileTypes = ["GENERIC", "CASCADESDBLIKECOLS",
@@ -367,11 +372,16 @@ def processXyzFileGivenInfo(info, extraInfo, config):
         return False, ""
     lib = cdll.LoadLibrary(config["anuvikarLib"])
     lib.pyProcessFile.restype = c_void_p
-    res = lib.pyProcessFile(_cookInfoForCpp(info, _InputInfoCpp()), _cookInfoForCpp(
+    resStr = ''
+    try:
+      res = lib.pyProcessFile(_cookInfoForCpp(info, _InputInfoCpp()), _cookInfoForCpp(
         extraInfo, _ExtraInfoCpp()), _cookInfoForCpp(config, _ConfigCpp()))
-    resStr = _sanitizeCppRes(cast(res, c_char_p).value)
-    lib.dalloc.argtypes = [c_void_p]
-    lib.dalloc(res)
+      resStr = _sanitizeCppRes(cast(res, c_char_p).value)
+    except:
+      resStr = "Error while cpp processing"
+    finally:
+      lib.dalloc.argtypes = [c_void_p]
+      lib.dalloc(res)
     return True, resStr
 
 
@@ -600,8 +610,9 @@ def processXyzFilesInDirGivenMetaFile(metaFilePath, xyzDir, config, idStartIndex
         return False, "Error in xyz directory path"
     meta = xmlFileToDict(metaFilePath)
     metaInfo = meta['cdbml']['cdbrecord']
-    if not _validateMetaInfo(metaInfo):
-        return False, metaFilePath + ": anuvikar does not yet support processing corresponding cascades (only supports perfect, not surface bcc/fcc)"
+    isValid, err = _validateMetaInfo(metaInfo)
+    if not isValid:
+        return False, metaFilePath + ": " + err
     xyzFiles = _getAllFilesWithPrefixSuffix(
         xyzDir, prefix, suffix, excludePrefix, excludeSuffix)
     print(str(len(xyzFiles)) + " xyz files corresponding to meta file " + metaFilePath)
@@ -615,6 +626,7 @@ def processXyzFilesInDirGivenMetaFile(metaFilePath, xyzDir, config, idStartIndex
             res.append(curRes)
         else:
             print(curRes)
+            logging.error(metaFilePath + ", " + xyzFile + ": " + curRes)
         if onlyProcessTop > 0 and len(res) >= onlyProcessTop: break
     return True, res
 
