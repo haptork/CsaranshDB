@@ -357,17 +357,17 @@ def validateArchive(srcDir, extractionDir, metaFiles, overwriteJson, overwriteDb
       #archiveName = os.path.basename(archivePath)
       if not os.path.exists(archivePath):
         logging.error("Archive missing from the source directory: " + archivePath)
-        print("Archive missing from the source directory: " + archivePath)
+        print("Archive missing from the source directory: " + archivePath + " for " + metaFilePath)
         continue
       xyzDir = _unzipFile(extractionDir, archivePath, archiveName)
       if len(xyzDir) == 0: 
-        logging.error("Error in unzipping the file: " + archivePath)
+        logging.error("Error in unzipping the file: " + archivePath + " for " + metaFilePath)
         print("Error in unzipping the file: " + archivePath)
         continue
       print("processing: ", archiveName)
       isSuccess, msg, curCascades = stageEkaCpp(metaFilePath, xyzDir, config)
       if not isSuccess: 
-        logging.error("Error in cpp processing of file: " + metaFilePath + ": " + msg)
+        logging.error("Error in cpp processing files in : " + xyzDir + " for " + metaFilePath + ": " + msg)
         print("Error in cpp processing of file: " + metaFilePath + ": " + msg)
       else:
         cascades += curCascades
@@ -419,4 +419,6 @@ if __name__ == "__main__":
     #overwriteDb = (sys.argv[4] == "1")
     metaFiles = [x for x in sys.argv[3:]]
     logging.basicConfig(filename=os.path.join(extractionDir, "av_py.log"), level=logging.WARNING, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+    logging.warning("Atho Anuvikar validation")
     validateArchive(srcDir, extractionDir, metaFiles, overwriteJson, overwriteDb)
+    logging.warning("Iti")
