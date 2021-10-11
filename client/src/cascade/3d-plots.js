@@ -1,4 +1,5 @@
 import React from 'react';
+import { dlOptions } from '../utils';
 import { getColor, getClassData, getPairColorOrient, uniqueKey } from "../utils";
 import createPlotlyComponent from 'react-plotly.js/factory';
 const Plotly = window.Plotly;
@@ -606,6 +607,9 @@ export class ClassesPlot extends React.Component {
       <Plot data={cookDataClasses(props.traces)} layout={ layout(true) }
       style={{height: "320px", width: "100%"}}
       onClick={props.clickHandler}
+      config={{scrollZoom:true,
+        ...(dlOptions('csaransh_savi_classes'))
+      }}
       useResizeHandler
     />
     );

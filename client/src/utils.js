@@ -300,3 +300,13 @@ export const InfoTooltip = (props) => (<div style={{margin: props.margin ? props
         <InfoIcon/>
       </HtmlTooltip>
     </div>);
+
+export const dlOptions = name => { 
+  return {
+    toImageButtonOptions: {
+      format: 'svg',
+      filename: name,
+    },
+    displaylogo: false
+  };
+}
