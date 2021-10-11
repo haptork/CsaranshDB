@@ -332,6 +332,7 @@ def clusterClasses(data, feat, tag):
         cascade['clusterClasses']['savi'][tcid]['hdbpoint'] = dim
     for cascade in data:
       if 'siavenu' not in cascade:
+        triads, pairs = makeLatticeGroups(cascade)
         cascade['siavenu'] = getPointDefectLines(cascade, triads, pairs)
       if 'savi' not in cascade:
         cascade['savi'] = {}

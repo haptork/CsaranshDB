@@ -132,3 +132,15 @@ opacity:1.0;
     max-height:165px !important;
     overflow-y: scroll;
 }
+
+.info-tt-icon {
+    opacity: 0.5;
+    position:absolute;
+    top:0; 
+    right:0; 
+    z-index:1;
+}
+
+.info-tt-icon:hover {
+    opacity: 1.0;
+}

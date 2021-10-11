@@ -223,6 +223,7 @@ const cookDataCmp = (c, cmpColorIndex) => {
             }
         },
         margin: { l: 30, r: 10, b: 40, t: 30, pad: 1 },
+        showlegend: false
       };
     };
 
@@ -473,8 +474,10 @@ const cookData = (row) => {
   return data;
   */
 }
-    const layout = {
+    const layout = (showLegend) => {
+      return {
         autosize: true,
+        showlegend: showLegend,
         scene: {
             aspectratio: {
                 x: 1,
@@ -513,9 +516,10 @@ const cookData = (row) => {
         },
         margin: { l: 30, r: 10, b: 40, t: 30, pad: 1 },
     };
+  };
 
 export const ClusterPlot = props => 
-  <Plot data={cookData(props.row)} layout={ layout }
+  <Plot data={cookData(props.row)} layout={ layout(false) }
   style={{height: "320px", width: "100%"}}
   useResizeHandler
   />;
@@ -555,7 +559,7 @@ return [trace1, trace2];
 }
 
 export const ScatterPlot = props => 
-  <Plot data={cookDataScatter(props.coords)} layout={ layout }
+  <Plot data={cookDataScatter(props.coords)} layout={ layout(true) }
   style={{height: "320px", width: "100%"}}
   useResizeHandler
   />;
@@ -599,7 +603,7 @@ export class ClassesPlot extends React.Component {
   render() {
     const props = this.props; 
     return (
-      <Plot data={cookDataClasses(props.traces)} layout={ layout }
+      <Plot data={cookDataClasses(props.traces)} layout={ layout(true) }
       style={{height: "320px", width: "100%"}}
       onClick={props.clickHandler}
       useResizeHandler

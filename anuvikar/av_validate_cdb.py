@@ -372,15 +372,18 @@ def validateArchive(srcDir, extractionDir, metaFiles, overwriteJson, overwriteDb
       else:
         cascades += curCascades
         #return [isSuccess, msg]
+    writeResultsToJSON(cascades, config)
+    print("Analysis results written to JSON: " + config['outputJSONFilePath'])
   else:
     print("Using existing processed json file. To carry out fresh analysis delete/move anuvikar.json from extraction dir.")
     logging.warning("Processed json file 'anuvikar.json' already exists. Using it for further processing.")
     f = open(config['outputJSONFilePath'], 'r')
     cascades = json.load(f)
     f.close()
-  writeResultsToJSON(cascades, config)
-  print("Analysis results written to JSON: " + config['outputJSONFilePath'])
   cascades = stageDwiMl(cascades)
+  config['outputJSONFilePath'] =  os.path.join(extractionDir, "anuvikar_ml.json")
+  writeResultsToJSON(cascades, config)
+  print("Json with Ml results written: " + config['outputJSONFilePath'])
   if not(os.path.exists(config['outputDbPath'])) or overwriteDb:
     if os.path.exists(config['outputDbPath']):
       os.remove(config['outputDbPath'])

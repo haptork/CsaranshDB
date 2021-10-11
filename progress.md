@@ -652,7 +652,7 @@ TODO:
 WIP:
 
 - ~~Add logging flags for c++.~~
-- Legend for orientations, mesh shapes etc.
+- ~~Legend for orientations, mesh shapes etc.~~
 - ~~Add more columns to maintable.~~
 - ~~Deploy to Aws.~~
 
@@ -660,5 +660,8 @@ TODO:
 
 - fix wrong row count on excluding a single row from the statistics using the second action button.
 - Add mesh for 7? and no component defect clusters.
-- Change icon for temperature in outline.
+- ~~Change icon for temperature in outline.~~
 - links to cascadesdb in infile and xyzfile.
+
+- ~~Savi viz. chips info.~~
+- ~~cascadeview2 resize.~~

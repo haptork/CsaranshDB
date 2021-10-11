@@ -52,7 +52,7 @@ class CascadeViews1 extends React.Component {
     const curXyzCoords = toXyzArSplit(row);
     console.log(row);
     return (
-          <GridItem xs={12} sm={12} md={6}>
+          <GridItem xs={12} sm={12} md={7}>
        <CustomTabs
               title={"3D"}
               headerColor="info"
@@ -123,13 +123,13 @@ class CascadeViews2 extends React.Component {
     //console.log(row);
     //console.log(curXyzCoords);
     return (
-          <GridItem xs={12} sm={12} md={6}>
+          <GridItem xs={12} sm={12} md={5}>
        <CustomTabs
               title={"2D Eigen Contours"}
               headerColor="info"
               tabs={[
                 {
-                  tabName: "Vac",
+                  tabName: "Vacancy",
                   tabIcon: VacIcon,
                   tabContent: (
                  <HeatMapC coords={curXyzCoords[1]}/>
@@ -141,7 +141,7 @@ class CascadeViews2 extends React.Component {
                   )
                 },
                 {
-                  tabName: "Int",
+                  tabName: "SIA",
                   tabIcon: IntIcon,
                   tabContent: (
                  <HeatMapC coords={curXyzCoords[0]}/>

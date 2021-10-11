@@ -32,7 +32,7 @@ export const HeatMapC = props => {
      margin: { l: 30, r: 10, b: 35, t: 30, pad: 1 },
    }
   }
-  style={{height: "320px", width: "100%"}}
+  style={{height: "385px", width: "100%"}}
   useResizeHandler
 />);
 }

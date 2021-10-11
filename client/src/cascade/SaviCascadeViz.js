@@ -4,10 +4,12 @@ import { OrbitControls, useTexture, MeshDistortMaterial} from '@react-three/drei
 import { Points, Point } from './SaviCascadeVizHelper';
 import { Canvas} from '@react-three/fiber';
 import Button from '@material-ui/core/Button';
+import Chip from '@material-ui/core/Chip';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import InfoIcon from '@material-ui/icons/Info';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
+import zIndex from '@material-ui/core/styles/zIndex';
 
 
 const getPairColorOrient = x => {
@@ -57,6 +59,8 @@ function CompSphere(props) {
  //const [active, setActive] = useState(false);
  const active = (props.sel === props.info.label)
  const radius = Math.min(...props.size);
+ if (radius < 0.01) radius = Math.max(...props.size);
+ if (radius < 0.01) radius = 2.0;
   return (
       <mesh 
       position={props.position}
@@ -96,6 +100,8 @@ function CompDistort1(props) {
  //const [active, setActive] = useState(false);
  const active = (props.sel === props.info.label)
  const radius = Math.min(...props.size);
+ if (radius < 0.01) radius = Math.max(...props.size);
+ if (radius < 0.01) radius = 2.0;
   return (
       <mesh 
       position={props.position}
@@ -132,6 +138,8 @@ function CompVac(props) {
  const active = (props.sel === props.info.label)
  //console.log("shpere", props)
  let radius = Math.min(...props.size);
+ if (radius < 0.01) radius = Math.max(...props.size);
+ if (radius < 0.01) radius = 2.0;
  if (radius < 2) radius *= 2.0;
  if (radius > 20) radius *= 0.8;
  //console.log("shpere", props, radius)
@@ -151,13 +159,12 @@ function CompVac(props) {
 }
         //<cylinderGeometry args={[radius, radius, radius , 6]} />
 
-function defectItems(coords, lines, allComps, sias, vacs, meshProps, meshInfo, label) {
+function defectItems(coords, lines, allComps, sias, vacs, meshProps, meshInfo, label, clustersizes) {
   //const sias = [];
   //const vacs = [];
   //const meshProps = [];
   let i = 0;
   const allCompInfo = [];
-  let totalCents = 0;
   const typeName= ["||", "@", "#", "#||"]
   const orientName= ["", "100", "110", "111", ""]
   let totalPoints = 0;
@@ -214,8 +221,7 @@ function defectItems(coords, lines, allComps, sias, vacs, meshProps, meshInfo, l
         const curCent = points.length/3;
         const compInfo = {cent:curCent, name: typeName[i], type:i}
         if (i === 0 && comp.length > 3) compInfo.name += " - <" + orientName[comp[3].verdict] + ">";
-        totalCents += curCent
-        meshInfo[i].push({"index": allCompInfo.length, 'label': label})
+        meshInfo[i].push({"index": allCompInfo.length, 'label': label, 'defectsize': clustersizes[label]})
         allCompInfo.push(compInfo)
         meshProps[i].push({...boxProps, color:totalColorVal})
       }
@@ -233,7 +239,11 @@ function defectItems(coords, lines, allComps, sias, vacs, meshProps, meshInfo, l
     sias.push({position:[c[0], c[1], c[2]], color:[0.1, 0.1, 0.1], opacity:((c[5]==1)?0.9:0.4)});
   }
   const msgAr = [] 
-  for (let comp of allCompInfo) msgAr.push(comp.name + ": " + Math.ceil(comp.cent/totalPoints*100) + "% ");
+  for (let comp of allCompInfo) msgAr.push([Math.ceil(comp.cent/totalPoints*100), comp.name]);
+  msgAr.sort();
+  for (let comp of msgAr) {
+    comp[0] = "" + comp[0] + "%";
+  }
   //const msg = msgAr.join(", ");
   //let extraMsg = ""
   //if (totalCents < 98) extraMsg = ", ~: " + (100 - totalCents);
@@ -247,13 +257,8 @@ function defectItems(coords, lines, allComps, sias, vacs, meshProps, meshInfo, l
   //return [sias, vacs, meshProps]
 }
 
-function vacClusters(coords, clusterPoints, sias, vacs, meshProps, meshInfo, label) {
+function vacClusters(coords, clusterPoints, sias, vacs, meshProps, meshInfo, label, clustersizes) {
   const points = [];
-  /*
-  if (label == 75) {
-      console.log(vacs.length);
-  }
-  */
   for (const cIndex of clusterPoints) { // TODO pointsI and pointsV
     const c = coords[cIndex];
     const curColor = [1.0, 0.8, 0.1];
@@ -264,33 +269,26 @@ function vacClusters(coords, clusterPoints, sias, vacs, meshProps, meshInfo, lab
       vacs.push({position:[c[0], c[1], c[2]], color:curColor, opacity:((c[5]==1)?0.9:0.4)});
     }
   }
-  if (points.length < 2) return;
+  if (points.length < 2*3) return;
   const pointsAr = new Float32Array(points);
   const boxExtent = new THREE.Box3().setFromArray(pointsAr);
   const diffOf = (key) => (boxExtent.max[key] - boxExtent.min[key]);
   const midOf = (key) => (boxExtent.max[key] + boxExtent.min[key])/2.0;
   const boxProps = {label: label, position:[midOf('x'), midOf('y'), midOf('z')], size:[diffOf('x'), diffOf('y'), diffOf('z')]};
   meshProps.push(boxProps)
-  meshInfo.push({label:label});
+  meshInfo.push({label:label, defectsize:Math.abs(clustersizes[label])});
 }
 
-function DrawClusters({handleCmp, meshProps, meshInfo, setLabel}) {
-  // TODO use type info in meshProps for different shapes
+function DrawClusters({handleCmp, meshProps, meshInfo, setLabel, setDefect, selectedDefect}) {
   // TODO use meshInstance.
-  /*
-  const infoFn = (event) => {
-      setLabel('mesh info');
-  }
-  */
-  const [selectedDefect, setDefect] = useState(-1);
   //const [isShow, setShow] = useState(false);
   const selectFn = (event, info) => {
       if (info.label === selectedDefect) {
         setDefect(-1);
-        setLabel("Click a defect to show info.");
+        setLabel([]);
       } else {
         setDefect(info.label);
-        setLabel(info.defect.join(","));
+        setLabel(info.defect);
         handleCmp(info.label);
       }
       event.stopPropagation();
@@ -298,15 +296,14 @@ function DrawClusters({handleCmp, meshProps, meshInfo, setLabel}) {
   const selectFnVac = (event, info) => {
       if (info.label === selectedDefect) {
         setDefect(-1);
-        setLabel("Click a defect to show info.");
+        setLabel([]);
       } else {
         setDefect(info.label);
-        setLabel("Vacancy cluster");
+        setLabel([[info.defectsize, "Vacancy cluster of size"]]);
         handleCmp(info.label);
       }
       event.stopPropagation();
   }
-
   return(
    <>
     {meshProps[0].map((p, i) => <CompBoxed key={i} sel={selectedDefect} info={meshInfo[0][i]} {...p}  selectFn={selectFn} />)}
@@ -316,19 +313,6 @@ function DrawClusters({handleCmp, meshProps, meshInfo, setLabel}) {
     {meshProps[4].map((p, i) => <CompVac key={i} sel={selectedDefect} info={meshInfo[4][i]} {...p}  selectFn={selectFnVac} />)}
     </>
   );
-  /*
-  return(
-   <>
-    <Sia points={sias} size={2} sa={true} texture={textures[0]} />
-    <SiaDebug points={vacs} size={2} sa={true} texture={textures[1]} />
-    {meshProps[0].map((p, i) => <CompBoxed key={i} {...p} />)}
-    {meshProps[1].map((p, i) => <CompSphere key={i} {...p} />)}
-    {meshProps[2].map((p, i) => <CompDistort1 key={i} {...p} />)}
-    {meshProps[3].map((p, i) => <CompDistort2 key={i} {...p} />)}
-    {meshProps[4].map((p, i) => <CompVac key={i} {...p} />)}
-   </> 
-  );
-  */
 }
 
     //<SiaBoxed texture={texture} points={sias} ar={pointsAr} boxProps={boxProps} sa={true} size={2}/>
@@ -342,7 +326,11 @@ function DrawCanvas({handleCmp, coords, saviInfo, siavenu, clusters, clustersize
       //console.log("clicked" + index);
     //setLabel("clicked " +  index);
   }
+
+  const [selectedDefect, setDefect] = useState(-1);
+
   const onClickFn = (event) => {
+    setDefect(-1);
     if (event.intersections.length === 0) return;
     let minDist = event.intersections[0].distanceToRay;
     let minIndex = event.intersections[0].index;
@@ -361,16 +349,14 @@ function DrawCanvas({handleCmp, coords, saviInfo, siavenu, clusters, clustersize
     const i = onClickFn(event);
     if (i < 0 || i >= sias.length) return;
     const eMsg = (extraMsg) ? extraMsg : "";
-    setLabel(eMsg + "SIA at " + sias[i].position.join(', '));
+    setLabel([[sias[i].position.join(', '), eMsg + "SIA at "]]);
   }
-
   const onClickFnVac = (event, extraMsg) => {
     const i = onClickFn(event);
     if (i < 0 || i >= vacs.length) return;
     const eMsg = (extraMsg) ? extraMsg : "";
-    setLabel(eMsg + "Vacancy site at " + vacs[i].position.join(', '));
+    setLabel([[vacs[i].position.join(', '), eMsg + "Vacancy site at "]]);
   }
-
   for (const c of coords) {
     //if (c[4] > 0) continue; // cluster
     if (c[4] != 0) continue; // cluster or triad
@@ -393,7 +379,7 @@ function DrawCanvas({handleCmp, coords, saviInfo, siavenu, clusters, clustersize
     const curColor = (triad[0].length === 2) ? [0.5, 0.5, 0.2]  : getPairColorOrient(triad[1]);
     for (const cIndex of triad[0]) {
       const c = coords[cIndex];
-      if (c[3] == 1) {
+      if (c[3] === 1) {
         //nSingleSias++;
         sias.push({position:[c[0], c[1], c[2]], color:curColor, opacity:((c[5]==1)?0.9:0.4), onClick:onClickFnTriadSia});
         //infoSia.push()
@@ -410,11 +396,11 @@ function DrawCanvas({handleCmp, coords, saviInfo, siavenu, clusters, clustersize
   const meshProps = [[], [], [], [], []];
   const meshInfo = [[], [], [], [], []];
   for (const clusterLabel in saviInfo) {
-    defectItems(coords, saviInfo[clusterLabel].venu, saviInfo[clusterLabel].samuh, sias, vacs, meshProps, meshInfo, clusterLabel);
+    defectItems(coords, saviInfo[clusterLabel].venu, saviInfo[clusterLabel].samuh, sias, vacs, meshProps, meshInfo, clusterLabel, clustersizes);
   }
   for (const clusterLabel in clusters) {
     if (clustersizes[clusterLabel] > -1) continue;
-    vacClusters(coords, clusters[clusterLabel], sias, vacs, meshProps[4], meshInfo[4], clusterLabel);
+    vacClusters(coords, clusters[clusterLabel], sias, vacs, meshProps[4], meshInfo[4], clusterLabel, clustersizes);
   }
   const [texture1, texture2] = useTexture(["textures/metalatom.png", "textures/vacancy.png"])
   const camPos = [camerapos[0], camerapos[1], camerapos[2] - boxsize/1.6];
@@ -430,7 +416,7 @@ function DrawCanvas({handleCmp, coords, saviInfo, siavenu, clusters, clustersize
     <pointLight position={[150, 150, 150]} intensity={0.55} />
     <Sia texture={texture1} points={sias} sa={true} size={2}/>
     <Sia texture={texture2} points={vacs} sa={true} size={2}/>
-    <DrawClusters handleCmp={handleCmp} meshProps={meshProps} meshInfo={meshInfo} setLabel={setLabel}/>
+    <DrawClusters handleCmp={handleCmp} meshProps={meshProps} meshInfo={meshInfo} setLabel={setLabel} selectedDefect={selectedDefect} setDefect={setDefect}/>
     <box3Helper args={[box, 0x4090a0]}/>
     <axesHelper args={[10]}/>
     <OrbitControls target={camerapos}/>
@@ -438,30 +424,32 @@ function DrawCanvas({handleCmp, coords, saviInfo, siavenu, clusters, clustersize
 
   );
     //
+
+    //
 }
 
 const HtmlTooltip = withStyles((theme) => ({
   tooltip: {
     backgroundColor: '#f5f5f9',
     color: 'rgba(0, 0, 0, 0.87)',
-    maxWidth: 220,
-    fontSize: theme.typography.pxToRem(12),
+    maxWidth: 252,
     border: '1px solid #dadde9',
   },
 }))(Tooltip);
 
 
 export default function SaviCascadeViz(props) {
-   const [label, setLabel] = useState("Click a defect to show its info");
+   const defaultLabel = "Click a defect to show its info";
+   const [labels, setLabel] = useState([]);
    return (
+     <div>
     <div style={{height:"360px", position:'relative'}} >
-    <div style={{position:'absolute', top:0, right:0}}>
+    <div className="info-tt-icon">
     <HtmlTooltip
         title={
           <React.Fragment>
-            <Typography color="inherit">Plot Legend</Typography>
-            <em>{"TODO"}</em> <b>{'glyphs, '}</b>
-            {"orientations and colors"}
+        <img style={{width:'250px'}} src="images/legend-savi-morph.png" alt="legend..."/>  
+            <Typography display="block" variant="caption" color="inherit">- Click on a defect to view details. For clusters detailed view and comparisons appear below on click.</Typography>
           </React.Fragment>
         }
       >
@@ -471,10 +459,10 @@ export default function SaviCascadeViz(props) {
     <React.Suspense fallback={null}>
    {props.coords && <DrawCanvas handleCmp={props.handleCmp} setLabel={setLabel} {...props} />}
     </React.Suspense>
-    <p>
-      {label}
-    </p>
-
+    </div>
+    <div>
+      {(labels.length>0) ? (labels.map((l, i) => <Chip size="small" label={l[1] + ": " + l[0]} key={i} variant="outlined" />)) : <Chip size="small"  label={defaultLabel}/> }
+    </div>
     </div>
    );
 }
