@@ -647,7 +647,7 @@ TODO:
 - About page.
 - Same min-max in contour plot.
 
-## 7th Oct
+## 7th and 8th Oct
 
 WIP:
 
@@ -665,3 +665,13 @@ TODO:
 
 - ~~Savi viz. chips info.~~
 - ~~cascadeview2 resize.~~
+
+## 11th Oct
+
+WIP:
+
+- info tooltip to all the sections.
+
+TODO:
+
+- Add savi ref on savi-viz legend.

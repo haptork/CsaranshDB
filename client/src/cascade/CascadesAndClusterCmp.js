@@ -28,6 +28,7 @@ import {ClusterCmpPlot} from "../cascade/ClusterCmpPlot";
 
 import { toXyzArSplit, uniqueKey } from "../utils";
 import SaviCascadeViz from "./SaviCascadeViz.js";
+import { InfoTooltip } from '../utils';
 
 /*
 import {
@@ -132,7 +133,14 @@ class CascadeViews2 extends React.Component {
                   tabName: "Vacancy",
                   tabIcon: VacIcon,
                   tabContent: (
+                 <div>
+                 <InfoTooltip
+                     text={"Shows vacancy contour on two principal axes of the cascade. This is a good indicator of major damage spots or sub-cascades."}
+                     onLeft
+                     margin="15px"
+                 />
                  <HeatMapC coords={curXyzCoords[1]}/>
+                  </div>
                   ),
                   footerContent: (
                     <div className={classes.stats}>
@@ -144,7 +152,14 @@ class CascadeViews2 extends React.Component {
                   tabName: "SIA",
                   tabIcon: IntIcon,
                   tabContent: (
+                    <div>
+                 <InfoTooltip
+                     text={"Shows SIA contour on two principal axes of the cascade."}
+                     onLeft
+                     margin="15px"
+                 />
                  <HeatMapC coords={curXyzCoords[0]}/>
+                 </div>
                   ),
                   footerContent: (
                     <div className={classes.stats}>
@@ -156,7 +171,14 @@ class CascadeViews2 extends React.Component {
                   tabName: "Both",
                   tabIcon: AllIcon,
                   tabContent: (
+                    <div>
+                 <InfoTooltip
+                     text={"Shows SIA & vacancy contour on two principal axes of the cascade."}
+                     onLeft
+                     margin="15px"
+                 />
                  <HeatMapC coords={curXyzCoords[2]}/>
+                </div>
                  ),
                   footerContent: (
                     <div className={classes.stats}>

@@ -283,7 +283,7 @@ export class DashboardSimple extends React.Component {
     <AppBar>
             <Toolbar disableGutters={!openly}>
              <Typography variant="h5" color="inherit" noWrap>
-                <a id="logoTitle" href="https://github.com/haptork/csaransh">CSaransh</a>
+                <img id="logoImg" src="logo192.png" />
               </Typography>
               <IconButton
                 color="inherit"

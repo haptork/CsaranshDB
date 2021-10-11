@@ -5,12 +5,8 @@ import { Points, Point } from './SaviCascadeVizHelper';
 import { Canvas} from '@react-three/fiber';
 import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import InfoIcon from '@material-ui/icons/Info';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
 import zIndex from '@material-ui/core/styles/zIndex';
-
+import { InfoTooltip } from '../utils';
 
 const getPairColorOrient = x => {
   if (x === undefined) return (0.1, 0.1, 0.2);
@@ -428,34 +424,17 @@ function DrawCanvas({handleCmp, coords, saviInfo, siavenu, clusters, clustersize
     //
 }
 
-const HtmlTooltip = withStyles((theme) => ({
-  tooltip: {
-    backgroundColor: '#f5f5f9',
-    color: 'rgba(0, 0, 0, 0.87)',
-    maxWidth: 252,
-    border: '1px solid #dadde9',
-  },
-}))(Tooltip);
-
-
 export default function SaviCascadeViz(props) {
    const defaultLabel = "Click a defect to show its info";
    const [labels, setLabel] = useState([]);
    return (
      <div>
     <div style={{height:"360px", position:'relative'}} >
-    <div className="info-tt-icon">
-    <HtmlTooltip
-        title={
-          <React.Fragment>
-        <img style={{width:'250px'}} src="images/legend-savi-morph.png" alt="legend..."/>  
-            <Typography display="block" variant="caption" color="inherit">- Click on a defect to view details. For clusters detailed view and comparisons appear below on click.</Typography>
-          </React.Fragment>
-        }
-      >
-        <InfoIcon/>
-      </HtmlTooltip>
-    </div>
+    <InfoTooltip
+        text={"- Click on a defect to view details. For clusters detailed view and comparisons appear below on click."}
+        contents={<img style={{width:'250px'}} src="images/legend-savi-morph.png" alt="legend..."/>}
+        onRight
+    />
     <React.Suspense fallback={null}>
    {props.coords && <DrawCanvas handleCmp={props.handleCmp} setLabel={setLabel} {...props} />}
     </React.Suspense>

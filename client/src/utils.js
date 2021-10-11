@@ -1,3 +1,9 @@
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
+import React from 'react';
+import InfoIcon from '@material-ui/icons/Info';
+
 export const accessorsAndParseFns = {
   "accessorDefault" : name => x => x[name],
   "accessorTwod" : x => (parseFloat(x["eigen_var"][0]) + parseFloat(x["eigen_var"][1])) * 100,
@@ -272,3 +278,25 @@ function combineStyles(...styles) {
     return outStyles.reduce((acc, val) => Object.assign(acc, val));
   };
 }
+
+const HtmlTooltip = withStyles((theme) => ({
+  tooltip: {
+    backgroundColor: '#f5f5f9',
+    color: 'rgba(0, 0, 0, 0.87)',
+    maxWidth: 252,
+    border: '1px solid #dadde9',
+  },
+}))(Tooltip);
+
+export const InfoTooltip = (props) => (<div style={{margin: props.margin ? props.margin : 0}} className={`info-tt-icon ${(props.onLeft || !props.onRight)? "info-left": "info-right"}`}>
+    <HtmlTooltip
+        title={
+          <React.Fragment>
+            {props.contents}
+            <Typography display="block" variant="caption" color="inherit">{props.text}</Typography>
+          </React.Fragment>
+        }
+      >
+        <InfoIcon/>
+      </HtmlTooltip>
+    </div>);

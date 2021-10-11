@@ -41,10 +41,10 @@ header {
 
 #mainTableC {
    position:fixed;
-   width: calc(100% - 110px);
+   width: calc(100% - 80px);
    display:flex;
    z-index:1110;
-   margin-left:110px;
+   margin-left:86px;
    margin-top:20px;
 }
 
@@ -118,6 +118,13 @@ opacity:1.0;
   color: rgb(95, 219, 99);
 }
 
+#logoImg {
+  width: 90px;
+  margin-top: 10px;
+  cursor:pointer;
+}
+
+
 .MuiToolbar-root {
     padding-left: 12px;
 }
@@ -133,12 +140,20 @@ opacity:1.0;
     overflow-y: scroll;
 }
 
+.info-right {
+    right:0; 
+}
+
+.info-left {
+    left:0; 
+}
+
 .info-tt-icon {
     opacity: 0.5;
     position:absolute;
     top:0; 
-    right:0; 
     z-index:1;
+    cursor:help;
 }
 
 .info-tt-icon:hover {
