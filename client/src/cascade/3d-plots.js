@@ -385,6 +385,7 @@ export class Cluster2CmpPlot extends React.Component {
     return (<Plot data={plotData} layout={ layoutCmp(mn, mx) }
     style={{height: "320px", width: "100%"}}
     useResizeHandler
+    config={dlOptions("csaransh-defect")}
     />);
   }
 }
@@ -414,6 +415,7 @@ export const ClusterClassPlot = props => {
   return (<Plot data={plotData} layout={ layoutCmp(mn, mx) }
   style={{height: "320px", width: "100%"}}
   useResizeHandler
+    config={dlOptions("csaransh-defect")}
   />);
 }
 // onClick={props.clickHandler}
@@ -523,6 +525,7 @@ export const ClusterPlot = props =>
   <Plot data={cookData(props.row)} layout={ layout(false) }
   style={{height: "320px", width: "100%"}}
   useResizeHandler
+  config={dlOptions("csaransh-defect")}
   />;
 
 const cookDataScatter = (c) => {
@@ -563,6 +566,7 @@ export const ScatterPlot = props =>
   <Plot data={cookDataScatter(props.coords)} layout={ layout(true) }
   style={{height: "320px", width: "100%"}}
   useResizeHandler
+  config={dlOptions("csaransh-cascade")}
   />;
 
 // ===============

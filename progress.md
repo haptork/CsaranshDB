@@ -671,7 +671,11 @@ TODO:
 WIP:
 
 - info tooltip to all the sections.
+- remove plotly button.
+- Add edit online button.
+- Save to svg in plotly.
 
 TODO:
 
 - Add savi ref on savi-viz legend.
+- Add <111> like orientation help in savi-viz.

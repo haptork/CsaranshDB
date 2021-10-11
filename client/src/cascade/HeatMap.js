@@ -1,5 +1,5 @@
 import React from 'react'; 
-import { toXyArSplit, getColor } from "../utils";
+import { toXyArSplit, getColor, dlOptions} from "../utils";
 import createPlotlyComponent from 'react-plotly.js/factory';
 const Plotly = window.Plotly;
 const Plot = createPlotlyComponent(Plotly);
@@ -24,6 +24,7 @@ export const HeatMap = props =>
   }
   style={{height: "320px", width: "100%"}}
   useResizeHandler
+  config={dlOptions("csaransh-contour")}
   />;
 
 export const HeatMapC = props => {
@@ -34,5 +35,6 @@ export const HeatMapC = props => {
   }
   style={{height: "385px", width: "100%"}}
   useResizeHandler
+  config={dlOptions("csaransh-contour")}
 />);
 }
