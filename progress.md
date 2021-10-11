@@ -670,12 +670,22 @@ TODO:
 
 WIP:
 
-- info tooltip to all the sections.
-- remove plotly button.
-- Add edit online button.
-- Save to svg in plotly.
+- ~~info tooltip to all the plots.~~
+- ~~remove plotly button from modbar.~~
+  - Plotly config. documentation link:
+    - https://plotly.com/javascript/configuration-options/
+- ~~Add edit online button.~~
+- ~~Save to svg in plotly.~~
 
 TODO:
 
 - Add savi ref on savi-viz legend.
 - Add <111> like orientation help in savi-viz.
+- Legend for main table.
+- Footer.
+- Dialog for about page and data subset selection.
+- Check sorting of components in savi-viz.
+- Reset chip labels on change of view-row.
+- Hide stats one-row filter button.
+- Spinners when loading data.
+- cdb_validate to take input from user when no meta-file is given.

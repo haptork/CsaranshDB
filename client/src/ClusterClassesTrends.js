@@ -15,6 +15,8 @@ import AngleIcon from "@material-ui/icons/CallSplit";
 import DistIcon from "@material-ui/icons/LinearScale";
 import StatsIcon from '@material-ui/icons/MultilineChart';
 
+import { InfoTooltip, morphologyLabelDesc, dlOptions } from './utils';
+
 import Paper from '@material-ui/core/Paper';
 import Select from 'react-select';
 
@@ -110,6 +112,7 @@ const ClusterClassesEnergyBar1 = props => {
   }
   const layout = {
      margin: { l: 40, r: 20, b: 100, t: 20, pad: 1 },
+     hovermode: "x",
      //barmode: 'stack',
      /*
      xaxis: {
@@ -126,8 +129,10 @@ const ClusterClassesEnergyBar1 = props => {
   };
   return (
     <Plot data={traces} layout={layout} 
-      style={{height: "320px", width: "100%"}}
-    useResizeHandler/>
+      style={{height: "340px", width: "100%"}}
+    useResizeHandler
+    config={dlOptions('csaransh_savi_distribution')}
+    />
   );
 }
 
@@ -188,7 +193,7 @@ const DefectSizeBoxPlot = props => {
     buttons: menuItems
   }];
   const layout = {
-     margin: { l: 40, r: 20, b: 40, t: 20, pad: 1 },
+     margin: { l: 20, r: 20, b: 100, t: 20, pad: 1 },
      updatemenus: updatemenus,
      yaxis: {
        title: {
@@ -200,7 +205,9 @@ const DefectSizeBoxPlot = props => {
   return (
     <Plot data={traces} layout={layout} config={{displayModeBar: false}}
       style={{height: "320px", width: "100%"}}
-    useResizeHandler/>
+    useResizeHandler
+    config={dlOptions('csaransh_savi_size_distribution')}
+    />
   );
 }
 
@@ -290,19 +297,35 @@ export class ClusterClassesTrends extends React.Component {
             </CardHeader>
             <CardBody>
          <Grid container justifyContent="center">
-         <GridItem xs={12} sm={12} md={8}>
+         <GridItem xs={12} sm={12} md={12}>
+            <InfoTooltip
+                text={"Shows average number of defects for each morphology. Select columns to grouping for compairing values between materials, energies, potentials etc. Click and drag to zoom."}
+                contents={morphologyLabelDesc}
+                onLeft
+                marginTop="15px"
+                marginLeft="15px"
+            />
+
               <ClusterClassesEnergyBar1 data={classData} />
          </GridItem>
-         <GridItem xs={12} sm={12} md={4}>
-            <Paper>
+         </Grid>
+         <Grid container justifyContent="center">
+         <GridItem xs={12} sm={12} md={12}>
+           <div style={{position:"relative"}}>
+            <InfoTooltip
+                text={"Shows size distribution for each morphology grouped by columns selected. Select morphology from the drop-down menu on left. Select columns to grouping for compairing values between materials, energies, potentials etc. Click and drag to zoom."}
+                contents={morphologyLabelDesc}
+                onLeft
+                marginTop="0px"
+            />
             <DefectSizeBoxPlot data={this.state.classData} groupingLabels={groupingLabels}/>
-            </Paper>
+            </div>
           </GridItem>
          </Grid>
             </CardBody>
             <CardFooter chart>
               <div className={classes.stats}>
-                <StatsIcon /> Distribution of classes among groups - Select grouping from the top selection.
+                <StatsIcon /> Distribution of defects among morphologies and morphology size distribution - Select grouping from the top selection.
               </div>
             </CardFooter>
           </Card>
@@ -311,6 +334,3 @@ export class ClusterClassesTrends extends React.Component {
     );
   }
 }
-/*
- 
-*/

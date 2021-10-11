@@ -91,7 +91,15 @@ class CascadeViews1 extends React.Component {
                   tabName: "Damage spots",
                   tabIcon: MeshIcon,
                   tabContent: (
+                 <div>
+                 <InfoTooltip
+                     text={"Shows meshes for disjoint damage spots found using density based clustering algorithms. The damage spots are a good indicator of sub-cascades."}
+                     onLeft
+                     marginTop="15px"
+                     marginLeft="15px"
+                 />
                  <ClusterPlot row={row}/>
+                 </div>
                  ),
                   footerContent: (
                     <div className={classes.stats}>
@@ -137,7 +145,8 @@ class CascadeViews2 extends React.Component {
                  <InfoTooltip
                      text={"Shows vacancy contour on two principal axes of the cascade. This is a good indicator of major damage spots or sub-cascades."}
                      onLeft
-                     margin="15px"
+                     marginTop="15px"
+                     marginLeft="15px"
                  />
                  <HeatMapC coords={curXyzCoords[1]}/>
                   </div>
@@ -156,7 +165,8 @@ class CascadeViews2 extends React.Component {
                  <InfoTooltip
                      text={"Shows SIA contour on two principal axes of the cascade."}
                      onLeft
-                     margin="15px"
+                     marginTop="15px"
+                     marginLeft="15px"
                  />
                  <HeatMapC coords={curXyzCoords[0]}/>
                  </div>
@@ -175,7 +185,8 @@ class CascadeViews2 extends React.Component {
                  <InfoTooltip
                      text={"Shows SIA & vacancy contour on two principal axes of the cascade."}
                      onLeft
-                     margin="15px"
+                     marginTop="15px"
+                     marginLeft="15px"
                  />
                  <HeatMapC coords={curXyzCoords[2]}/>
                 </div>

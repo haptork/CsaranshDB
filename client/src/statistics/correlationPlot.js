@@ -1,5 +1,6 @@
 import React from 'react';
 import Correlation from "node-correlation";
+import {dlOptions} from "../utils";
 
 import createPlotlyComponent from 'react-plotly.js/factory';
 const Plotly = window.Plotly;
@@ -74,7 +75,8 @@ export class CorrelationPlot extends React.Component {
         //width: 700,
         //height: 700,
         //autosize: false
-      }
+      },
+      margin: { l: 100, r: 10, b: 10, t: 60, pad: 1 },
     };
     return (
       <Plot
@@ -82,6 +84,7 @@ export class CorrelationPlot extends React.Component {
         layout = {layout}
         style={{height: "460px", width: "100%"}}
         useResizeHandler
+      config={dlOptions('csaransh_stats_correlation')}
       />
     );
   }

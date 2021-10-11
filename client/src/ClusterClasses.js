@@ -15,7 +15,7 @@ import FormGroup from '@material-ui/core/FormGroup';
 import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-
+import { InfoTooltip, morphologyLabelDesc } from './utils';
 //import { getClassData } from "./utils";
 
 const getName = (clusterInfo, shortName) => {
@@ -101,12 +101,21 @@ export class ClusterClassesPlot extends React.Component {
     return (
     <Card chart>
       <CardHeader color="info">
-      Cluster Classes
+      Defect Morphology Classes and Statistics
       </CardHeader>
       <CardBody>
         <Grid container>
-          <GridItem xs={12} sm={12} md={6}>
+          <GridItem xs={12} sm={12} md={7}>
           <Paper>
+            <InfoTooltip
+                text={"Each point in the plot represents a defect cluster and is colored based on its morphology. Click on a point on left to view the defect on right. Axes represent latent space found such that similar defect shapes and sizes are clustered together. Click / double click on legend to toggle the morphology visibility."}
+                contents={
+                  morphologyLabelDesc
+                }
+                onLeft
+                marginTop="18px"
+                marginLeft="38px"
+            />
           <ClassesPlot mode={this.state.curMode} traces={this.state.classData.traces} clickHandler={(dt)=>this.onPointClick(dt)} />
         <Grid container justifyContent="center">
         <GridItem xs={12} sm={12} md={12} >
@@ -129,7 +138,13 @@ export class ClusterClassesPlot extends React.Component {
         </Grid>
           </Paper>
           </GridItem>
-          <GridItem xs={12} sm={12} md={6}>
+          <GridItem xs={12} sm={12} md={5}>
+            <InfoTooltip
+                contents={<img style={{width:'250px'}} src="images/legend-sia-plotly.png" alt="legend..."/>}
+                onRight
+                marginTop="18px"
+                marginLeft="38px"
+            />
           <Cluster2CmpPlot  cid={this.state.showcid} row={this.state.curCluster} defectData={this.state.curCluster}/>
           <Typography  variant="caption" align="center" color="primary" display="block">{this.state.nm}</Typography>
           </GridItem>
@@ -137,7 +152,7 @@ export class ClusterClassesPlot extends React.Component {
       </CardBody>
       <CardFooter chart>
         <div className={this.props.classes.stats}>
-          <ClassesIcon/> Shows defect morphology classification. Different classes are shown with different colors. Click on a point on left to view the cluster on right. Click on legend to toggle a class and double click on legend label to only make that class points appear. The image below shows typical morphologies. <span>Papers on methods: <a href="https://arxiv.org/abs/2009.14147">Graph</a>, <a href="https://www.sciencedirect.com/science/article/pii/S0927025619306639">unsupervised</a></span>.
+          <ClassesIcon/> Shows defect morphology classification. Click on a point on left to view the cluster on right. <span>References for algorithms used: <a href="https://doi.org/10.1016/j.commatsci.2021.110474">SaVi</a>, <a href="https://www.sciencedirect.com/science/article/pii/S0927025619306639">Defect similarity and clustering</a></span>.
         </div>
       </CardFooter>
    </Card>

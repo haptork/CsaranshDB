@@ -288,12 +288,12 @@ const HtmlTooltip = withStyles((theme) => ({
   },
 }))(Tooltip);
 
-export const InfoTooltip = (props) => (<div style={{margin: props.margin ? props.margin : 0}} className={`info-tt-icon ${(props.onLeft || !props.onRight)? "info-left": "info-right"}`}>
+export const InfoTooltip = (props) => (<div style={{marginTop: props.marginTop ? props.marginTop : 0, marginLeft: props.marginLeft ? props.marginLeft : 0}} className={`info-tt-icon ${(props.onLeft || !props.onRight)? "info-left": "info-right"}`}>
     <HtmlTooltip
         title={
           <React.Fragment>
-            {props.contents}
             <Typography display="block" variant="caption" color="inherit">{props.text}</Typography>
+            {props.contents}
           </React.Fragment>
         }
       >
@@ -307,6 +307,24 @@ export const dlOptions = name => {
       format: 'svg',
       filename: name,
     },
-    displaylogo: false
+    displaylogo: false,
+    showEditInChartStudio: true,
+    plotlyServerURL: "https://chart-studio.plotly.com",
+    modeBarButtonsToRemove: ['pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d']
+//zoom2d, pan2d, select2d, lasso2d, zoomIn2d, zoomOut2d, autoScale2d, , resetScale2d]
   };
 }
+
+const morphologyLabelDescList = [
+      ['||', 'Parallel or dislocation'],
+      ['||-!', 'Parallel with few non-parallel fringes'],
+      ['||//', 'Multiple Parallel components'],
+      ['@', 'Ring & basis (hexagon, di-interstitial /\\)'],
+      ['#', 'Random / no specific order'],
+      ['||@', 'Parallel with ring']
+    ];
+
+export const morphologyLabelDesc = 
+                  (<ul style={{ listStyleType:"none", paddingLeft:"15px", fontSize:"0.72rem"}}>
+                    {morphologyLabelDescList.map((l, i) => <li key={i}> <b>{l[0]}</b>: {l[1]}</li>)}
+                  </ul>);

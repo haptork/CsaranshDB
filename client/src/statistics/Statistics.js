@@ -17,6 +17,7 @@ import CustomTabs from "../components/CustomTabs/CustomTabs.js";
 import AngleIcon from "@material-ui/icons/CallSplit";
 import DistIcon from "@material-ui/icons/LinearScale";
 import Select from 'react-select';
+import { InfoTooltip } from '../utils';
 
 const accessorDefault = name => x => x[name];
 const accessorOned = x => parseFloat(x["eigen_var"][0]);
@@ -175,6 +176,12 @@ export class Statistics extends React.Component {
               </span>
             </CardHeader>
             <CardBody>
+                 <InfoTooltip
+                     text={"Boxplot of different output parameters for the currently filtered data-set. The output parameter to plot can be selected from the drop-down on left. The x-axis shows category groups. The columns that decide grouping such as material, potential used etc. can be selected from the title bar for comparison. The dashed lines in boxes show mean and std-dev. Click and drag to zoom. Filtering the data in the main-table updates this plot."}
+                     onLeft
+                     marginTop="15px"
+                     marginLeft="15px"
+                 />
               <NDefectsPlot data= {nDefects} fields = {this.fields}/>
             </CardBody>
             <CardFooter chart>
@@ -190,6 +197,12 @@ export class Statistics extends React.Component {
               <h4 className={classes.cardTitleWhite}>Correlations</h4>
             </CardHeader>
             <CardBody id="splomCardBody">
+                 <InfoTooltip
+                     text={"Shows correlation between various output parameters for the currently filtered dataset. Filtering the data in the main-table updates this plot."}
+                     onLeft
+                     marginTop="15px"
+                     marginLeft="15px"
+                 />
               <CorrelationPlot data={splomVals}/>
             </CardBody>
             <CardFooter chart>

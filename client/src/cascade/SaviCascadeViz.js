@@ -433,7 +433,7 @@ export default function SaviCascadeViz(props) {
     <InfoTooltip
         text={"- Click on a defect to view details. For clusters detailed view and comparisons appear below on click."}
         contents={<img style={{width:'250px'}} src="images/legend-savi-morph.png" alt="legend..."/>}
-        onRight
+        onLeft
     />
     <React.Suspense fallback={null}>
    {props.coords && <DrawCanvas handleCmp={props.handleCmp} setLabel={setLabel} {...props} />}

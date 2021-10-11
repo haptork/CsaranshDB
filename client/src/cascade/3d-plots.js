@@ -523,9 +523,9 @@ const cookData = (row) => {
 
 export const ClusterPlot = props => 
   <Plot data={cookData(props.row)} layout={ layout(false) }
-  style={{height: "320px", width: "100%"}}
+  style={{height: "385px", width: "100%"}}
   useResizeHandler
-  config={dlOptions("csaransh-defect")}
+  config={dlOptions("csaransh-damage-spots")}
   />;
 
 const cookDataScatter = (c) => {
@@ -564,7 +564,7 @@ return [trace1, trace2];
 
 export const ScatterPlot = props => 
   <Plot data={cookDataScatter(props.coords)} layout={ layout(true) }
-  style={{height: "320px", width: "100%"}}
+  style={{height: "385px", width: "100%"}}
   useResizeHandler
   config={dlOptions("csaransh-cascade")}
   />;

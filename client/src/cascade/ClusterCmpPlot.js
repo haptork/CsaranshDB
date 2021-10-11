@@ -168,7 +168,9 @@ export class ClusterCmpPlot extends React.Component {
         <InfoTooltip
           text={"Select cluster to show by clicking above in Savi visualization or select cluster-id below. Similarity criterion for matching can also be selected. The right panel shows the top-5 matching clusters from the database. The name for each matching cluster shows cluster-id and cascade-id and info which can be used to view that particular cascade. The legend only applies to SIA clusters."}
           contents={<img style={{width:'250px'}} src="images/legend-sia-plotly.png" alt="legend..."/>}
-          onRight
+          onLeft
+          marginTop="18px"
+          marginLeft="38px"
         />
 
         <Cluster2CmpPlot row={row} defectData={cmpData} cid={cid}/>

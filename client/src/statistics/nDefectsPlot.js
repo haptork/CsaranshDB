@@ -1,4 +1,5 @@
 import React from 'react';
+import { dlOptions } from '../utils';
 import createPlotlyComponent from 'react-plotly.js/factory';
 const Plotly = window.Plotly;
 const Plot = createPlotlyComponent(Plotly);
@@ -50,6 +51,7 @@ export class NDefectsPlot extends React.Component {
        }}
         style={{height: "460px", width: "100%"}}
         useResizeHandler
+        config={dlOptions('csaransh-stats-boxed')}
       />
     );
   }
