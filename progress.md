@@ -689,3 +689,11 @@ TODO:
 - Hide stats one-row filter button.
 - Spinners when loading data.
 - cdb_validate to take input from user when no meta-file is given.
+
+## 12th Oct
+
+WIP:
+
+https://stackoverflow.com/questions/49429906/how-should-i-configure-create-react-app-to-serve-app-from-subdirectory
+
+https://ubuntu.com/tutorials/install-and-configure-apache#4-setting-up-the-virtualhost-configuration-file

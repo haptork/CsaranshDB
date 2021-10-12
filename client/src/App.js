@@ -5,7 +5,6 @@ import {BrowserRouter as Router, Route, Switch, useParams, useLocation} from "re
 
 import { uniqueKey, getAllCol } from "./utils";
 import 'react-table-v6/react-table.css';
-import 'react-table-v6/react-table.css';
 import './css/material-dashboard-react.css';
 import './css/index.css';
 import './css/style.css';
