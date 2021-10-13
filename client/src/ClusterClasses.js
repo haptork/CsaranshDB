@@ -16,6 +16,7 @@ import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import { InfoTooltip, morphologyLabelDesc } from './utils';
+import legendSiaPlotly from './images/legend-sia-plotly.png';
 //import { getClassData } from "./utils";
 
 const getName = (clusterInfo, shortName) => {
@@ -25,13 +26,13 @@ const getName = (clusterInfo, shortName) => {
 };
 
 const  fetchClusterInfo = async (id) => {
-  const clusterJson = await fetch('/clustercoords/' + id);
+  const clusterJson = await fetch('clustercoords/' + id);
   const cluster =  await clusterJson.json();
   return cluster;
 }
 
 const  fetchClusters = async (queryString) => {
-  const addss = '/clustershdb' + queryString;
+  const addss = 'clustershdb' + queryString;
   //console.log("fetching clusters with ", addss);
   const classJson = await fetch(addss);
   const rowData =  await classJson.json();
@@ -140,7 +141,7 @@ export class ClusterClassesPlot extends React.Component {
           </GridItem>
           <GridItem xs={12} sm={12} md={5}>
             <InfoTooltip
-                contents={<img style={{width:'250px'}} src="images/legend-sia-plotly.png" alt="legend..."/>}
+                contents={<img style={{width:'250px'}} src={legendSiaPlotly} alt="legend..."/>}
                 onRight
                 marginTop="18px"
                 marginLeft="38px"

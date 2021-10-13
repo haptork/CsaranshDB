@@ -42,7 +42,7 @@ class HomeOld extends Component {
   }
       /*
   componentDidMount() {
-    fetch('/cascades'+this.queryString)
+    fetch('cascades'+this.queryString)
       .then(res=>res.json())
       .then(cascades => this.setState({cascades}));
     console.log(cascades.length);
@@ -66,7 +66,7 @@ function Home() {
 
   /*
   useEffect(() => {
-    fetch('/cascades'+queryString)
+    fetch('cascades'+queryString)
     .then(res => res.json())
     .then(cascades => setCascades(cascades));
   }, []);

@@ -7,6 +7,9 @@ import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
 import zIndex from '@material-ui/core/styles/zIndex';
 import { InfoTooltip } from '../utils';
+import textureAtom from '../textures/metalatom.png';
+import textureVacancy from '../textures/vacancy.png';
+import legendSavi from "../images/legend-savi-morph.png";
 
 const getPairColorOrient = x => {
   if (x === undefined) return (0.1, 0.1, 0.2);
@@ -398,7 +401,7 @@ function DrawCanvas({handleCmp, coords, saviInfo, siavenu, clusters, clustersize
     if (clustersizes[clusterLabel] > -1) continue;
     vacClusters(coords, clusters[clusterLabel], sias, vacs, meshProps[4], meshInfo[4], clusterLabel, clustersizes);
   }
-  const [texture1, texture2] = useTexture(["textures/metalatom.png", "textures/vacancy.png"])
+  const [texture1, texture2] = useTexture([textureAtom, textureVacancy])
   const camPos = [camerapos[0], camerapos[1], camerapos[2] - boxsize/1.6];
   const box = new THREE.Box3();
   box.setFromCenterAndSize( new THREE.Vector3(camerapos[0], camerapos[1], camerapos[2]), new THREE.Vector3( boxsize, boxsize, boxsize ) );
@@ -432,7 +435,7 @@ export default function SaviCascadeViz(props) {
     <div style={{height:"360px", position:'relative'}} >
     <InfoTooltip
         text={"- Click on a defect to view details. For clusters detailed view and comparisons appear below on click."}
-        contents={<img style={{width:'250px'}} src="images/legend-savi-morph.png" alt="legend..."/>}
+        contents={<img style={{width:'250px'}} src={legendSavi} alt="legend..."/>}
         onLeft
     />
     <React.Suspense fallback={null}>

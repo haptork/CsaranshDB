@@ -33,6 +33,7 @@ import { getCids, getInitialSelectionFor } from "./cascade/ClusterCmpPlot.js";
 
 import MainTable from "./Maintable.js"
 import {ClusterClassesTrends} from "./ClusterClassesTrends.js";
+import logo from './images/logo192.png';
 
 //const getCids = (row) => [];
 //const getInitialSelection = (row) => '';
@@ -83,14 +84,14 @@ const overallStats = outline => {
 };
 
 const  fetchCascadeInfo = async (id) => {
-  const cascadeJson = await fetch('/cascade/' + id);
+  const cascadeJson = await fetch('cascade/' + id);
   const rowData =  await cascadeJson.json();
   return rowData;
 }
 
 const  fetchClusterCmpInfo = async (id, cid) => {
   try {
-  const clusterCmpJson = await fetch('/clustercmp/' + id + "/" + cid);
+  const clusterCmpJson = await fetch('clustercmp/' + id + "/" + cid);
   //console.log("clusterCmpJson", clusterCmpJson);
   const cmpData =  await clusterCmpJson.json();
   return cmpData;
@@ -135,7 +136,7 @@ export class DashboardSimple extends React.Component {
     //if (prevProps === undefined) return;
     //console.log("In dashboard comp did mount");
     if (prevProps !== undefined && (prevProps.queryString === this.props.queryString)) return;
-    fetch('/cascades'+this.props.queryString)
+    fetch('cascades'+this.props.queryString)
       .then(res=>res.json())
       .then(cascades => {
         const data = cascades.data;
@@ -252,7 +253,7 @@ export class DashboardSimple extends React.Component {
       });
     });
 /*
-    fetch('/cascades'+this.props.queryString)
+    fetch('cascades'+this.props.queryString)
       .then(res=>res.json())
       .then(cascades => {
         const data = cascades;
@@ -283,7 +284,7 @@ export class DashboardSimple extends React.Component {
     <AppBar>
             <Toolbar disableGutters={!openly}>
              <Typography variant="h5" color="inherit" noWrap>
-                <img id="logoImg" src="logo192.png" />
+                <img id="logoImg" src={logo} alt="Csaransh"/>
               </Typography>
               <IconButton
                 color="inherit"

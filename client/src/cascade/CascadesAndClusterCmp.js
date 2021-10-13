@@ -51,7 +51,7 @@ class CascadeViews1 extends React.Component {
     //const row = this.props.row;
     const row = this.props.row.viewfields;
     const curXyzCoords = toXyzArSplit(row);
-    console.log(row);
+    //console.log(row);
     return (
           <GridItem xs={12} sm={12} md={7}>
        <CustomTabs

@@ -25,6 +25,7 @@ import StepButton from '@material-ui/core/StepButton';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import { InfoTooltip } from '../utils';
+import legendSiaPlotly from "../images/legend-sia-plotly.png";
 
 // TODO rewrite with cmdData.
 const getClusterTypeAndClass = (row, cid, cmpData) => {
@@ -167,7 +168,7 @@ export class ClusterCmpPlot extends React.Component {
         <Paper>
         <InfoTooltip
           text={"Select cluster to show by clicking above in Savi visualization or select cluster-id below. Similarity criterion for matching can also be selected. The right panel shows the top-5 matching clusters from the database. The name for each matching cluster shows cluster-id and cascade-id and info which can be used to view that particular cascade. The legend only applies to SIA clusters."}
-          contents={<img style={{width:'250px'}} src="images/legend-sia-plotly.png" alt="legend..."/>}
+          contents={<img style={{width:'250px'}} src={legendSiaPlotly} alt="legend..."/>}
           onLeft
           marginTop="18px"
           marginLeft="38px"
