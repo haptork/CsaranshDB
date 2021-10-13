@@ -212,7 +212,7 @@ const DefectSizeBoxPlot = props => {
 }
 
 const  fetchMorphologyStats = async (queryString) => {
-  const addss = 'morphstats' + queryString;
+  const addss = 'csaransh/morphstats' + queryString;
   //console.log("fetching clusters with ", addss);
   const classJson = await fetch(addss);
   const rowData =  await classJson.json();

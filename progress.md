@@ -671,6 +671,7 @@ TODO:
 WIP:
 
 - ~~info tooltip to all the plots.~~
+  - https://v4.mui.com/components/lists/
 - ~~remove plotly button from modbar.~~
   - Plotly config. documentation link:
     - https://plotly.com/javascript/configuration-options/
@@ -694,6 +695,18 @@ TODO:
 
 WIP:
 
-https://stackoverflow.com/questions/49429906/how-should-i-configure-create-react-app-to-serve-app-from-subdirectory
+- Deploy app as a URL on cascadesdb.org/csaransh
+  - https://stackoverflow.com/questions/49429906/how-should-i-configure-create-react-app-to-serve-app-from-subdirectory
+  - https://ubuntu.com/tutorials/install-and-configure-apache#4-setting-up-the-virtualhost-configuration-file
+  - 
 
-https://ubuntu.com/tutorials/install-and-configure-apache#4-setting-up-the-virtualhost-configuration-file
+## 13th Oct
+
+WIP:
+
+- Merge changes from index.js of cdb.
+
+TODO:
+
+- Csaransh logo onclick shift correct.
+- A15-Huiqiu DENG, 289.xml, R121-1... check defects count 0 error.

@@ -46,7 +46,7 @@ module.exports = () => {
     res.sendFile(path.join(__dirname, "..", "..", "client", 'build', 'index.html'));
   });
   
-  api.post('/add', async (req, res) => {
+  api.post(['/add', '/csaransh/add'], async (req, res) => {
     const [cascade, error] = validateCascade(req.body);
     if (error) {
         res.status(400).send(error.details);
@@ -59,7 +59,7 @@ module.exports = () => {
     }
   });
   
-  api.get('/cascades', async (req, res) => {
+  api.get(['/cascades', '/csaransh/cascades'], async (req, res) => {
     let rows = dbhandle.from("cascades");
   
     const dlimit = [5, 10000];
@@ -126,14 +126,14 @@ module.exports = () => {
     res.send({'data':cascades, 'outline':outline});
   });
   
-  api.get('/cascade/:id', async (req, res) => {
+  api.get(['/cascade/:id', '/csaransh/cascade/:id'], async (req, res) => {
     const id = req.params.id;
     const cascade = await dbhandle.where({id:id}).first().from("cascades");
     if (!cascade) res.status(404).send("<h2> Error getting cascade with input id. </h2>");
     res.send(cascade);
   });
 
-  api.get('/clustercmp/:id/:cid', async (req, res) => {
+  api.get(['/clustercmp/:id/:cid', '/csaransh/clustercmp/:id/:cid'], async (req, res) => {
     const id = req.params.id;
     const cid = req.params.cid;
     //console.log(id, cid);
@@ -158,7 +158,7 @@ module.exports = () => {
     res.send(cluster);
   });
 
-  api.get('/clustercoords/:id/', async (req, res) => {
+  api.get(['/clustercoords/:id/', '/csaransh/clustercoords/:id/'], async (req, res) => {
     const id = req.params.id;
     const cid = req.params.cid;
     //console.log(id, cid);
@@ -174,7 +174,7 @@ module.exports = () => {
     res.send(cluster);
   });
 /*
-  api.get('/clustershdb', async (req, res) => {
+  api.get(['/clustershdb', 'csaransh/clustershdb'], async (req, res) => {
     let rows = dbhandle.from("clusters");
     rows.join('cascades', 'clusters.cascadeid', '=', 'cascades.id')
     const filters = req.query.filter;
@@ -244,7 +244,7 @@ module.exports = () => {
   });
 */
 
-  api.get('/clustershdb', async (req, res) => {
+  api.get(['/clustershdb', '/csaransh/clustershdb'], async (req, res) => {
     let rows = dbhandle.from("clusters");
     rows.join('cascades', 'clusters.cascadeid', '=', 'cascades.id')
     const filters = req.query.filter;
@@ -274,7 +274,7 @@ module.exports = () => {
     res.send({ditraces, traces});
   });
 
-  api.get('/morphstats', async (req, res) => {
+  api.get(['/morphstats', '/csaransh/morphstats'], async (req, res) => {
     let rows = dbhandle.from("clusters");
     rows.join('cascades', 'clusters.cascadeid', '=', 'cascades.id')
     const filters = req.query.filter;

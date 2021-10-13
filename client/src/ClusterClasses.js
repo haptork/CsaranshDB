@@ -26,13 +26,13 @@ const getName = (clusterInfo, shortName) => {
 };
 
 const  fetchClusterInfo = async (id) => {
-  const clusterJson = await fetch('clustercoords/' + id);
+  const clusterJson = await fetch('csaransh/clustercoords/' + id);
   const cluster =  await clusterJson.json();
   return cluster;
 }
 
 const  fetchClusters = async (queryString) => {
-  const addss = 'clustershdb' + queryString;
+  const addss = 'csaransh/clustershdb' + queryString;
   //console.log("fetching clusters with ", addss);
   const classJson = await fetch(addss);
   const rowData =  await classJson.json();

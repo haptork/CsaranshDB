@@ -84,14 +84,14 @@ const overallStats = outline => {
 };
 
 const  fetchCascadeInfo = async (id) => {
-  const cascadeJson = await fetch('cascade/' + id);
+  const cascadeJson = await fetch('csaransh/cascade/' + id);
   const rowData =  await cascadeJson.json();
   return rowData;
 }
 
 const  fetchClusterCmpInfo = async (id, cid) => {
   try {
-  const clusterCmpJson = await fetch('clustercmp/' + id + "/" + cid);
+  const clusterCmpJson = await fetch('csaransh/clustercmp/' + id + "/" + cid);
   //console.log("clusterCmpJson", clusterCmpJson);
   const cmpData =  await clusterCmpJson.json();
   return cmpData;
@@ -136,7 +136,7 @@ export class DashboardSimple extends React.Component {
     //if (prevProps === undefined) return;
     //console.log("In dashboard comp did mount");
     if (prevProps !== undefined && (prevProps.queryString === this.props.queryString)) return;
-    fetch('cascades'+this.props.queryString)
+    fetch('csaransh/cascades'+this.props.queryString)
       .then(res=>res.json())
       .then(cascades => {
         const data = cascades.data;
