@@ -19,6 +19,21 @@
 
 #include <iostream>
 
+// TODO import from printJson
+auto strSimulationCodeD(av::XyzFileType code) {
+  return (code == av::XyzFileType::cascadesDbLikeCols)
+             ? "cascadesDbLikeCols"
+             : (code == av::XyzFileType::lammpsWithStdHeader)
+                   ? "lammpsWithStdHeader"
+                   : (code == av::XyzFileType::parcasWithStdHeader)
+                      ? "parcasWithStdHeader"
+                      : (code == av::XyzFileType::lammpsDisplacedCompute)
+                        ? "lammpsDisp"
+                        : "generic-XYZ";
+}
+
+
+
 auto getThresh(const av::InputInfo &info, const double &factor) {
   auto tempFactor = 1.0 + (info.temperature - 900)/10000;
   if (tempFactor < 1.0) tempFactor = 1.0;
@@ -244,10 +259,13 @@ getAtomsTime(av::InputInfo &info, av::ExtraInfo &extraInfo,
     if (combos.size() > 1 && info.originType == 1 &&  // estimated origin but two lattice constants, one given, one from boxdimensions & unit-cells
          (secLatConst > 0.0 && std::fabs(info.latticeConst - secLatConst) > 1e-2)) {
       auto mx = std::max(std::get<3>(combos[0]), std::get<3>(combos[1]));
-      if (mx / std::get<3>(combos[leastIndex]) > 1.2) {
+      if (mx > 1.1 * std::get<3>(combos[leastIndex])) {
         const std::string msgPre = (leastIndex == 0) ? "given value of box-size might not be exact." : "given value of lattice constant might not be exact";
         if (leastIndex == 0) {
           av::Logger::inst().log_warning(info.xyzFilePath + ", " + extraInfo.infile + ": " + msgPre + "Difference in given lattice constant & box-size based lattice constant caused difference in"
+               "displaced atom values: " + std::to_string(std::get<3>(combos[0])) + ", " + std::to_string(std::get<3>(combos[0])));
+        } else {
+          av::Logger::inst().log_warning(info.xyzFilePath + ", " + extraInfo.infile + ": reverse " + msgPre + "Difference in given lattice constant & box-size based lattice constant caused difference in"
                "displaced atom values: " + std::to_string(std::get<3>(combos[0])) + ", " + std::to_string(std::get<3>(combos[0])));
         }
       }
@@ -273,6 +291,16 @@ av::xyz2defectsTime(av::InputInfo &mainInfo,
                       av::ExtraInfo &extraInfo,
                       const av::Config &config, std::istream &infile, av::frameStatus &fs) {
   auto atoms = getAtomsTime(mainInfo, extraInfo, config, infile, fs);
+  if (atoms.second.empty() && mainInfo.xyzFileType != av::XyzFileType::generic) {
+    infile.clear();
+    infile.seekg(0);
+    auto temp = mainInfo.xyzFileType;
+    mainInfo.xyzFileType = av::XyzFileType::generic;
+    atoms = getAtomsTime(mainInfo, extraInfo, config, infile, fs);
+    if (!atoms.second.empty()) {
+      Logger::inst().log_warning(extraInfo.infile +": " + mainInfo.xyzFilePath + ": Default file format " + strSimulationCodeD(temp) + " is not correct. Fallback to generic reading works.");
+    }
+  }
   if (atoms.second.empty())
     return std::make_tuple(atoms.first, ErrorStatus::noError, av::DefectVecT{}, std::vector<int>{});
   return (mainInfo.structure == "bcc") ? av::atoms2defects(atoms, mainInfo, extraInfo, config) : av::atoms2defectsFcc(atoms, mainInfo, extraInfo, config);
