@@ -124,6 +124,18 @@ opacity:1.0;
   cursor:pointer;
 }
 
+#logoImg:hover {
+  animation: shake 0.40s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+
+@keyframes shake{
+      0%{ opacity:1.0; transform:rotate(0deg) scale(1.0) }
+      30%{ opacity:0.9; transform:rotate(11deg) scale(1.05) }
+      70%{ opacity:0.9; transform:rotate(-20deg) scale(1.1) }
+      100%{ opacity:1.0; transform:rotate(-8) scale(1.1) }
+    }
+
 
 .MuiToolbar-root {
     padding-left: 12px;

@@ -296,6 +296,7 @@ export const InfoTooltip = (props) => (<div style={{marginTop: props.marginTop ?
             {props.contents}
           </React.Fragment>
         }
+        disableFocusListener interactive
       >
         <InfoIcon/>
       </HtmlTooltip>

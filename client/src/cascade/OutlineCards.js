@@ -9,15 +9,17 @@ import ElemIcon from "@material-ui/icons/Grain";
 import EnergyIcon from "@material-ui/icons/FlashOn";
 import PlanarIcon from "@material-ui/icons/FilterBAndW";
 import ClassesIcon from '@material-ui/icons/WbSunny';
+import QueryDialog from "../QueryDialog.js";
 
 const Item = props => {
   const classes = props.classes;
   const Icon = props.icon;
+//          <CardIcon color={props.color} onClick={() => { console.log('clicked') }} onClick={props.onClk(true)} ></CardIcon>
   return (
     <GridItem xs={12} sm={6} md={3}>
       <Card>
-        <CardHeader color={props.color} stats icon>
-          <CardIcon color={props.color}>
+        <CardHeader color={props.color} stats icon onClick={() => props.onClk(true)} style={{cursor:"pointer"}}>
+          <CardIcon color={props.color} >
             <Icon />
           </CardIcon>
           <p className={classes.cardCategory}>{props.val["title"]}</p>
@@ -33,21 +35,31 @@ const Item = props => {
 export class OutlineCards extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      showQueryDialog: false
+    };
   }
 
   shouldComponentUpdate(nextProps, nextState){
-    return this.props.values[0].label.length == 0 ;
+    //return this.props.values[0].label.length == 0 ;
+    return true;
+  }
+
+  handleQueryDialog = (showQueryDialog, values) => {
+    if (!showQueryDialog) this.props.onClose(values)
+    this.setState({showQueryDialog});
   }
 
   render () {
     const props = this.props;
     const colors = ["success", "warning", "primary", "info"];
     const icons = [ElemIcon, EnergyIcon, PlanarIcon, ClassesIcon];
-    const x = colors.map((c, i) => { return ( <Grid container className="content"> <Item color={colors[0]} icon={icons[0]} val={props.values[0]} classes={props.classes}/> </Grid>);});
+    //const x = colors.map((c, i) => { return ( <Grid container className="content"> <Item onClk={this.handleQueryDialog} color={colors[0]} icon={icons[0]} val={props.values[0]} classes={props.classes}/> </Grid>);});
     //console.log(props.values);
     return (
       <Grid container className="content"> 
-      {colors.map((c, i) => <Item color={c} icon={icons[i]} key={i} val={props.values[i]} classes={props.classes}/>)}
+      {colors.map((c, i) => <Item onClk={this.handleQueryDialog} color={c} icon={icons[i]} key={i} val={props.values[i]} classes={props.classes}/>)}
+      <QueryDialog open={this.state.showQueryDialog} setOpen={this.handleQueryDialog}/>
       </Grid>
     );
   }

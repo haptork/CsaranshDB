@@ -22,9 +22,9 @@ class ActionButton extends React.Component {
   }
   render() {
     const isLook = this.props.look === uniqueKey(this.props.cellInfo);
-    const isExcept = this.props.except.has(uniqueKey(this.props.cellInfo));
+    //const isExcept = this.props.except.has(uniqueKey(this.props.cellInfo));
     const lookButColor = isLook ? 'primary' : 'default';
-    const exButColor = isExcept ? 'secondary' : 'default';
+    //const exButColor = isExcept ? 'secondary' : 'default';
 
     return (
      <div>
@@ -38,6 +38,12 @@ class ActionButton extends React.Component {
       <Visibility/>
       </IconButton>
       </Tooltip>
+      {this.props.cellInfo.id}
+     </div>
+    );
+  }
+}
+/*
  
     <Tooltip id="tooltipExcept" title="Remove from statistics" placement="top">
       <IconButton className="tableButton" size="small" color={exButColor} onClick={() => {
@@ -47,11 +53,8 @@ class ActionButton extends React.Component {
         {(isExcept) ? <Gpsoff /> : <Gpsfix/>}
       </IconButton>
       </Tooltip>
-      {this.props.cellInfo.id}
-     </div>
-    );
-  }
-}
+
+*/
 
 const RangeFilter = props => {
   let clsName = (props.isFilter) ? 'filter-yes' : 'filter-no';
@@ -106,6 +109,7 @@ const uniqueAr = (ar, fieldAccessor) => {
   for (const x of resAr) {
     res.push({label:x, value:x});
   }
+  console.log("unique", res);
   return res;
 }
 
@@ -281,7 +285,7 @@ export class MainTable extends React.Component {
                       <Select
                         name={id}
                         value={filter ? filter.value : ""}
-                        closeOnSelect={false}
+                        closeMenuOnSelect={false}
                         multi
                         onChange={val => {
                           return onChange(val);

@@ -704,7 +704,9 @@ WIP:
 
 WIP:
 
-- Merge changes from index.js of cdb.
+- ~~Merge changes from index.js of cdb.~~
+- ~~Dialog for about page~~ 
+- Dialog for data subset selection.
 
 TODO:
 

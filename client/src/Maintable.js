@@ -17,9 +17,9 @@ import { uniqueKey, getAllCol } from "./utils";
 
 const ActionButton = (props) => {
     const isLook = props.look === uniqueKey(props.cellInfo);
-    const isExcept = props.except.has(uniqueKey(props.cellInfo));
+    //const isExcept = props.except.has(uniqueKey(props.cellInfo));
     const lookButColor = isLook ? 'primary' : 'default';
-    const exButColor = isExcept ? 'secondary' : 'default';
+    //const exButColor = isExcept ? 'secondary' : 'default';
     return (
      <div>
 
@@ -32,7 +32,11 @@ const ActionButton = (props) => {
       <Visibility/>
       </IconButton>
       </Tooltip>
- 
+      {props.cellInfo.id}
+     </div>
+    );
+}
+/* 
     <Tooltip id="tooltipExcept" title="Remove from statistics" placement="top">
       <IconButton className="tableButton" size="small" color={exButColor} onClick={() => {
         return props.onBan(props.cellInfo, isExcept);
@@ -41,10 +45,7 @@ const ActionButton = (props) => {
         {(isExcept) ? <Gpsoff /> : <Gpsfix/>}
       </IconButton>
       </Tooltip>
-      {props.cellInfo.id}
-     </div>
-    );
-}
+*/
 
 const RangeFilter = props => {
   let clsName = (props.isFilter) ? 'filter-yes' : 'filter-no';
@@ -99,6 +100,7 @@ const uniqueAr = (ar, fieldAccessor) => {
   for (const x of resAr) {
     res.push({label:x, value:x});
   }
+  //console.log(res);
   return res;
 }
 
@@ -306,7 +308,7 @@ export class MainTable extends React.Component {
                         className='maintable-select-container'
                         classNamePrefix='maintable-select'
                         value={filter ? filter.value : ""}
-                        closeOnSelect={false}
+                        closeMenuOnSelect={false}
                         isMulti
                         onChange={val => {
                           return onChange(val);

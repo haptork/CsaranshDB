@@ -33,7 +33,7 @@ import { getCids, getInitialSelectionFor } from "./cascade/ClusterCmpPlot.js";
 
 import MainTable from "./Maintable.js"
 import {ClusterClassesTrends} from "./ClusterClassesTrends.js";
-import logo from './images/logo192.png';
+import AboutDialog from "./AboutDialog.js";
 
 //const getCids = (row) => [];
 //const getInitialSelection = (row) => '';
@@ -132,6 +132,10 @@ export class DashboardSimple extends React.Component {
       };
   }
 
+  onQueryDialogClose(values) {
+    console.log("closed query dialog: ", values);
+  }
+
   componentDidMount(prevProps) {
     //if (prevProps === undefined) return;
     //console.log("In dashboard comp did mount");
@@ -180,7 +184,6 @@ export class DashboardSimple extends React.Component {
     }
     return name;
   }
-
   handleShowCols = showCol => {
    this.setState(
       { showCol }
@@ -283,9 +286,7 @@ export class DashboardSimple extends React.Component {
       <div className="main-panel">
     <AppBar>
             <Toolbar disableGutters={!openly}>
-             <Typography variant="h5" color="inherit" noWrap>
-                <img id="logoImg" src={logo} alt="Csaransh"/>
-              </Typography>
+              <AboutDialog />
               <IconButton
                 color="inherit"
                 aria-label="open drawer"
@@ -301,7 +302,7 @@ export class DashboardSimple extends React.Component {
           <GridItem id="mainTable" xs={12}>
 <Accordion id="mainTablePanel" expanded={this.state.mobileOpen} onChange={this.handleToggleDrawer}>
           <AccordionSummary /*onMouseEnter={this.handleShowDrawer}*/ expandIcon={<ExpandMoreIcon />}>
-            <Typography className={classes.heading}>Cascades List - {this.state.curRows.length} cascades {(this.state.curRows.length < data.length) ? " filtered out of total " + data.length : " - Filter, View, Plot Using Action Buttons"} 
+            <Typography className={classes.heading}>Cascades List - {this.state.curRows.length} cascades {(this.state.curRows.length < data.length) ? " filtered out of total " + data.length : " - Filter, View and Plot Cascades"} 
            </Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -309,7 +310,7 @@ export class DashboardSimple extends React.Component {
               <Select
                 defaultValue={this.state.showCol}
                 name="Table columns"
-                closeOnSelect={false}
+                closeMenuOnSelect={false}
                 isMulti
                 isClearable={false}
                 options={this.allCols}
@@ -330,7 +331,7 @@ export class DashboardSimple extends React.Component {
           </GridItem>
           </Grid>
           </ClickAwayListener>
-       <OutlineCards values= {this.state.dataOutline} classes={classes}/>
+       <OutlineCards values= {this.state.dataOutline} classes={classes} onClose={this.onQueryDialogClose}/>
        <CascadesAndClusterCmp classes={classes} row={this.state.lookrow} cid={this.state.cidCmp} cmpData={this.state.cmpData} allCids={this.state.allCids} handleClusterCmp={(cid)=>this.handleClusterCmp(cid)} data={this.state.data} shortName={this.shortName}/>
         <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>

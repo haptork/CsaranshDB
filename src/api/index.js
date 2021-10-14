@@ -58,10 +58,10 @@ module.exports = () => {
       res.status(500).json({message:"Error adding cascade.", error: err});
     }
   });
-  
+ 
   api.get(['/cascades', '/csaransh/cascades'], async (req, res) => {
     let rows = dbhandle.from("cascades");
-  
+    console.log("query", req.query); 
     const dlimit = [5, 10000];
     let limit = (req.query.limit == '') ? dlimit[0] : parseInt(req.query.limit);
     if (isNaN(limit)) limit = dlimit[1];
@@ -82,19 +82,25 @@ module.exports = () => {
       }
     }
 
-    const filters = req.query.filter;
-    //console.log(filters)
-
+    const filters = req.query;
     for (let column in filters) {
       if (!column in dbColumns) continue;
       if (dbColumns[column] === 'text') {
-        rows.where(column, "like", '%'+filters[column]+'%');
-      } else if (dbColumns[column] === 'range') {
         if (filters[column].length == 0) continue;
-        rows.where(column, ">=", filters[column][0]);
-        if (filters[column].length < 2) continue;
-        rows.where(column, "<=", filters[column][1]);
+        if (Array.isArray(filters[column])) rows.whereIn(column, filters[column]);
+        else rows.where(column, "like", '%'+filters[column]+'%');
+      } else if (dbColumns[column] === 'range') {
+        const ar = filters[column].split(",");
+        if (ar.length == 0) continue;
+        rows.where(column, ">=", ar[0]);
+        if (ar.length < 2) continue;
+        rows.where(column, "<=", ar[1]);
+      } 
+      /*
+      if (dbColumns[column] === 'text') {
+        rows.where(column, "like", '%'+filters[column]+'%');
       }
+      */
     }
     //console.log(rows.toSQL().toNative());
     let query1 = rows.clone();
@@ -124,6 +130,8 @@ module.exports = () => {
     const cascades =  await rows;
     //console.log(cascades[0])
     res.send({'data':cascades, 'outline':outline});
+
+
   });
   
   api.get(['/cascade/:id', '/csaransh/cascade/:id'], async (req, res) => {
@@ -318,3 +326,72 @@ module.exports = () => {
   });
   return api;
 }
+
+/*
+cascades:
+    let rows = dbhandle.from("cascades");
+    console.log("query", req.query); 
+    const dlimit = [5, 10000];
+    let limit = (req.query.limit == '') ? dlimit[0] : parseInt(req.query.limit);
+    if (isNaN(limit)) limit = dlimit[1];
+    if (limit > dlimit[1]) limit = dlimit[1];
+    rows.limit(limit);
+  
+    if (req.query.offset && req.query.offset != '') {
+      const offsetVal = parseInt(req.query.offset);
+      if (!isNaN(offsetVal)) rows.offset(offsetVal);
+    }
+ 
+    const sortColumn = req.query.sort;
+    if (sortColumn && sortColumn !== '' && sortColumn in dbColumns) {
+      if (req.query.desc !== undefined) {
+          rows.orderBy(sortColumn, 'desc');
+      } else {
+          rows.orderBy(sortColumn, 'asc');
+      }
+    }
+
+    const filters = req.query.filter;
+    //console.log(filters)
+
+    for (let column in filters) {
+      if (!column in dbColumns) continue;
+      if (dbColumns[column] === 'text') {
+        rows.where(column, "like", '%'+filters[column]+'%');
+      } else if (dbColumns[column] === 'range') {
+        if (filters[column].length == 0) continue;
+        rows.where(column, ">=", filters[column][0]);
+        if (filters[column].length < 2) continue;
+        rows.where(column, "<=", filters[column][1]);
+      }
+    }
+    //console.log(rows.toSQL().toNative());
+    let query1 = rows.clone();
+    let query2 = rows.clone();
+    let query3 = rows.clone();
+    let query4 = rows.clone();
+    //console.log(rows.toSQL().toNative());
+    query1.select(dbhandle.raw("DISTINCT substrate"));
+    query2.select(dbhandle.raw("DISTINCT energy"));
+    query3.select(dbhandle.raw("DISTINCT potentialused"));
+    query4.select(dbhandle.raw("DISTINCT temperature"));
+    
+    //"energy", "temperature", "maxclustersize", "maxclustersizei", "maxclustersizev", "inclusteri", "inclusterv", "hullvol", "hulldensity", "potentialused", "es", "author");
+    let out = {};
+    out.substrate =  await query1;
+    out.energy =  await query2;
+    out.potentialused =  await query3;
+    out.temperature =  await query4;
+    outline = {}
+    for(const label in out) {
+      outline[label] = [];
+      for (const row of out[label]) {
+        outline[label].push(row[label])
+      }
+    }
+    rows.select("id", "ndefects", "substrate", "energy", "infile", "xyzfilepath", "temperature", "structure", "maxclustersize", "maxclustersizei", "maxclustersizev", "nclusters", "incluster", "inclusteri", "inclusterv", "hullvol", "hulldensity", "ndclustv", "dclustsecimpact", "potentialused", "es", "author");
+    const cascades =  await rows;
+    //console.log(cascades[0])
+    res.send({'data':cascades, 'outline':outline});
+
+*/

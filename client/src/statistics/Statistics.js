@@ -168,7 +168,7 @@ export class Statistics extends React.Component {
               <span style={{display:"inline-block", top:"8px", minWidth:"200px", color:"slategray", position:"relative", marginLeft:"10px"}}>
               <Select
                 value={groupingLabels}
-                closeOnSelect={false}
+                closeMenuOnSelect={false}
                 isMulti
                 options={this.options}
                 onChange={this.handleChange}
