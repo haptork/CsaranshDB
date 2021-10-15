@@ -1,8 +1,6 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import logo from './images/logo192.png';
@@ -38,6 +36,8 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from 'react-select';
 import Slider from '@material-ui/core/Slider';
 import { makeStyles } from '@material-ui/core/styles';
+import MuiDialogContent from '@material-ui/core/DialogContent';
+import MuiDialog from '@material-ui/core/Dialog';
 
 const substrates = [
   { value: 'W', label: "W"}, 
@@ -115,6 +115,22 @@ const temperatureMarks = [
   },
 ];
 
+const DialogContent = withStyles((theme) => ({
+  root: {
+    overflow: "visible",
+  },
+}))(MuiDialogContent);
+
+const Dialog = withStyles((theme) => ({
+  root: {
+    overflow: "visible",
+  },
+  paper: {
+    overflow: "visible",
+  }
+}))(MuiDialog);
+
+
 
 export default function QueryDialog(props) {
   const open = props.open;
@@ -134,24 +150,20 @@ export default function QueryDialog(props) {
   const handleTemperature = (event, newValue) => {
     setTemperature(newValue);
   };
-const useStyles = makeStyles({
-  root: {
-    width: 300,
-  },
-});
-const classes = useStyles();
   return (
-    <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+    <Dialog maxWidth='lg' fullWidth={true} scroll="paper" open={open} onClose={handleClose} style={{overflowY:"visible"}} aria-labelledby="form-dialog-title">
         <form name="filter" method="GET">
         <DialogTitle id="form-dialog-title">Dataset Selection</DialogTitle>
 
-        <DialogContent>
+        <DialogContent style={{overflowY:"visible"}}>
           <DialogContentText>
-            Select Data-set to explore:
           </DialogContentText>
-            <FormControl>
-              <span style={{display:"inline-block", top:"8px", minWidth:"200px", color:"slategray", position:"relative", marginLeft:"10px"}}>
+          <Grid container>
+            <GridItem xs={12} sm={6} md={6}>
+            <FormControl className="queryformctrl">
               <Select
+                className='querydialog-select-container'
+                classNamePrefix='querydialog-select'
                 value={substrate}
                 closeOnSelect={false}
                 isMulti
@@ -160,56 +172,51 @@ const classes = useStyles();
                 placeholder="Materials"
                 name="substrate"
               />
-              </span>
             </FormControl>
-            <FormControl>
-              <span style={{display:"inline-block", top:"8px", minWidth:"170px", color:"slategray", position:"relative", marginLeft:"10px"}}>
+            <FormControl className="queryformctrl">
               <Select
+                className='querydialog-select-container'
+                classNamePrefix='querydialog-select'
                 value={structure}
                 closeMenuOnSelect={false}
                 isMulti
                 options={structures}
                 onChange={setStructure}
                 placeholder="Structures"
+                name="structure"
               />
-              </span>
             </FormControl>
-            <FormControl>
-              <span style={{display:"inline-block", top:"8px", minWidth:"200px", color:"slategray", position:"relative", marginLeft:"10px"}}>
+            <FormControl className="queryformctrl">
               <Select
-                value={potential}
-                closeMenuOnSelect={false}
-                isMulti
-                options={potentials}
-                onChange={setStructure}
-                placeholder="Potentials"
-              />
-              </span>
-            </FormControl>
-            <FormControl>
-              <span style={{display:"inline-block", top:"8px", minWidth:"170px", color:"slategray", position:"relative", marginLeft:"10px"}}>
-              <Select
+                className='querydialog-select-container'
+                classNamePrefix='querydialog-select'
                 value={es}
                 closeMenuOnSelect={false}
                 isMulti
                 options={ess}
                 onChange={setEs}
                 placeholder="Elect. Stopping"
+                name="es"
               />
-              </span>
             </FormControl>
-            <FormControl>
-              <span style={{display:"inline-block", top:"8px", minWidth:"200px", color:"slategray", position:"relative", marginLeft:"10px"}}>
-              <Select
-                value={author}
-                closeMenuOnSelect={false}
-                isMulti
-                options={authors}
-                onChange={setAuthor}
-                placeholder="Author"
-              />
-              </span>
-            </FormControl>
+
+            </GridItem>
+            <GridItem xs={12} sm={6} md={6}>
+      <Typography id="range-slider" gutterBottom>
+        Energy range
+      </Typography>
+      <Slider
+        value={energy}
+        onChange={handleEnergy}
+        valueLabelDisplay="auto"
+        aria-labelledby="range-slider"
+        getAriaValueText={energytext}
+        marks={energyMarks}
+        min={energies[0]}
+        max={energies[1]}
+        name="energy"
+      />
+
       <Typography id="range-slider" gutterBottom>
         Temperature range
       </Typography>
@@ -225,23 +232,42 @@ const classes = useStyles();
         step={10}
         name="temperature"
       />
-      <Typography id="range-slider" gutterBottom>
-        Energy range
-      </Typography>
-      <Slider
-        value={energy}
-        onChange={handleEnergy}
-        valueLabelDisplay="auto"
-        aria-labelledby="range-slider"
-        getAriaValueText={energytext}
-        marks={energyMarks}
-        min={energies[0]}
-        max={energies[1]}
-        name="energy"
-      />
+
+            </GridItem>
+            <GridItem xs={12} sm={6} md={6}>
+            <FormControl className="queryformctrl">
+              <Select
+                className='querydialog-select-container'
+                classNamePrefix='querydialog-select'
+                value={potential}
+                closeMenuOnSelect={false}
+                isMulti
+                options={potentials}
+                onChange={setPotential}
+                placeholder="Potentials"
+                name="potentialused"
+              />
+            </FormControl>
+</GridItem>
+            <GridItem xs={12} sm={6} md={6}>
+            <FormControl className="queryformctrl">
+              <Select
+                className='querydialog-select-container'
+                classNamePrefix='querydialog-select'
+                value={author}
+                closeMenuOnSelect={false}
+                isMulti
+                options={authors}
+                onChange={setAuthor}
+                placeholder="Author"
+                name="author"
+              />
+            </FormControl>
+</GridItem>
+</Grid>
        </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleClose}>
             Cancel
           </Button>
           <Button type="submit" color="primary">

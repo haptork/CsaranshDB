@@ -706,9 +706,15 @@ WIP:
 
 - ~~Merge changes from index.js of cdb.~~
 - ~~Dialog for about page~~ 
-- Dialog for data subset selection.
+- ~~Dialog for data subset selection.~~
 
 TODO:
 
 - Csaransh logo onclick shift correct.
 - A15-Huiqiu DENG, 289.xml, R121-1... check defects count 0 error.
+
+## 14th Oct
+
+- ~~A15-Huiqiu DENG, 289.xml, R121-1... check defects count 0 error.~~
+
+## 15th Oct

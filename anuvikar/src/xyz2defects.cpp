@@ -263,10 +263,12 @@ getAtomsTime(av::InputInfo &info, av::ExtraInfo &extraInfo,
         const std::string msgPre = (leastIndex == 0) ? "given value of box-size might not be exact." : "given value of lattice constant might not be exact";
         if (leastIndex == 0) {
           av::Logger::inst().log_warning(info.xyzFilePath + ", " + extraInfo.infile + ": " + msgPre + "Difference in given lattice constant & box-size based lattice constant caused difference in"
-               "displaced atom values: " + std::to_string(std::get<3>(combos[0])) + ", " + std::to_string(std::get<3>(combos[0])));
+               "displaced atom values: " + std::to_string(std::get<3>(combos[0])) + ", " + std::to_string(std::get<3>(combos[1])) +
+               "lattice constants: " + std::to_string(info.latticeConst) + ", " + std::to_string(secLatConst)));
         } else {
           av::Logger::inst().log_warning(info.xyzFilePath + ", " + extraInfo.infile + ": reverse " + msgPre + "Difference in given lattice constant & box-size based lattice constant caused difference in"
-               "displaced atom values: " + std::to_string(std::get<3>(combos[0])) + ", " + std::to_string(std::get<3>(combos[0])));
+               "displaced atom values: " + std::to_string(std::get<3>(combos[0])) + ", " + std::to_string(std::get<3>(combos[1])) +
+               "lattice constants: " + std::to_string(info.latticeConst) + ", " + std::to_string(secLatConst)));
         }
       }
     }

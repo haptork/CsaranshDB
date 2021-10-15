@@ -9,7 +9,10 @@ import ElemIcon from "@material-ui/icons/Grain";
 import EnergyIcon from "@material-ui/icons/FlashOn";
 import PlanarIcon from "@material-ui/icons/FilterBAndW";
 import ClassesIcon from '@material-ui/icons/WbSunny';
+import EditIcon from '@material-ui/icons/Edit';
 import QueryDialog from "../QueryDialog.js";
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
 
 const Item = props => {
   const classes = props.classes;
@@ -22,7 +25,18 @@ const Item = props => {
           <CardIcon color={props.color} >
             <Icon />
           </CardIcon>
-          <p className={classes.cardCategory}>{props.val["title"]}</p>
+          <span className={classes.cardCategory}>
+            {props.val["title"]}
+            <Tooltip title="Change Dataset" enterDelay={300}>
+              <IconButton
+                color="inherit"
+                size="small"
+                className="outlinebutton"
+              >
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+            </span>
           <h3 className={classes.cardTitle}>
             {props.val["label"]} <small>{props.val["labelSm"]}</small>
           </h3>

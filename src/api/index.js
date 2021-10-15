@@ -255,16 +255,22 @@ module.exports = () => {
   api.get(['/clustershdb', '/csaransh/clustershdb'], async (req, res) => {
     let rows = dbhandle.from("clusters");
     rows.join('cascades', 'clusters.cascadeid', '=', 'cascades.id')
-    const filters = req.query.filter;
+
+
+    const filters = req.query;
     for (let column in filters) {
       if (!column in dbColumns) continue;
       if (dbColumns[column] === 'text') {
-        rows.where("cascades."+column, "like", '%'+filters[column]+'%');
+        if (filters[column].length == 0) continue;
+        if (Array.isArray(filters[column])) rows.whereIn(column, filters[column]);
+        else rows.where(column, "like", '%'+filters[column]+'%');
       } else if (dbColumns[column] === 'range') {
-        if (filters[column].length < 2) continue;
-        rows.where("cascades."+column, ">=", filters[column][0]);
-        rows.where("cascades."+column, "<", filters[column][1]);
-      }
+        const ar = filters[column].split(",");
+        if (ar.length == 0) continue;
+        rows.where(column, ">=", ar[0]);
+        if (ar.length < 2) continue;
+        rows.where(column, "<=", ar[1]);
+      } 
     }
     //rows.select("clusters.id", "savimorph", "hdbpoint");
     rows.where("savimorph", "!=", "7-?")
@@ -285,17 +291,22 @@ module.exports = () => {
   api.get(['/morphstats', '/csaransh/morphstats'], async (req, res) => {
     let rows = dbhandle.from("clusters");
     rows.join('cascades', 'clusters.cascadeid', '=', 'cascades.id')
-    const filters = req.query.filter;
-    //console.log(filters)
+
+
+    const filters = req.query;
     for (let column in filters) {
       if (!column in dbColumns) continue;
       if (dbColumns[column] === 'text') {
-        rows.where(column, "like", '%'+filters[column]+'%');
+        if (filters[column].length == 0) continue;
+        if (Array.isArray(filters[column])) rows.whereIn(column, filters[column]);
+        else rows.where(column, "like", '%'+filters[column]+'%');
       } else if (dbColumns[column] === 'range') {
-        if (filters[column].length < 2) continue;
-        rows.where(column, ">=", filters[column][0]);
-        rows.where(column, "<", filters[column][1]);
-      }
+        const ar = filters[column].split(",");
+        if (ar.length == 0) continue;
+        rows.where(column, ">=", ar[0]);
+        if (ar.length < 2) continue;
+        rows.where(column, "<=", ar[1]);
+      } 
     }
     rows.where("savimorph", "!=", "7-?")
     const groupStr = req.query.groupby;

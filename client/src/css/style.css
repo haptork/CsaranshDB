@@ -171,3 +171,32 @@ opacity:1.0;
 .info-tt-icon:hover {
     opacity: 1.0;
 }
+
+.outlinebutton {
+    opacity: 0.6;
+}
+
+.outlinebutton:hover {
+    opacity: 1.0;
+}
+
+
+.outlinebutton svg {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+.queryformctrl {
+    margin: 4px !important;
+    width:100%;
+}
+
+.querydialog-select__menu-list {
+    max-height:155px !important;
+    overflow-y: scroll;
+}
+
+.querydialog-select-container {
+    width:100%;
+}
+
