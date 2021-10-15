@@ -343,7 +343,7 @@ def xmlFileToDict(fname):
 
 def validateArchive(srcDir, extractionDir, metaFiles, overwriteJson, overwriteDb):
   config = getDefaultConfig("warning", "error") # check bottom cell for various keys / options to configure
-  config['logFilePath'] = os.path.join(extractionDir, "av_cpp.log")
+  config['logFilePath'] = os.path.join(extractionDir, "avi_cpp.log")
   config['outputJSONFilePath'] = os.path.join(extractionDir, "anuvikar.json")
   config['outputDbPath'] = os.path.join(extractionDir, "anuvikar.db")
   config['anuvikarLib'] = libPath
@@ -389,7 +389,7 @@ def validateArchive(srcDir, extractionDir, metaFiles, overwriteJson, overwriteDb
       os.remove(config['outputDbPath'])
     writeMlResultsToSqliteDb(cascades, config)
     print("Analysis results written to db: " + config['outputDbPath'])
-  print("Please go through logs written to: ", extractionDir, ": av_cpp.log and av_py.log.")
+  print("Please go through logs written to: ", extractionDir, ": avi_cpp.log and avi_py.log.")
   print("Run add script to generate db that can be viewed with Csaransh.")
   summarizeLog(config)
   # saved cascades.json, cascades.db, log-summary.md, log.txt
@@ -421,7 +421,7 @@ if __name__ == "__main__":
     #overwriteJson = (sys.argv[3] == "1")
     #overwriteDb = (sys.argv[4] == "1")
     metaFiles = [x for x in sys.argv[3:]]
-    logging.basicConfig(filename=os.path.join(extractionDir, "av_py.log"), level=logging.WARNING, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+    logging.basicConfig(filename=os.path.join(extractionDir, "avi_py.log"), level=logging.WARNING, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
     logging.warning("Atho Anuvikar validation")
     validateArchive(srcDir, extractionDir, metaFiles, overwriteJson, overwriteDb)
     logging.warning("Iti")

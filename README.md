@@ -43,9 +43,9 @@ Dependencies:
 
 ### Basic Validation:
 
-#### Running av_validate_cdb.py
+#### Running avi_validate_cdb.py
 
-- `python av_validate_cdb.py $pathToXyzArchiveDir $pathToOutputDir ...pathToXmlMetafiles`.
+- `python avi_validate_cdb.py $pathToXyzArchiveDir $pathToOutputDir ...pathToXmlMetafiles`.
 - The first argument is a path to the directory that has arhived xyz files as downloaded / stored in CascadesDB. The directory can have many archives but only the ones that correspond to the metafiles given in argument three onwards will be analysed.
 - The second argument is path to the output directory. Archives will be extracted to this directory. Also, the processed files `anuvikar.json`, `anuvikar.db` and `log.txt` will be stored here. Since the output files have same name, please take care that outputs are not overwritten by multiple runs.
 - The third argument onwards can be multiple Xml metafiles to process. These can by given as `pathToMetaFileDir/*.xml`.
@@ -54,33 +54,33 @@ Dependencies:
 
 #### Examples
 
-- An example run command: `python av_validate_cdb /data/W/newEntries/ /data/W/newEntries /data/W/newEntries/*xml`. Here we have archives and xml files in the same directory and we want output files to be written in the same directory.
-- Another example run command: `python av_validate_cdb /data/W/allArchives/ /data/W/newEntries /data/W/newEntries/*xml`. Here we have storing all the old and new archives in the same directory `allArchives`. Directory for new xml files and output files to be written are  the same.
+- An example run command: `python avi_validate_cdb /data/W/newEntries/ /data/W/newEntries /data/W/newEntries/*xml`. Here we have archives and xml files in the same directory and we want output files to be written in the same directory.
+- Another example run command: `python avi_validate_cdb /data/W/allArchives/ /data/W/newEntries /data/W/newEntries/*xml`. Here we have storing all the old and new archives in the same directory `allArchives`. Directory for new xml files and output files to be written are  the same.
 
 ### Adding to Database
 
-- Run `python av_add_cdb.py $new_output_dir $destination_db_path $existing_database_path`:
-- First argument: Provide the output directory of the `av_validate_cdb.py` which has `anuvikar.json` and `anuvikar.db` files for the cascades that you wish to add to the database.
+- Run `python avi_add_cdb.py $new_output_dir $destination_db_path $existing_database_path`:
+- First argument: Provide the output directory of the `avi_validate_cdb.py` which has `anuvikar.json` and `anuvikar.db` files for the cascades that you wish to add to the database.
 - Second argument: File path for the output db.
 - Third argument: File path for the existing db if exists.
 - The destination db path (second argument) is the database file that can be copied to `$csaransh_dir$/src/db/dev.csaransh.db` to view the updated database.
-- The command generates another file which is `destination_db_path+_tree.pickle` which needs to be kept with the db file. This will be used by av_add_cdb.py while further adding more data (when passing this new db as the third argument).
+- The command generates another file which is `destination_db_path+_tree.pickle` which needs to be kept with the db file. This will be used by avi_add_cdb.py while further adding more data (when passing this new db as the third argument).
 
 #### Examples and Use Cases
 
 1. Fresh database:
 
-- Run av_validate_cdb for the archives and corrensponding meta files. Provide the output directory of this command to av_add_cdb. For example:
-  - `python av_validate_cdb /data/W/newEntries/ /data/W/newEntries /data/W/newEntries/*xml`
-  - `python av_add_cdb /data/W/newEntries/ /data/W/newEntries/csaransh.db`
+- Run avi_validate_cdb for the archives and corrensponding meta files. Provide the output directory of this command to avi_add_cdb. For example:
+  - `python avi_validate_cdb /data/W/newEntries/ /data/W/newEntries /data/W/newEntries/*xml`
+  - `python avi_add_cdb /data/W/newEntries/ /data/W/newEntries/csaransh.db`
   - `cp /data/W/newEntries/csaransh.db ./src/db/dev.csaransh.db`
   - Now you can open the webpage (directions given later in this readme) to view your new entries on csaransh-webapp.
 
 2. Adding new data to the earlier processed db:
 
   - Let us say that you want to add new data to the db we created in the last step.
-  - `python av_validate_cdb /data/W/newerEntries/ /data/W/newerEntries /data/W/newerEntries/*xml`
-  - `python av_add_cdb /data/W/newerData/ /data/W/newerData/csaransh.db /data/W/newEntries/csaransh.db`
+  - `python avi_validate_cdb /data/W/newerEntries/ /data/W/newerEntries /data/W/newerEntries/*xml`
+  - `python avi_add_cdb /data/W/newerData/ /data/W/newerData/csaransh.db /data/W/newEntries/csaransh.db`
   - `cp /data/W/newerEntries/csaransh.db ./src/db/dev.csaransh.db`
   - Now you can open the webpage (directions given later in this readme) to view your newer entries along with the new entries added earlier.
 
