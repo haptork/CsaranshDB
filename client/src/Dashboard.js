@@ -213,7 +213,9 @@ export class DashboardSimple extends React.Component {
     this.setState({ mobileOpen: true });
   };
 
-  handleAbout(aboutShow) { this.setState({aboutShow}); }
+  handleAbout(aboutShow) { 
+    this.setState({aboutShow}); 
+  }
 
   setRows(curRows) {
     this.setState({
@@ -365,10 +367,7 @@ export class DashboardSimple extends React.Component {
         </Grid>
         </AccordionDetails>
         </Accordion>
-         <Footer />
-
-
-
+         <Footer setOpen={(v) => this.handleAbout(v)} />
       </div>
     );
     }
