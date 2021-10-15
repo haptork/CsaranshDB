@@ -126,7 +126,7 @@ module.exports = () => {
         outline[label].push(row[label])
       }
     }
-    rows.select("id", "ndefects", "substrate", "energy", "infile", "xyzfilepath", "temperature", "structure", "maxclustersize", "maxclustersizei", "maxclustersizev", "nclusters", "incluster", "inclusteri", "inclusterv", "hullvol", "hulldensity", "ndclustv", "dclustsecimpact", "potentialused", "es", "author");
+    rows.select("id", "ndefects", "substrate", "energy", "infile", "xyzfilepath", "temperature", "simulationtime", "structure", "maxclustersize", "maxclustersizei", "maxclustersizev", "nclusters", "incluster", "inclusteri", "inclusterv", "hullvol", "hulldensity", "ndclustv", "dclustsecimpact", "potentialused", "es", "author");
     const cascades =  await rows;
     //console.log(cascades[0])
     res.send({'data':cascades, 'outline':outline});
