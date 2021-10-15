@@ -60,7 +60,6 @@ export class OutlineCards extends React.Component {
   }
 
   handleQueryDialog = (showQueryDialog, values) => {
-    if (!showQueryDialog) this.props.onClose(values)
     this.setState({showQueryDialog});
   }
 

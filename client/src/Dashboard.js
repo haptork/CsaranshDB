@@ -330,7 +330,7 @@ export class DashboardSimple extends React.Component {
           </GridItem>
           </Grid>
           </ClickAwayListener>
-       <OutlineCards values= {this.state.dataOutline} classes={classes} onClose={this.onQueryDialogClose}/>
+       <OutlineCards values= {this.state.dataOutline} classes={classes} />
        <CascadesAndClusterCmp classes={classes} row={this.state.lookrow} cid={this.state.cidCmp} cmpData={this.state.cmpData} allCids={this.state.allCids} handleClusterCmp={(cid)=>this.handleClusterCmp(cid)} data={this.state.data} shortName={this.shortName}/>
         <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -365,7 +365,7 @@ export class DashboardSimple extends React.Component {
         </Grid>
         </AccordionDetails>
         </Accordion>
-         <Footer setOpen={(v) => this.handleAbout(v)} />
+         <Footer />
 
 
 
