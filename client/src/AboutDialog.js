@@ -49,22 +49,15 @@ const CustomDialogTitle = withStyles(styles)((props) => {
   );
 });
 
-export default function AboutDialog() {
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
+export default function AboutDialog(props) {
+  //const [open, setOpen] = React.useState(false);
+  const handleClickOpen = () => props.setOpen(true);
+  const handleClose = () => props.setOpen(false);
   return (
     <div>
         <img id="logoImg" src={logo} alt="Csaransh" onClick={handleClickOpen}/>
       <Dialog
-        open={open}
+        open={props.open}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"

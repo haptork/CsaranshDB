@@ -129,11 +129,8 @@ export class DashboardSimple extends React.Component {
           cidCmp: getInitialSelectionFor(allCids),
           cmpData: {},
           showCol: this.allCols.filter(x => x['isShow']),
+          aboutShow: false
       };
-  }
-
-  onQueryDialogClose(values) {
-    console.log("closed query dialog: ", values);
   }
 
   componentDidMount(prevProps) {
@@ -216,6 +213,8 @@ export class DashboardSimple extends React.Component {
     this.setState({ mobileOpen: true });
   };
 
+  handleAbout(aboutShow) { this.setState({aboutShow}); }
+
   setRows(curRows) {
     this.setState({
       curRows,
@@ -286,7 +285,7 @@ export class DashboardSimple extends React.Component {
       <div className="main-panel">
     <AppBar>
             <Toolbar disableGutters={!openly}>
-              <AboutDialog />
+              <AboutDialog open={this.state.aboutShow} setOpen={(v) => this.handleAbout(v)} />
               <IconButton
                 color="inherit"
                 aria-label="open drawer"
@@ -366,7 +365,7 @@ export class DashboardSimple extends React.Component {
         </Grid>
         </AccordionDetails>
         </Accordion>
-         <Footer />
+         <Footer setOpen={(v) => this.handleAbout(v)} />
 
 
 

@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import withStyles from "@material-ui/core/styles/withStyles";
 import ListItem from "@material-ui/core/ListItem";
 import List from "@material-ui/core/List";
+import GithubIcon from "@material-ui/icons/GitHub";
 // core components
 import footerStyle from "./assets/jss/material-dashboard-react/components/footerStyle";
 import iaeaLogo from "./images/iaea-logo.png";
@@ -24,13 +25,18 @@ function Footer({ ...props }) {
         <div className={classes.left}>
           <List className={classes.list}>
             <ListItem className={classes.inlineBlock}>
+            <a href="#" onClick={() => props.setOpen(true)}>
+              About
+            </a>
+            </ListItem>
+            <ListItem className={classes.inlineBlock}>
             <a href="https://github.com/haptork/csaransh" className={classes.a}>
               Github Repository
             </a>
             </ListItem>
             <ListItem className={classes.inlineBlock}>
-            <a href="http://joss.theoj.org/papers/72f2ddde2112497826753319956ea8ab" className={classes.a}>
-              Csaransh citation link
+            <a href="https://github.com/haptork/csaransh/wiki" className={classes.a}>
+              Wiki - How To
             </a>
             </ListItem>
           </List>
