@@ -4,7 +4,7 @@ import {withStyles} from "@material-ui/core/styles";
 // core components
 import Grid from "@material-ui/core/Grid";
 import GridItem from "./components/Grid/GridItem";
-import Footer from "./components/Footer/Footer.js";
+import Footer from "./Footer.js";
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import classNames from 'classnames';
@@ -366,7 +366,7 @@ export class DashboardSimple extends React.Component {
         </Grid>
         </AccordionDetails>
         </Accordion>
-
+         <Footer />
 
 
 
