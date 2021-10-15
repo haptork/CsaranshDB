@@ -61,7 +61,7 @@ module.exports = () => {
  
   api.get(['/cascades', '/csaransh/cascades'], async (req, res) => {
     let rows = dbhandle.from("cascades");
-    console.log("query", req.query); 
+    //console.log("query", req.query); 
     const dlimit = [5, 10000];
     let limit = (req.query.limit == '') ? dlimit[0] : parseInt(req.query.limit);
     if (isNaN(limit)) limit = dlimit[1];
@@ -316,9 +316,9 @@ module.exports = () => {
     const validColumns = new Set(["energy", "substrate", "potentialused", "author", "temperature", "es"]);
     rows.groupBy("savimorph");
     for (let column of groupColumns) {
-      console.log(column, (validColumns.has(column)));
+      //console.log(column, (validColumns.has(column)));
       if (!(validColumns.has(column))) continue;
-      console.log(column);
+      //console.log(column);
       rows.groupBy(column);
       rows.select(column);
     }
