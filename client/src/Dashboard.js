@@ -34,6 +34,8 @@ import { getCids, getInitialSelectionFor } from "./cascade/ClusterCmpPlot.js";
 import MainTable from "./Maintable.js"
 import {ClusterClassesTrends} from "./ClusterClassesTrends.js";
 import AboutDialog from "./AboutDialog.js";
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 //const getCids = (row) => [];
 //const getInitialSelection = (row) => '';
@@ -130,7 +132,8 @@ export class DashboardSimple extends React.Component {
           cmpData: {},
           showCol: this.allCols.filter(x => x['isShow']),
           aboutShow: false,
-          cascadePanelOpen: false
+          cascadePanelOpen: false,
+          backdropOpen: true
       };
   }
 
@@ -144,7 +147,12 @@ export class DashboardSimple extends React.Component {
         const data = cascades.data;
         const dataOutline = overallStats(cascades.outline);
         //console.log(dataOutline);
-        if (data.length === 0) return;
+        if (data.length === 0) {
+            this.setState({
+              backdropOpen: false
+            });
+          return;
+        }
         const initialPick = 0;
         const initialRow = data[initialPick];
         const initialLook = uniqueKey(initialRow);
@@ -168,6 +176,7 @@ export class DashboardSimple extends React.Component {
               showCol : this.allCols.filter(x => x['isShow']),
               dataOutline: dataOutline,
               mobileOpen: true,
+              backdropOpen: false
             });
           });
         });
@@ -196,10 +205,14 @@ export class DashboardSimple extends React.Component {
     cid = '' + cid;
     //console.log(this.state.lookrow);
     if (!this.state.lookrow.viewfields.clusters.hasOwnProperty(cid)) return;
+    this.setState({
+      backdropOpen: true
+    });
     fetchClusterCmpInfo(this.state.look, cid).then(cmpData => {
       this.setState({
         cidCmp : cid,
-        cmpData : cmpData
+        cmpData : cmpData,
+        backdropOpen: false
       });
     });
   }
@@ -207,6 +220,10 @@ export class DashboardSimple extends React.Component {
   handleToggleDrawer = () => {
     this.setState({ mobileOpen: !this.state.mobileOpen });
   };
+
+  handleBackdropToggle = () => {
+    this.setState({ backdropOpen: !this.state.backdropOpen });
+  }
 
   cascadePanelToggle = () => {
     console.log("here");
@@ -252,6 +269,9 @@ export class DashboardSimple extends React.Component {
     if (isLooking) return;
     //const compareRows = new Set(this.state.compareRows);
     //compareRows.add(uniqueKey(row));
+    this.setState({
+      backdropOpen: true
+    });
     fetchCascadeInfo(newRowId).then(rowData => {
       rowData.viewfields = JSON.parse(rowData.viewfields);
       const allCids = getCids(rowData);
@@ -263,7 +283,8 @@ export class DashboardSimple extends React.Component {
           allCids : allCids,
           cidCmp : cidCmp,
           cmpData : cmpData,
-          cascadePanelOpen: true
+          cascadePanelOpen: true,
+          backdropOpen: false
         });
       });
     });
@@ -370,15 +391,18 @@ export class DashboardSimple extends React.Component {
         <AccordionDetails className={classes.details}>
         <Grid container justifyContent="center">
           <GridItem xs={12} sm={12} md={12}>
-            <ClusterClassesPlot classes={classes} queryString={this.props.queryString} shortName={this.shortName}/>
+            <ClusterClassesPlot toggleBackdrop={this.handleBackdropToggle} classes={classes} queryString={this.props.queryString} shortName={this.shortName}/>
           </GridItem>
           <GridItem xs={12} sm={12} md={12}>
-            <ClusterClassesTrends classes={classes} queryString={this.props.queryString}/>
+            <ClusterClassesTrends toggleBackdrop={this.handleBackdropToggle} classes={classes} queryString={this.props.queryString}/>
           </GridItem>
         </Grid>
         </AccordionDetails>
         </Accordion>
          <Footer setOpen={(v) => this.handleAbout(v)} />
+        <Backdrop open={this.state.backdropOpen} style={{zIndex: 1110}}>
+        <CircularProgress color="primary" />
+      </Backdrop>
       </div>
     );
     }

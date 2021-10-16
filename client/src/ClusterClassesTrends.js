@@ -255,7 +255,6 @@ export class ClusterClassesTrends extends React.Component {
   componentDidMount(prevProps) {
     if (prevProps !== undefined && (prevProps.queryString === this.props.queryString)) return;
     fetchMorphologyStats(this.cookQuery(this.state.groupingLabels)).then(classData => {
-      //console.log(classData);
       this.setState({
         classData
       });
@@ -263,8 +262,10 @@ export class ClusterClassesTrends extends React.Component {
   }
 
   handleChange = groupingLabels => {
+    this.props.toggleBackdrop();
     fetchMorphologyStats(this.cookQuery(groupingLabels)).then(classData => {
       //console.log(classData);
+      this.props.toggleBackdrop();
       this.setState({
         classData,
         groupingLabels 

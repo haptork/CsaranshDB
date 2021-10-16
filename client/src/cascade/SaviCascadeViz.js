@@ -237,9 +237,21 @@ function defectItems(coords, lines, allComps, sias, vacs, meshProps, meshInfo, l
     totalPoints += 1;
     sias.push({position:[c[0], c[1], c[2]], color:[0.1, 0.1, 0.1], opacity:((c[5]==1)?0.9:0.4)});
   }
-  const msgAr = [] 
+  let msgAr = [] 
   for (let comp of allCompInfo) msgAr.push([Math.ceil(comp.cent/totalPoints*100), comp.name]);
-  msgAr.sort();
+  if (msgAr.length > 5) {
+    const toDel = new Set();
+    for (let i = 0; i < msgAr.length; ++i) {
+      if (msgAr[i][0] < 3) {
+        toDel.add(i);
+      }
+    }
+    msgAr = msgAr.filter((item, index) => !toDel.has(index));
+    const origLen = meshProps.length - msgAr.length;
+    meshProps = meshProps.filter((item, index) => !toDel.has(index+origLen));
+    meshInfo = meshInfo.filter((item, index) => !toDel.has(index+origLen));
+  }
+  msgAr.sort((a, b) => b[0]-a[0]);
   for (let comp of msgAr) {
     comp[0] = "" + comp[0] + "%";
   }

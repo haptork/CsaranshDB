@@ -71,12 +71,14 @@ export class ClusterClassesPlot extends React.Component {
   handleShow(label, clusterIndex) {
     const labelIndex = this.state.classData.ditraces[label];
     const showcid = this.state.classData.traces[labelIndex].id[clusterIndex];
+    this.props.toggleBackdrop();
     fetchClusterInfo(showcid).then(clusterInfo => {
       this.setState({
         showcid,
         nm: getName(clusterInfo, this.props.shortName),
         curCluster: clusterInfo
       });
+      this.props.toggleBackdrop();
     });
   }
 
