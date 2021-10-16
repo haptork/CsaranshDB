@@ -129,7 +129,8 @@ export class DashboardSimple extends React.Component {
           cidCmp: getInitialSelectionFor(allCids),
           cmpData: {},
           showCol: this.allCols.filter(x => x['isShow']),
-          aboutShow: false
+          aboutShow: false,
+          cascadePanelOpen: false
       };
   }
 
@@ -161,13 +162,12 @@ export class DashboardSimple extends React.Component {
               // compareRows: new Set(),
               except : new Set(),
               look : initialLook,
-              mobileOpen : false,
               allCids : allCids,
               cidCmp : cidCmp,
               cmpData : cmpData,
               showCol : this.allCols.filter(x => x['isShow']),
               dataOutline: dataOutline,
-              mobileOpen: true
+              mobileOpen: true,
             });
           });
         });
@@ -178,6 +178,10 @@ export class DashboardSimple extends React.Component {
     let name = row.id;
     for (const x of this.state.showCol) {
       if (x.type != 'input') continue;
+      const y = x.accessor(row);
+      if (!y) continue;
+       const z = x.parseFn(y);
+       if (!z) continue;
       name += "-" + x.parseFn(x.accessor(row));
     }
     return name;
@@ -203,6 +207,11 @@ export class DashboardSimple extends React.Component {
   handleToggleDrawer = () => {
     this.setState({ mobileOpen: !this.state.mobileOpen });
   };
+
+  cascadePanelToggle = () => {
+    console.log("here");
+    this.setState({ cascadePanelOpen: !this.state.cascadePanelOpen});
+  }
 
   handleHideDrawer = () => {
     if (this.state.mobileOpen === false) return;
@@ -253,7 +262,8 @@ export class DashboardSimple extends React.Component {
           lookrow : rowData,
           allCids : allCids,
           cidCmp : cidCmp,
-          cmpData : cmpData
+          cmpData : cmpData,
+          cascadePanelOpen: true
         });
       });
     });
@@ -334,7 +344,7 @@ export class DashboardSimple extends React.Component {
           </Grid>
           </ClickAwayListener>
        <OutlineCards values= {this.state.dataOutline} classes={classes} />
-       <CascadesAndClusterCmp classes={classes} row={this.state.lookrow} cid={this.state.cidCmp} cmpData={this.state.cmpData} allCids={this.state.allCids} handleClusterCmp={(cid)=>this.handleClusterCmp(cid)} data={this.state.data} shortName={this.shortName}/>
+       <CascadesAndClusterCmp toggle={this.cascadePanelToggle} expanded={this.state.cascadePanelOpen} classes={classes} row={this.state.lookrow} cid={this.state.cidCmp} cmpData={this.state.cmpData} allCids={this.state.allCids} handleClusterCmp={(cid)=>this.handleClusterCmp(cid)} data={this.state.data} shortName={this.shortName}/>
         <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <div className={classes.column}>

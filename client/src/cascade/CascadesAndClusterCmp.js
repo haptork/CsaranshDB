@@ -210,7 +210,7 @@ export class CascadesAndClusterCmp extends React.Component {
   }
   
   shouldComponentUpdate(nextProps, nextState) {
-    return uniqueKey(this.props.row) != uniqueKey(nextProps.row) || this.props.cid != nextProps.cid;
+    return this.props.expanded != nextProps.expanded || uniqueKey(this.props.row) != uniqueKey(nextProps.row) || this.props.cid != nextProps.cid;
   }
 
   /*
@@ -226,14 +226,14 @@ export class CascadesAndClusterCmp extends React.Component {
   */
    
   render() {
-    const { classes, row, allCids, cid, cmpData, data} = this.props;
+    const { classes, row, allCids, cid, cmpData, data, expanded, toggle} = this.props;
     //console.log("rendering CascadesAndCmp");
     //console.log("cmpData", cmpData);
     return (
-      <Accordion>
+      <Accordion expanded={expanded} onChange={() => toggle()}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <div className={classes.column}>
-            <Typography className={classes.heading}>Visualize and Find Patterns</Typography>
+            <Typography className={classes.heading}>Visualize A Cascade & its defects</Typography>
           </div>
           <div className={classes.column}>
             <Typography className={classes.secondaryHeading}>Currently Viewing - {this.props.shortName(row)}</Typography>

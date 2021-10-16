@@ -200,6 +200,33 @@ export default function QueryDialog(props) {
               />
             </FormControl>
 
+            <FormControl className="queryformctrl">
+              <Select
+                className='querydialog-select-container'
+                classNamePrefix='querydialog-select'
+                value={author}
+                closeMenuOnSelect={false}
+                isMulti
+                options={authors}
+                onChange={setAuthor}
+                placeholder="Author"
+                name="author"
+              />
+            </FormControl>
+            <FormControl className="queryformctrl">
+              <Select
+                className='querydialog-select-container'
+                classNamePrefix='querydialog-select'
+                value={potential}
+                closeMenuOnSelect={false}
+                isMulti
+                options={potentials}
+                onChange={setPotential}
+                placeholder="Potentials"
+                name="potentialused"
+              />
+            </FormControl>
+
             </GridItem>
             <GridItem xs={12} sm={6} md={6}>
       <Typography id="range-slider" gutterBottom>
@@ -233,36 +260,18 @@ export default function QueryDialog(props) {
         name="temperature"
       />
 
+          <TextField
+            margin="dense"
+            id="cascadeid"
+            label="cascade-id / archive name"
+            name="id"
+            fullWidth
+          />
+
             </GridItem>
             <GridItem xs={12} sm={6} md={6}>
-            <FormControl className="queryformctrl">
-              <Select
-                className='querydialog-select-container'
-                classNamePrefix='querydialog-select'
-                value={potential}
-                closeMenuOnSelect={false}
-                isMulti
-                options={potentials}
-                onChange={setPotential}
-                placeholder="Potentials"
-                name="potentialused"
-              />
-            </FormControl>
 </GridItem>
             <GridItem xs={12} sm={6} md={6}>
-            <FormControl className="queryformctrl">
-              <Select
-                className='querydialog-select-container'
-                classNamePrefix='querydialog-select'
-                value={author}
-                closeMenuOnSelect={false}
-                isMulti
-                options={authors}
-                onChange={setAuthor}
-                placeholder="Author"
-                name="author"
-              />
-            </FormControl>
 </GridItem>
 </Grid>
        </DialogContent>

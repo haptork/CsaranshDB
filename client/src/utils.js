@@ -29,7 +29,7 @@ export const getAllCol = () => {
     { value: 'es', label: 'Electronic Stopping', isShow: false, filterType: "select", type: "input" , parseFn: ac.noParse},
     { value: 'structure', label: 'Structure', isShow: false, filterType: "select", type: "input", parseFn: ac.noParse},
     { value: 'tags', label: 'Archive', isShow: false, isFilter: true, filterType: "text" , type: "input", parseFn: ac.noParse},
-    { value: 'infile', label: 'Meta Info', isShow: false, isFilter: true, filterType: "text" , type: "input", parseFn: ac.noParse},
+    { value: 'infile', label: 'Meta No.', isShow: false, isFilter: true, filterType: "text" , type: "input", parseFn: ac.noParse},
     { value: 'xyzfilepath', label: 'Xyz file', isShow: false, filterType: "text" , type: "input", parseFn: ac.noParse},
     /*
     { value: 'xyzfilename', label: 'Xyz file name', isShow: false, filterType: "text" , type: "input", accessor: ac.accessorDefault("xyzfilepath"), parseFn: ac.parseFileName},

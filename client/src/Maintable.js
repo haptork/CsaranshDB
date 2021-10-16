@@ -65,7 +65,10 @@ const RangeFilter = props => {
   let clsName = (props.isFilter) ? 'filter-yes' : 'filter-no';
   return (<span>
     <HighlightOff
-      onClick={() => { return props.onChange(props.minMax); }}
+      onClick={() => { 
+        return props.onChange(props.minMax); 
+        //props.onChangeComplete();
+      }}
       className={`table-btn ${clsName}`}
     />
   <span>
@@ -205,6 +208,8 @@ export class MainTable extends React.Component {
       vfilters[key] = minMaxPropsMaker(this.rows, this.fields[this.keyPos[key]]['accessor']);
     }
     this.setState({ vfilters });
+    //console.log("final filter");
+    this.props.setRows(this.rows);
   }
 
   banHandler(cellInfo, isExcept) {
@@ -224,16 +229,30 @@ export class MainTable extends React.Component {
   updateFilters (filtered, curFilter) {
     let vfilters = {};
     let isFilter = this.defaultIsFilter();
+    /*
+    if (this.fields[this.keyPos[curFilter]].filterType === 'range' &&
+    this.filters[curFilter].min == filtered 
+    ) {
+    }
+    */
+
+    //console.log(curFilter);
+    //console.log(filtered);
+    //console.log(this.filters);
+    let isUpdate = true;
     for (const x of filtered) {
       const filterType = this.fields[this.keyPos[x.id]].filterType;
       if (filterType === "select" || filterType === "text") {
+        //console.log("yes select")
         if (x.value.length > 0) {
           isFilter[x.id] = true;
         }
       } else {
+        //console.log("yes min-max")
         if (x.value.min > this.filters[x.id].min || x.value.max < this.filters[x.id].max) {
           isFilter[x.id] = true;
-        }
+          if (curFilter == x.id) isUpdate = false;
+        } 
         if (x.id === curFilter) {
           if (isFilter[x.id]) vfilters[x.id] = x.value;
           else {
@@ -264,14 +283,20 @@ export class MainTable extends React.Component {
     for (const key in isFilter) {
       const filterType = this.fields[this.keyPos[key]].filterType;
       if (filterType === "select")  {
+        //console.log("2yes min-max")
         filterSelectAr[key] = isFilter[key] ? this.state.filterSelectAr[key] : uniqueAr(this.rows, this.fields[this.keyPos[key]]['accessor']);
       }
       else if (key !== curFilter) {
+        //console.log("not select and not filtered")
         vfilters[key] = minMaxPropsMaker(this.rows,  this.fields[this.keyPos[key]]['accessor']);
       }
     }
+
     //this.setState({vfilters, filtered, isFilter, substrate, energy}, () => this.props.setRows(this.rows));
-    this.props.setRows(this.rows);
+
+//    if (this.fields[this.keyPos[curFilter]].filterType != "range" || ) {
+    if(isUpdate)  this.props.setRows(this.rows);
+ //   }
     this.setState({vfilters, filtered, isFilter, filterSelectAr});
   }
  
@@ -325,7 +350,7 @@ export class MainTable extends React.Component {
                         closeMenuOnSelect={false}
                         isMulti
                         onChange={val => {
-                          return onChange(val);
+                          return onChange(val, 'range');
                         }}
                         options={this.state.filterSelectAr[id]}
                       />);
@@ -443,6 +468,7 @@ export class MainTable extends React.Component {
           }}
           filtered={this.state.filtered}
           onFilteredChange={(filtered, column) => {
+            //console.log(filtered, column);
             return this.updateFilters(filtered, column.id);
             //return this.setState({energies: [50,100,70], filtered});
           }}

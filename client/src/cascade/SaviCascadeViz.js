@@ -358,7 +358,7 @@ function DrawCanvas({handleCmp, coords, saviInfo, siavenu, clusters, clustersize
   }
   for (const c of coords) {
     //if (c[4] > 0) continue; // cluster
-    if (c[4] != 0) continue; // cluster or triad
+    if (c[4] != 0 && ((c[4] in saviInfo) || (c[4] == -1) || (clustersizes[c[4]] <= 0))) continue; // cluster or triad
     if (c[3] == 1) {
       //nSingleSias++;
       sias.push({position:[c[0], c[1], c[2]], color:[0.5, 0.5, 0.2], opacity:((c[5]===1)?0.9:0.4), onClick:onClickFnSia});

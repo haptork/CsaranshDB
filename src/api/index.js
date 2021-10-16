@@ -158,9 +158,9 @@ module.exports = () => {
                             .where({cascadeid:cmpCluster[0], name:cmpCluster[1]}).first().from("clusters");
       curClusterCoords.coords = JSON.parse(curClusterCoords.coords);
     const lenC = (curClusterCoords.coordtype == 1) ? 
-                    curClusterCoords.coords.lines.length + curClusterCoords.coords.linesT.length: 
-                    curClusterCoords.coords.length;
-      if (lenC > 3000) {
+                    (curClusterCoords.coords.lines.length + curClusterCoords.coords.linesT.length)*3: 
+                    curClusterCoords.coords[0].length;
+      if (lenC > 2000) {
         curClusterCoords.coords = [[], [], []];
         curClusterCoords.coordtype = -1;
       }
@@ -171,8 +171,9 @@ module.exports = () => {
     cluster.cmpsize = JSON.parse(cluster.cmpsize);
     cluster.coords = JSON.parse(cluster.coords);
     const lenC = (cluster.coordtype == 1) ? 
-                    cluster.coords.lines.length + cluster.coords.linesT.length: 
-                    cluster.coords.length;
+                    3*(cluster.coords.lines.length + cluster.coords.linesT.length): 
+                    cluster.coords[0].length;
+    //console.log(lenC);
     if (lenC > 3000) {
       cluster.coords = [[], [], []];
       cluster.coordtype = -1;
@@ -187,7 +188,7 @@ module.exports = () => {
     let rows = dbhandle.from("clusters");
     rows.join('cascades', 'clusters.cascadeid', '=', 'cascades.id')
     rows.select("cascades.id", "cascades.substrate",
-      "cascades.energy", "cascades.temperature", "cascades.potentialused",
+      "cascades.energy", "cascades.temperature", "cascades.potentialused", "cascades.xyzfilepath", "cascades.tags", "cascades.infile",
       "cascades.es", "cascades.author", "clusters.coordtype", "clusters.coords", "clusters.savimorph", "clusters.size", "clusters.name");
     const cluster = await rows.where({"clusters.id":id}).first();
     if (!cluster) res.status(404).send("<h2> Error getting cascade with input id. </h2>");
@@ -276,6 +277,7 @@ module.exports = () => {
       if (!column in dbColumns) continue;
       if (dbColumns[column] === 'text') {
         if (filters[column].length == 0) continue;
+        if (column == 'id') column = "cascades.id"
         if (Array.isArray(filters[column])) rows.whereIn(column, filters[column]);
         else rows.where(column, "like", '%'+filters[column]+'%');
       } else if (dbColumns[column] === 'range') {
@@ -312,6 +314,7 @@ module.exports = () => {
       if (!column in dbColumns) continue;
       if (dbColumns[column] === 'text') {
         if (filters[column].length == 0) continue;
+        if (column == "id") column = "cascades.id";
         if (Array.isArray(filters[column])) rows.whereIn(column, filters[column]);
         else rows.where(column, "like", '%'+filters[column]+'%');
       } else if (dbColumns[column] === 'range') {

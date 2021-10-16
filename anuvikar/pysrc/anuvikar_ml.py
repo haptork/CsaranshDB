@@ -148,18 +148,20 @@ def addEigenAndSubcascades(data):
         dclustNamesV = [x[1] for i, x in enumerate(lenV) if (
             x[0] / (totalV/len(lenV)) > 0.55 and x[0] > 4) or (i < 2 and x[0] > 4)]
         fdata['dclust_coords'] = {}
+        doLimit = len(dclustNamesV) > 1
         for x in subsv:
-            if x in dclustNamesV:
+            if x in dclustNamesV and (not doLimit or len(subsv[x]) > 4):
                 fdata['dclust_coords'][x] = subsv[x]
         fdata['dclustI_count'] = len(subsi)
         fdata['dclustV_count'] = len(subsv)
+        if fdata['dclustV_count'] == 0 and fdata['n_defects'] > 0: fdata['clustV_count'] = 1
         dclust_len = [0, 0]
         if (len(lenV) > 0):
             dclust_len[0] = lenV[0][0]
         if (len(lenV) > 1):
             dclust_len[1] = lenV[1][0]
         fdata['dclust_sec_impact'] = 0
-        if (dclust_len[0] > 0):
+        if (fdata['dclustV_count']>1 and dclust_len[0] > 0):
             fdata['dclust_sec_impact'] = dclust_len[1] * 100 / dclust_len[0]
 
 # chiSqr distance criterion for cluster comparison
