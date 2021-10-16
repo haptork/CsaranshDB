@@ -12,19 +12,19 @@
 #include <cluster2features.hpp>
 #include <helper.hpp>
 
-namespace av {
+namespace avi {
 
 std::pair<std::string, std::string> getInfileFromXyzfile(std::string xyzfile);
 
-std::pair<av::XyzFileType, bool> getSimulationCode(std::string fname);
+std::pair<avi::XyzFileType, bool> getSimulationCode(std::string fname);
 
-std::tuple<av::InputInfo, av::ExtraInfo, bool>
+std::tuple<avi::InputInfo, avi::ExtraInfo, bool>
 extractInfoParcas(std::string fname, std::string ftag);
 
-std::tuple<av::InputInfo, av::ExtraInfo, bool>
+std::tuple<avi::InputInfo, avi::ExtraInfo, bool>
 extractInfoLammps(std::string fname, std::string ftag);
 
-std::tuple<av::InputInfo, av::ExtraInfo, bool> infoFromStdIn();
+std::tuple<avi::InputInfo, avi::ExtraInfo, bool> infoFromStdIn();
 
-} // namespace av
+} // namespace avi
 #endif

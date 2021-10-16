@@ -11,7 +11,7 @@
 #include <cluster2features.hpp>
 #include <helper.hpp>
 
-using Coords = av::Coords;
+using Coords = avi::Coords;
 
 // dot product of two vectors
 double dotv(const Coords &a, const Coords &b) {
@@ -34,8 +34,8 @@ auto crossProd(const Coords &v1, const Coords &v2) {
 // calculates angle between ba and ca
 auto calcAngle(Coords a, Coords b, Coords c) {
   Coords v1, v2;
-  using av::invars::pi;
-  using av::maxAngle;
+  using avi::invars::pi;
+  using avi::maxAngle;
   for (size_t i = 0; i < a.size(); ++i) {
     v1[i] = b[i] - a[i];
     v2[i] = c[i] - a[i];
@@ -45,16 +45,16 @@ auto calcAngle(Coords a, Coords b, Coords c) {
 }
 
 // histograms for angles, distances and adjacency for cluster characterization
-av::featT av::pairHists(const std::vector<std::array<double, 3>> &v,
+avi::featT avi::pairHists(const std::vector<std::array<double, 3>> &v,
                                     const std::vector<bool> &v2,
                                     double latConst) {
   using std::array;
   using std::vector;
-  using av::distBins;
-  using av::angleBins;
-  using av::angleBinSize;
-  using av::adjBins;
-  using av::invars::epsilon;
+  using avi::distBins;
+  using avi::angleBins;
+  using avi::angleBinSize;
+  using avi::adjBins;
+  using avi::invars::epsilon;
   constexpr auto maxDistAssumption = 1.0; //
   constexpr double distBinSize = maxDistAssumption / distBins;
   array<double, adjBins> adjacencyHistnn2{};

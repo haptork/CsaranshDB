@@ -20,21 +20,21 @@
 #include <iostream>
 
 // TODO import from printJson
-auto strSimulationCodeD(av::XyzFileType code) {
-  return (code == av::XyzFileType::cascadesDbLikeCols)
+auto strSimulationCodeD(avi::XyzFileType code) {
+  return (code == avi::XyzFileType::cascadesDbLikeCols)
              ? "cascadesDbLikeCols"
-             : (code == av::XyzFileType::lammpsWithStdHeader)
+             : (code == avi::XyzFileType::lammpsWithStdHeader)
                    ? "lammpsWithStdHeader"
-                   : (code == av::XyzFileType::parcasWithStdHeader)
+                   : (code == avi::XyzFileType::parcasWithStdHeader)
                       ? "parcasWithStdHeader"
-                      : (code == av::XyzFileType::lammpsDisplacedCompute)
+                      : (code == avi::XyzFileType::lammpsDisplacedCompute)
                         ? "lammpsDisp"
                         : "generic-XYZ";
 }
 
 
 
-auto getThresh(const av::InputInfo &info, const double &factor) {
+auto getThresh(const avi::InputInfo &info, const double &factor) {
   auto tempFactor = 1.0 + (info.temperature - 900)/10000;
   if (tempFactor < 1.0) tempFactor = 1.0;
   return (factor * info.latticeConst) * tempFactor ;
@@ -86,8 +86,8 @@ auto existAnchorInter(
 // sets the surviving flag of an interstitial and vacancy if they are closer
 // than a threshold
 auto clean(
-    std::vector<std::tuple<av::Coords, av::Coords, bool>> &inter,
-    std::vector<std::tuple<av::Coords, bool>> &vac, double latticeConst) {
+    std::vector<std::tuple<avi::Coords, avi::Coords, bool>> &inter,
+    std::vector<std::tuple<avi::Coords, bool>> &vac, double latticeConst) {
   const auto &thresh = latticeConst; // * sqrt(3) / 2;
   for (size_t i = 0; i < vac.size(); ++i) {
     if (!std::get<1>(vac[i])) continue;
@@ -96,7 +96,7 @@ auto clean(
     for (size_t j = 0; j < inter.size(); ++j) {
       if (!std::get<2>(inter[j])) continue;
       auto dist =
-          av::calcDist(std::get<0>(vac[i]), std::get<1>(inter[j]));
+          avi::calcDist(std::get<0>(vac[i]), std::get<1>(inter[j]));
       if (dist < min) {
         min = dist;
         minj = j;
@@ -109,91 +109,91 @@ auto clean(
   }
 }
 
-std::pair<av::xyzFileStatus, std::array<std::vector<av::Coords>, 2>>
-getDisplacedAtomsTime(av::InputInfo &info, av::ExtraInfo &extraInfo,
-         const av::Config &config, std::istream &infile, av::frameStatus &fs) {
-  using av::Coords;
+std::pair<avi::xyzFileStatus, std::array<std::vector<avi::Coords>, 2>>
+getDisplacedAtomsTime(avi::InputInfo &info, avi::ExtraInfo &extraInfo,
+         const avi::Config &config, std::istream &infile, avi::frameStatus &fs) {
+  using avi::Coords;
   using std::get;
   using std::string;
   using std::tuple;
   using std::vector;
-  std::pair<av::xyzFileStatus, std::array<std::vector<av::Coords>, 2>> res;
+  std::pair<avi::xyzFileStatus, std::array<std::vector<avi::Coords>, 2>> res;
   auto &atoms = res.second;
-  //std::array<std::vector<av::Coords>, 2> atoms;
+  //std::array<std::vector<avi::Coords>, 2> atoms;
   // const auto latConst = info.latticeConst;
   std::string line;
   // read file and apply object
-  std::array<av::Coords, 2> c;
-  av::lineStatus ls;
+  std::array<avi::Coords, 2> c;
+  avi::lineStatus ls;
   auto origin = std::array<double,3>{{info.originX, info.originY, info.originZ}};
   auto latConst = info.latticeConst;
-  auto obj = av::AddOffset{latConst, info.structure, origin};
+  auto obj = avi::AddOffset{latConst, info.structure, origin};
   auto fn = [&latConst] (double x) { return x * latConst; };
-  res.first = av::xyzFileStatus::eof;
+  res.first = avi::xyzFileStatus::eof;
   while (std::getline(infile, line)) {
-    std::tie(ls, c) = av::getCoordDisplaced(line);
-    if (ls == av::lineStatus::coords &&
-        fs == av::frameStatus::inFrame) {
+    std::tie(ls, c) = avi::getCoordDisplaced(line);
+    if (ls == avi::lineStatus::coords &&
+        fs == avi::frameStatus::inFrame) {
       auto vacC = std::get<0>(obj(c[0]));
       std::transform(begin(vacC), end(vacC), begin(vacC), fn);
       atoms[0].emplace_back(std::move(vacC));
       atoms[1].emplace_back(c[1]);
-    } else if (ls == av::lineStatus::frameBorder) {
-      if (fs != av::frameStatus::prelude) {
-        fs = av::frameStatus::inFrame;
+    } else if (ls == avi::lineStatus::frameBorder) {
+      if (fs != avi::frameStatus::prelude) {
+        fs = avi::frameStatus::inFrame;
         if (config.allFrames && !atoms[0].empty()) {
-          res.first = av::xyzFileStatus::reading;
+          res.first = avi::xyzFileStatus::reading;
           break;
         }
         atoms[0].clear();
         atoms[1].clear();
       }
-      fs = av::frameStatus::inFrame;
+      fs = avi::frameStatus::inFrame;
     }
   }
   return res;
 }
 
-std::pair<av::xyzFileStatus, std::vector<std::tuple<av::Coords, double, av::Coords>>>
-getAtomsTime(av::InputInfo &info, av::ExtraInfo &extraInfo,
-         const av::Config &config, std::istream &infile, av::frameStatus &fs) {
-  using av::Coords;
-  using av::strAr;
+std::pair<avi::xyzFileStatus, std::vector<std::tuple<avi::Coords, double, avi::Coords>>>
+getAtomsTime(avi::InputInfo &info, avi::ExtraInfo &extraInfo,
+         const avi::Config &config, std::istream &infile, avi::frameStatus &fs) {
+  using avi::Coords;
+  using avi::strAr;
   using std::get;
   using std::string;
   using std::tuple;
   using std::vector;
   vector<Coords>
       atoms; // for all the atoms along with nearest closest sites and offset
-  std::pair<av::xyzFileStatus, vector<tuple<Coords, double, Coords>>>
+  std::pair<avi::xyzFileStatus, vector<tuple<Coords, double, Coords>>>
       res; // for all the atoms along with nearest closest sites and offset
   const auto &latConst = info.latticeConst;
   if (info.ncell > 0) atoms.reserve(info.ncell * info.ncell * info.ncell * 2);
   std::string line;
   // read file and apply object
   Coords c;
-  av::lineStatus ls;
-  res.first = av::xyzFileStatus::eof;
+  avi::lineStatus ls;
+  res.first = avi::xyzFileStatus::eof;
   while (std::getline(infile, line)) {
-    std::tie(ls, c) = av::getCoord(line, fs, info, extraInfo);
-    if (ls == av::lineStatus::coords &&
-        fs == av::frameStatus::inFrame) {
+    std::tie(ls, c) = avi::getCoord(line, fs, info, extraInfo);
+    if (ls == avi::lineStatus::coords &&
+        fs == avi::frameStatus::inFrame) {
       atoms.emplace_back(c);
-    } else if (ls == av::lineStatus::inFrameCoords) {
+    } else if (ls == avi::lineStatus::inFrameCoords) {
       atoms.emplace_back(c);
-    } else if (ls == av::lineStatus::frameBorder) {
-      if (fs != av::frameStatus::prelude) {
-        fs = av::frameStatus::inFrame;
+    } else if (ls == avi::lineStatus::frameBorder) {
+      if (fs != avi::frameStatus::prelude) {
+        fs = avi::frameStatus::inFrame;
         if (config.allFrames && !atoms.empty()) {
-          res.first = av::xyzFileStatus::reading;
+          res.first = avi::xyzFileStatus::reading;
           break;
         }
         if (!atoms.empty()) {
-          av::Logger::inst().log_warning(info.xyzFilePath + ", " + extraInfo.infile + ": " + " Multiple frames in file. Reading last one.");
+          avi::Logger::inst().log_warning(info.xyzFilePath + ", " + extraInfo.infile + ": " + " Multiple frames in file. Reading last one.");
         }
         atoms.clear();
       }
-      fs = av::frameStatus::inFrame;
+      fs = avi::frameStatus::inFrame;
         //atoms.clear(); // Ignoring the frame before this one
     }
   }
@@ -209,28 +209,28 @@ getAtomsTime(av::InputInfo &info, av::ExtraInfo &extraInfo,
     info.latticeConst = secLatConst;
     secLatConst = -1.0;
   }
-  std::vector<std::tuple<av::Coords, double, std::string, int>> combos;
+  std::vector<std::tuple<avi::Coords, double, std::string, int>> combos;
   if (info.originType > 0) {
-    auto originEstimated = av::estimateOrigin(atoms, info.latticeConst);
+    auto originEstimated = avi::estimateOrigin(atoms, info.latticeConst);
     combos.emplace_back(
-        av::Coords{
+        avi::Coords{
             {originEstimated[0], originEstimated[1], originEstimated[2]}},
         info.latticeConst, "estimated origin, given latConst", 0);
     if (secLatConst > 0.0) {
-      auto originEstimatedSec = av::estimateOrigin(atoms, secLatConst);
+      auto originEstimatedSec = avi::estimateOrigin(atoms, secLatConst);
       combos.emplace_back(
-          av::Coords{{originEstimatedSec[0], originEstimatedSec[1],
+          avi::Coords{{originEstimatedSec[0], originEstimatedSec[1],
                             originEstimatedSec[2]}},
           secLatConst, "estimated originSec, boxSize/ncell latconst", 0);
     }
   }
   if ((secLatConst > 0.0 && info.originType == 0) || info.originType == 2) {
     combos.emplace_back(
-        av::Coords{{info.originX, info.originY, info.originZ}},
+        avi::Coords{{info.originX, info.originY, info.originZ}},
         info.latticeConst, "given origin, given latconst", 0);
     if (secLatConst > 0.0)
       combos.emplace_back(
-          av::Coords{{info.originX, info.originY, info.originZ}},
+          avi::Coords{{info.originX, info.originY, info.originZ}},
           secLatConst, "given origin, boxSize/ncell latconst", 0);
   }
   if (!combos.empty()) {
@@ -241,12 +241,12 @@ getAtomsTime(av::InputInfo &info, av::ExtraInfo &extraInfo,
       for (size_t i = 0; i < combos.size(); i++) {
         auto curOrigin = std::get<0>(combos[i]);
         auto curLatConst = std::get<1>(combos[i]);
-        auto obj = av::AddOffset{curLatConst, info.structure, curOrigin};
+        auto obj = avi::AddOffset{curLatConst, info.structure, curOrigin};
         std::get<3>(combos[i]) = std::count_if(
             begin(atoms), end(atoms), [&obj, thresh](const auto &it) {
               return std::get<1>(obj(it)) > thresh;
             });
-        av::Logger::inst().log_debug(
+        avi::Logger::inst().log_debug(
             std::get<2>(combos[i]) + " origin, latconst " + strAr(curOrigin) +
             ", " + std::to_string(curLatConst) + " : nThreshold " +
             std::to_string(std::get<3>(combos[i])));
@@ -262,11 +262,11 @@ getAtomsTime(av::InputInfo &info, av::ExtraInfo &extraInfo,
       if (mx > 1.1 * std::get<3>(combos[leastIndex])) {
         const std::string msgPre = (leastIndex == 0) ? "given value of box-size might not be exact." : "given value of lattice constant might not be exact";
         if (leastIndex == 0) {
-          av::Logger::inst().log_warning(info.xyzFilePath + ", " + extraInfo.infile + ": " + msgPre + "Difference in given lattice constant & box-size based lattice constant caused difference in"
+          avi::Logger::inst().log_warning(info.xyzFilePath + ", " + extraInfo.infile + ": " + msgPre + "Difference in given lattice constant & box-size based lattice constant caused difference in"
                "displaced atom values: " + std::to_string(std::get<3>(combos[0])) + ", " + std::to_string(std::get<3>(combos[1])) +
                "lattice constants: " + std::to_string(info.latticeConst) + ", " + std::to_string(secLatConst)));
         } else {
-          av::Logger::inst().log_warning(info.xyzFilePath + ", " + extraInfo.infile + ": reverse " + msgPre + "Difference in given lattice constant & box-size based lattice constant caused difference in"
+          avi::Logger::inst().log_warning(info.xyzFilePath + ", " + extraInfo.infile + ": reverse " + msgPre + "Difference in given lattice constant & box-size based lattice constant caused difference in"
                "displaced atom values: " + std::to_string(std::get<3>(combos[0])) + ", " + std::to_string(std::get<3>(combos[1])) +
                "lattice constants: " + std::to_string(info.latticeConst) + ", " + std::to_string(secLatConst)));
         }
@@ -278,8 +278,8 @@ getAtomsTime(av::InputInfo &info, av::ExtraInfo &extraInfo,
     info.latticeConst = std::get<1>(combos[leastIndex]);
   }
   res.second.reserve(atoms.size());
-  auto origin = av::Coords{{info.originX, info.originY, info.originZ}};
-  auto obj = av::AddOffset{info.latticeConst, info.structure, origin};
+  auto origin = avi::Coords{{info.originX, info.originY, info.originZ}};
+  auto obj = avi::AddOffset{info.latticeConst, info.structure, origin};
   // std::cout << "latInfo: " << info.latticeConst << ", " << info.structure << ", " << origin[0] << '\n';
   std::transform(begin(atoms), end(atoms), std::back_inserter(res.second), obj);
   // std::cout << "\natoms1: " << atoms[0][0] << " | " << atoms[atoms.size() - 1][0] << '\n';
@@ -288,39 +288,39 @@ getAtomsTime(av::InputInfo &info, av::ExtraInfo &extraInfo,
   return res;
 }
 
-av::DefectRes
-av::xyz2defectsTime(av::InputInfo &mainInfo,
-                      av::ExtraInfo &extraInfo,
-                      const av::Config &config, std::istream &infile, av::frameStatus &fs) {
+avi::DefectRes
+avi::xyz2defectsTime(avi::InputInfo &mainInfo,
+                      avi::ExtraInfo &extraInfo,
+                      const avi::Config &config, std::istream &infile, avi::frameStatus &fs) {
   auto atoms = getAtomsTime(mainInfo, extraInfo, config, infile, fs);
-  if (atoms.second.empty() && mainInfo.xyzFileType != av::XyzFileType::generic) {
+  if (atoms.second.empty() && mainInfo.xyzFileType != avi::XyzFileType::generic) {
     infile.clear();
     infile.seekg(0);
     auto temp = mainInfo.xyzFileType;
-    mainInfo.xyzFileType = av::XyzFileType::generic;
+    mainInfo.xyzFileType = avi::XyzFileType::generic;
     atoms = getAtomsTime(mainInfo, extraInfo, config, infile, fs);
     if (!atoms.second.empty()) {
       Logger::inst().log_warning(extraInfo.infile +": " + mainInfo.xyzFilePath + ": Default file format " + strSimulationCodeD(temp) + " is not correct. Fallback to generic reading works.");
     }
   }
   if (atoms.second.empty())
-    return std::make_tuple(atoms.first, ErrorStatus::noError, av::DefectVecT{}, std::vector<int>{});
-  return (mainInfo.structure == "bcc") ? av::atoms2defects(atoms, mainInfo, extraInfo, config) : av::atoms2defectsFcc(atoms, mainInfo, extraInfo, config);
+    return std::make_tuple(atoms.first, ErrorStatus::xyzFileReadError, avi::DefectVecT{}, std::vector<int>{});
+  return (mainInfo.structure == "bcc") ? avi::atoms2defects(atoms, mainInfo, extraInfo, config) : avi::atoms2defectsFcc(atoms, mainInfo, extraInfo, config);
 }
 
-av::DefectRes
-av::displaced2defectsTime(av::InputInfo &mainInfo,
-                      av::ExtraInfo &extraInfo,
-                      const av::Config &config, std::istream &infile, av::frameStatus &fs) {
+avi::DefectRes
+avi::displaced2defectsTime(avi::InputInfo &mainInfo,
+                      avi::ExtraInfo &extraInfo,
+                      const avi::Config &config, std::istream &infile, avi::frameStatus &fs) {
   auto atoms = getDisplacedAtomsTime(mainInfo, extraInfo, config, infile, fs);
   if (atoms.second.empty())
-    return std::make_tuple(atoms.first, ErrorStatus::noError, av::DefectVecT{}, std::vector<int>{});
-  return av::displacedAtoms2defects(atoms, mainInfo.latticeConst);
+    return std::make_tuple(atoms.first, ErrorStatus::noError, avi::DefectVecT{}, std::vector<int>{});
+  return avi::displacedAtoms2defects(atoms, mainInfo.latticeConst);
 }
 
 /*
-void testIt(std::vector<std::tuple<av::Coords, double, av::Coords>>
-atoms, av::NextExpected n) { std::ofstream f{"junk_got.txt"}; for (auto it
+void testIt(std::vector<std::tuple<avi::Coords, double, avi::Coords>>
+atoms, avi::NextExpected n) { std::ofstream f{"junk_got.txt"}; for (auto it
 : atoms) { for (auto jt: std::get<0>(it)) { f << jt << " ";
     }
     f << " | ";
@@ -354,8 +354,8 @@ atoms, av::NextExpected n) { std::ofstream f{"junk_got.txt"}; for (auto it
 }
 */
 
-av::Coords av::getInitialMax(const av::Coords &origin,
-                                         const av::Coords &maxes) {
+avi::Coords avi::getInitialMax(const avi::Coords &origin,
+                                         const avi::Coords &maxes) {
   auto maxes1 = maxes;
   constexpr auto epsilon = 1e-2;
   for (auto i = 0; i < 3; i++) {
@@ -370,8 +370,8 @@ av::Coords av::getInitialMax(const av::Coords &origin,
   return maxes1;
 }
 
-av::Coords av::getInitialMaxFcc(const av::Coords &origin,
-                                         const av::Coords &maxes) {
+avi::Coords avi::getInitialMaxFcc(const avi::Coords &origin,
+                                         const avi::Coords &maxes) {
   auto maxes1 = maxes;
   constexpr auto epsilon = 1e-2;
   //for (auto i = 2; i < 3; i++) {
@@ -389,8 +389,8 @@ av::Coords av::getInitialMaxFcc(const av::Coords &origin,
 
 
 
-void setCenter(av::ExtraInfo &extraInfo, av::Coords minC,
-               av::Coords maxC, double latConst) {
+void setCenter(avi::ExtraInfo &extraInfo, avi::Coords minC,
+               avi::Coords maxC, double latConst) {
   if (!extraInfo.isPkaGiven) {
     extraInfo.xrec = ((maxC[0] - minC[0]) / 2.0 + minC[0])*latConst;
     extraInfo.yrec = ((maxC[1] - minC[1]) / 2.0 + minC[1])*latConst;
@@ -402,11 +402,11 @@ void setCenter(av::ExtraInfo &extraInfo, av::Coords minC,
 // single frame file having xyz coordinates of all the atoms and input
 // information
 // Can be improved to O(N) as given here: https://arxiv.org/abs/1811.10923
-av::DefectRes av::atoms2defects(
-    std::pair<av::xyzFileStatus, std::vector<av::offsetCoords>> stAtoms,
-    av::InputInfo &info, av::ExtraInfo &extraInfo,
-    const av::Config &config) {
-  using av::Coords;
+avi::DefectRes avi::atoms2defects(
+    std::pair<avi::xyzFileStatus, std::vector<avi::offsetCoords>> stAtoms,
+    avi::InputInfo &info, avi::ExtraInfo &extraInfo,
+    const avi::Config &config) {
+  using avi::Coords;
   using std::get;
   using std::tuple;
   using std::vector;
@@ -422,18 +422,18 @@ av::DefectRes av::atoms2defects(
   auto firstRow = std::get<0>(*(minmax.first));
   auto lastRow = std::get<0>(*(minmax.second));
   auto maxes = lastRow;
-  auto maxesInitial = av::getInitialMax(firstRow, maxes);
-  // av::Logger::inst().log_debug("Atoms: " + std::to_string(atoms.size()));
+  auto maxesInitial = avi::getInitialMax(firstRow, maxes);
+  // avi::Logger::inst().log_debug("Atoms: " + std::to_string(atoms.size()));
   // std::cout << "\nfirstRow: " << firstRow[0] << '\n';
   // std::cout << "\nmaxes: " << maxes[0] << ", " << maxes[1] << ", " << maxes[2] << '\n';
   // std::cout << "\nmaxesInitial: " << maxesInitial[0] << ", " << maxesInitial[1] << ", " << maxesInitial[2] << '\n';
-  av::NextExpected nextExpected{firstRow, maxes, maxesInitial};
+  avi::NextExpected nextExpected{firstRow, maxes, maxesInitial};
   setCenter(extraInfo, firstRow, lastRow, info.latticeConst);
-   // av::Logger::inst().log_debug("Min: " + strAr(firstRow) + " coord: " +
+   // avi::Logger::inst().log_debug("Min: " + strAr(firstRow) + " coord: " +
    // strAr(std::get<2>(*minmax.first)));
-   // av::Logger::inst().log_debug("Max: " + strAr(lastRow) + " coord: " +
+   // avi::Logger::inst().log_debug("Max: " + strAr(lastRow) + " coord: " +
    // strAr(std::get<2>(*minmax.second)));
-   //av::NextExpected nextExpected2{firstRow, maxes, maxesInitial}; testIt(atoms, nextExpected2);
+   //avi::NextExpected nextExpected2{firstRow, maxes, maxesInitial}; testIt(atoms, nextExpected2);
   std::tuple<double, Coords, Coords> pre;
   bool isPre = false;
   const auto latConst = info.latticeConst;
@@ -482,7 +482,7 @@ av::DefectRes av::atoms2defects(
                           nextExpected.maxCur(), boundaryThresh)) {
           vacSias.emplace_back(interstitials.size());
           vacancies.emplace_back(nextExpected.cur(), true);
-          //av::Logger::inst().log_debug("vac: " + strAr(nextExpected.cur()) + " coord: " + strAr(ar)); 
+          //avi::Logger::inst().log_debug("vac: " + strAr(nextExpected.cur()) + " coord: " + strAr(ar)); 
           if (config.safeRunChecks &&
               vacancies.size() * extraFactor > atoms.size()) {
             Logger::inst().log_error( errMsg + 
@@ -555,14 +555,14 @@ av::DefectRes av::atoms2defects(
     if (interstitials.size() != vacancies.size()) {
       if ((int(interstitials.size()) / int(vacancies.size())) > extraFactor) {
 
-        av::Logger::inst().log_warning(errMsg +
+        avi::Logger::inst().log_warning(errMsg +
             "sia and vacancy counts are different (i, v, "
             "interTresh): " +
             std::to_string(interstitials.size()) + ", " +
             std::to_string(vacancies.size()) + ", " +
             std::to_string(interThresh.size()));
       } else {
-        av::Logger::inst().log_debug(
+        avi::Logger::inst().log_debug(
             "sia and vacancy counts are different (i, v, "
             "interThresh): " +
             std::to_string(interstitials.size()) + ", " +
@@ -572,7 +572,7 @@ av::DefectRes av::atoms2defects(
       if (interstitials.size() * (extraFactor / 10) < vacancies.size() ||
           vacancies.size() * (extraFactor / 10) < interstitials.size()) {
 
-        av::Logger::inst().log_error(errMsg+
+        avi::Logger::inst().log_error(errMsg+
             "not processing since the difference in sia and vacancy is too big (i, v, "
             "interThresh): " +
             std::to_string(interstitials.size()) + ", " +
@@ -586,7 +586,7 @@ av::DefectRes av::atoms2defects(
   // std::cout<<"\nvacancies: " << vacancies.size() << '\n';
   // std::cout<<"\ninterThresh: " << interThresh.size() << '\n';
   atoms.clear();
-  av::DefectVecT defects;
+  avi::DefectVecT defects;
   defects.reserve(2 * vacancies.size());
   auto vacCleanSave = vacancies;
   auto anchor2coord = [&latConst](Coords c) {
@@ -677,11 +677,11 @@ av::DefectRes av::atoms2defects(
   return std::make_tuple(stAtoms.first, ErrorStatus::noError, std::move(defects), std::move(vacSiasNu));
 }
 
-av::DefectRes av::atoms2defectsFcc(
-    std::pair<av::xyzFileStatus, std::vector<av::offsetCoords>> stAtoms,
-    av::InputInfo &info, av::ExtraInfo &extraInfo,
-    const av::Config &config) {
-  using av::Coords;
+avi::DefectRes avi::atoms2defectsFcc(
+    std::pair<avi::xyzFileStatus, std::vector<avi::offsetCoords>> stAtoms,
+    avi::InputInfo &info, avi::ExtraInfo &extraInfo,
+    const avi::Config &config) {
+  using avi::Coords;
   using std::get;
   using std::tuple;
   using std::vector;
@@ -697,18 +697,18 @@ av::DefectRes av::atoms2defectsFcc(
   auto firstRow = std::get<0>(*(minmax.first));
   auto lastRow = std::get<0>(*(minmax.second));
   auto maxes = lastRow;
-  auto maxesInitial = av::getInitialMaxFcc(firstRow, maxes);
-  // av::Logger::inst().log_debug("Atoms: " + std::to_string(atoms.size()));
+  auto maxesInitial = avi::getInitialMaxFcc(firstRow, maxes);
+  // avi::Logger::inst().log_debug("Atoms: " + std::to_string(atoms.size()));
   // std::cout << "\nfirstRow: " << firstRow[0] << '\n';
   // std::cout << "\nmaxes: " << maxes[0] << ", " << maxes[1] << ", " << maxes[2] << '\n';
   // std::cout << "\nmaxesInitial: " << maxesInitial[0] << ", " << maxesInitial[1] << ", " << maxesInitial[2] << '\n';
-  av::NextExpected nextExpected{firstRow, maxes, maxesInitial, maxesInitial};
+  avi::NextExpected nextExpected{firstRow, maxes, maxesInitial, maxesInitial};
   setCenter(extraInfo, firstRow, lastRow, info.latticeConst);
-   // av::Logger::inst().log_debug("Min: " + strAr(firstRow) + " coord: " +
+   // avi::Logger::inst().log_debug("Min: " + strAr(firstRow) + " coord: " +
    // strAr(std::get<2>(*minmax.first)));
-   // av::Logger::inst().log_debug("Max: " + strAr(lastRow) + " coord: " +
+   // avi::Logger::inst().log_debug("Max: " + strAr(lastRow) + " coord: " +
    // strAr(std::get<2>(*minmax.second)));
-   //av::NextExpected nextExpected2{firstRow, maxes, maxesInitial}; testIt(atoms, nextExpected2);
+   //avi::NextExpected nextExpected2{firstRow, maxes, maxesInitial}; testIt(atoms, nextExpected2);
   std::tuple<double, Coords, Coords> pre;
   bool isPre = false;
   const auto latConst = info.latticeConst;
@@ -757,7 +757,7 @@ av::DefectRes av::atoms2defectsFcc(
                           nextExpected.maxCur(), boundaryThresh)) {
           vacSias.emplace_back(interstitials.size());
           vacancies.emplace_back(nextExpected.cur(), true);
-          //av::Logger::inst().log_debug("vac: " + strAr(nextExpected.cur()) + " coord: " + strAr(ar)); 
+          //avi::Logger::inst().log_debug("vac: " + strAr(nextExpected.cur()) + " coord: " + strAr(ar)); 
           if (config.safeRunChecks &&
               vacancies.size() * extraFactor > atoms.size()) {
             Logger::inst().log_error(errMsg+
@@ -829,14 +829,14 @@ av::DefectRes av::atoms2defectsFcc(
     }
     if (interstitials.size() != vacancies.size()) {
       if ((int(interstitials.size()) / int(vacancies.size())) > extraFactor) {
-        av::Logger::inst().log_warning(errMsg +
+        avi::Logger::inst().log_warning(errMsg +
             "interstitails and vacancies have different sizes (i, v, "
             "interTresh): " +
             std::to_string(interstitials.size()) + ", " +
             std::to_string(vacancies.size()) + ", " +
             std::to_string(interThresh.size()));
       } else {
-        av::Logger::inst().log_debug(
+        avi::Logger::inst().log_debug(
             "interstitails and vacancies have different sizes (i, v, "
             "interThresh): " +
             std::to_string(interstitials.size()) + ", " +
@@ -847,7 +847,7 @@ av::DefectRes av::atoms2defectsFcc(
           vacancies.size() * (extraFactor / 10) < interstitials.size()) {
         if (!(Logger::inst().mode() & LogMode::info))
           Logger::inst().log_info("from \"" + info.xyzFilePath + "\"");
-        av::Logger::inst().log_error(errMsg + 
+        avi::Logger::inst().log_error(errMsg + 
             "not processing since the difference is too big (i, v, "
             "interThresh): " +
             std::to_string(interstitials.size()) + ", " +
@@ -861,7 +861,7 @@ av::DefectRes av::atoms2defectsFcc(
   //std::cout<<"\nvacancies: " << vacancies.size() << '\n';
   //std::cout<<"\ninterThresh: " << interThresh.size() << '\n';
   atoms.clear();
-  av::DefectVecT defects;
+  avi::DefectVecT defects;
   defects.reserve(2 * vacancies.size());
   auto vacCleanSave = vacancies;
   auto anchor2coord = [&latConst](Coords c) {
@@ -953,17 +953,17 @@ av::DefectRes av::atoms2defectsFcc(
 
 
 
-auto cleanDisplaced(av::DefectVecT &inter, av::DefectVecT &vac,
+auto cleanDisplaced(avi::DefectVecT &inter, avi::DefectVecT &vac,
                     double latticeConst) {
-  using av::DefectTWrap::coords;
-  using av::DefectTWrap::isSurviving;
+  using avi::DefectTWrap::coords;
+  using avi::DefectTWrap::isSurviving;
   auto thresh = latticeConst; // * sqrt(3) / 2;
   for (size_t i = 0; i < vac.size(); ++i) {
     auto min = thresh + 1e-6;
     size_t minj = 0;
     for (size_t j = 0; j < inter.size(); ++j) {
       if (!isSurviving(inter[j])) continue;
-      auto dist = av::calcDist(coords(vac[i]), coords(inter[j]));
+      auto dist = avi::calcDist(coords(vac[i]), coords(inter[j]));
       if (dist < min) {
         min = dist;
         minj = j;
@@ -976,13 +976,13 @@ auto cleanDisplaced(av::DefectVecT &inter, av::DefectVecT &vac,
   }
 }
 
-av::DefectRes av::displacedAtoms2defects(
-    std::pair<av::xyzFileStatus, std::array<std::vector<av::Coords>, 2>> statoms, double latticeConst) {
-  using av::Coords;
+avi::DefectRes avi::displacedAtoms2defects(
+    std::pair<avi::xyzFileStatus, std::array<std::vector<avi::Coords>, 2>> statoms, double latticeConst) {
+  using avi::Coords;
   using std::get;
   using std::tuple;
   using std::vector;
-  av::DefectVecT inter, vac, defects;
+  avi::DefectVecT inter, vac, defects;
   auto &atoms = statoms.second;
   constexpr auto epsilon = 1e-4;
   const auto nn = (std::sqrt(3) * latticeConst) / 2 + epsilon;
@@ -1129,5 +1129,5 @@ av::DefectRes av::displacedAtoms2defects(
   std::cout << '\n';
   */
   //std::cout <<"finnal defects size: " << defects.size() << '\n';
-  return std::make_tuple(statoms.first, av::ErrorStatus::noError, std::move(defects), std::move(latticeSiteGroups));
+  return std::make_tuple(statoms.first, avi::ErrorStatus::noError, std::move(defects), std::move(latticeSiteGroups));
 }

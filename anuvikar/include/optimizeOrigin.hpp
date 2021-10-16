@@ -10,13 +10,13 @@
 
 #include <helper.hpp>
 
-namespace av {
+namespace avi {
 
-Coords correctOrigin(const std::vector<av::Coords> &atoms,
-                     av::Coords origin, double latConst);
+Coords correctOrigin(const std::vector<avi::Coords> &atoms,
+                     avi::Coords origin, double latConst);
 
-Coords estimateOrigin(const std::vector<av::Coords> &atoms,
+Coords estimateOrigin(const std::vector<avi::Coords> &atoms,
                       const double &latConst);
 
-} // namespace av
+} // namespace avi
 #endif

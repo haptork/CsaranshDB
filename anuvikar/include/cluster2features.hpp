@@ -13,7 +13,7 @@
 
 #include <helper.hpp>
 
-namespace av {
+namespace avi {
 // using defectsT = std::vector<std::tuple<Coords, bool, int, bool>>;
 constexpr size_t distBins = 40;
 constexpr size_t angleBins = 36;
@@ -27,5 +27,5 @@ using adjNn2FeatT = std::array<double, adjBins>;
 using featT = std::tuple<distFeatT, angleFeatT, adjNn2FeatT>;
 featT pairHists(const std::vector<std::array<double, 3>> &v,
                 const std::vector<bool> &v2, double latConst);
-} // namespace av
+} // namespace avi
 #endif // CLUSTER2FEATURES_ANUVIKAR_HPP

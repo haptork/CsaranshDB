@@ -56,13 +56,13 @@ struct PyConfig {
   bool safeRunChecks{true};
   double thresholdFactor{0.345};
   double extraDefectsSafetyFactor{50.0};
-  int logMode{av::LogMode::warning | av::LogMode::error};
+  int logMode{avi::LogMode::warning | avi::LogMode::error};
   const char *logFilePath;
   const char *outputJSONFilePath;
 };
 
 auto pyConfigToCppConfig(const PyConfig &pyConfig) {
-  auto config = av::Config{};
+  auto config = avi::Config{};
   config.allFrames = pyConfig.allFrames;
   config.onlyDefects = pyConfig.onlyDefects;
   config.isFindClusterFeatures = pyConfig.isFindClusterFeatures;
@@ -81,7 +81,7 @@ auto pyConfigToCppConfig(const PyConfig &pyConfig) {
 
 auto pyInfoToCppInfo(const InfoPyInput &pyinput,
                      const InfoPyExtraInput &pyextra) {
-  av::InputInfo input;
+  avi::InputInfo input;
   input.ncell = pyinput.ncell;
   input.boxSize = pyinput.boxSize;
   input.latticeConst = pyinput.latticeConst;
@@ -99,19 +99,19 @@ auto pyInfoToCppInfo(const InfoPyInput &pyinput,
   );
   std::vector<std::string> keyWords{"GENERIC", "CASCADESDBLIKECOLS", "PARCAS",
                                     "LAMMPS-XYZ", "LAMMPS-DISP"};
-  std::vector<av::XyzFileType> codes{
-      av::XyzFileType::generic,
-      av::XyzFileType::cascadesDbLikeCols,
-      av::XyzFileType::parcasWithStdHeader,
-      av::XyzFileType::lammpsWithStdHeader,
-      av::XyzFileType::lammpsDisplacedCompute};
+  std::vector<avi::XyzFileType> codes{
+      avi::XyzFileType::generic,
+      avi::XyzFileType::cascadesDbLikeCols,
+      avi::XyzFileType::parcasWithStdHeader,
+      avi::XyzFileType::lammpsWithStdHeader,
+      avi::XyzFileType::lammpsDisplacedCompute};
   for (size_t i = 0; i < keyWords.size(); i++) {
     if (simCodeStr == keyWords[i]) {
       input.xyzFileType = codes[i];
       break;
     }
   }
-  av::ExtraInfo extra;
+  avi::ExtraInfo extra;
   extra.energy = pyextra.energy;
   extra.simulationTime = pyextra.simulationTime;
   extra.isPkaGiven = pyextra.isPkaGiven;
@@ -132,26 +132,26 @@ auto pyInfoToCppInfo(const InfoPyInput &pyinput,
 
 extern "C" char *pyProcessFile(InfoPyInput pyInfo, InfoPyExtraInput pyExtraInfo,
                                PyConfig pyConfig) {
-  using av::Logger;
+  using avi::Logger;
   auto config = pyConfigToCppConfig(pyConfig);
-  auto info = av::InputInfo{};
-  auto extraInfo = av::ExtraInfo{};
+  auto info = avi::InputInfo{};
+  auto extraInfo = avi::ExtraInfo{};
   auto isSuccess = false;
   std::tie(isSuccess, info, extraInfo) = pyInfoToCppInfo(pyInfo, pyExtraInfo);
   Logger::inst().mode(config.logMode);
   Logger::inst().file(config.logFilePath);
   std::stringstream outfile;
-  auto res = av::resultsT{};
+  auto res = avi::resultsT{};
   auto success = 0;
   if (!isSuccess) {
-    res.err = av::ErrorStatus::unknownSimulator;
+    res.err = avi::ErrorStatus::unknownSimulator;
   } else {
     Logger::inst().log_info("Started Processing file \"" + info.xyzFilePath +
                             " (" + extraInfo.infile + ") " + "\"");
-    av::frameStatus fs = av::frameStatus::prelude;
+    avi::frameStatus fs = avi::frameStatus::prelude;
     std::ifstream xyzfile{info.xyzFilePath};
     if (xyzfile.bad() || !xyzfile.is_open()) {
-      res.err = av::ErrorStatus::xyzFileReadError;
+      res.err = avi::ErrorStatus::xyzFileReadError;
     }
     auto frameCount = 0;
     auto initId = extraInfo.id;
@@ -159,20 +159,20 @@ extern "C" char *pyProcessFile(InfoPyInput pyInfo, InfoPyExtraInput pyExtraInfo,
     while (true) {
       if (config.allFrames && origSimTime == 0) extraInfo.simulationTime = success + 1;
       if (config.allFrames) extraInfo.id = initId + "_" + std::to_string(success + 1);
-      auto res = av::processTimeFile(info, extraInfo, config, xyzfile, fs, outfile, success == 0);
+      auto res = avi::processTimeFile(info, extraInfo, config, xyzfile, fs, outfile, success == 0);
       frameCount++;
-      if (res.second != av::ErrorStatus::noError) {
+      if (res.second != avi::ErrorStatus::noError) {
         Logger::inst().log_info("Error processing" + std::to_string(frameCount) +" frame in file \"" + info.xyzFilePath + "\"");
       } else {
         ++success;
         if (config.allFrames) Logger::inst().log_info("Finished processing" + std::to_string(success) +" frame in file \"" + info.xyzFilePath + "\"");
       }
-      if (res.first == av::xyzFileStatus::eof) break;
+      if (res.first == avi::xyzFileStatus::eof) break;
     }
     xyzfile.close();
     Logger::inst().log_info("Finished Processing");
   }
-  if (success == 0) av::printJson(outfile, info, extraInfo, res);
+  if (success == 0) avi::printJson(outfile, info, extraInfo, res);
   std::string str = outfile.str();
   char *writable = (char *)malloc(sizeof(char) * (str.size() + 1));
   std::copy(str.begin(), str.end(), writable);
@@ -181,17 +181,17 @@ extern "C" char *pyProcessFile(InfoPyInput pyInfo, InfoPyExtraInput pyExtraInfo,
 }
 
 extern "C" char *pyProcessFileWoInfo(char *xyzfile, PyConfig pyConfig) {
-  using av::Logger;
+  using avi::Logger;
   auto config = pyConfigToCppConfig(pyConfig);
   auto xyzfileStr = std::string(xyzfile);
   Logger::inst().mode(config.logMode);
   Logger::inst().file(config.logFilePath);
   Logger::inst().log_info("Started Processing file \"" + xyzfileStr + "\"");
   std::stringstream outfile;
-  av::InputInfo info;
-  av::ExtraInfo extraInfo;
+  avi::InputInfo info;
+  avi::ExtraInfo extraInfo;
   bool isInfo;
-  auto res = av::processFileTimeCmd(xyzfileStr, outfile, config, 0, info, extraInfo, isInfo);
+  auto res = avi::processFileTimeCmd(xyzfileStr, outfile, config, 0, info, extraInfo, isInfo);
   Logger::inst().log_info("Finished Processing");
   std::string str = outfile.str();
   char *writable = (char *)malloc(

@@ -14,15 +14,15 @@
 #include <helper.hpp>
 #include <results.hpp>
 
-namespace av {
+namespace avi {
 
-std::pair<av::xyzFileStatus, av::ErrorStatus> processTimeFile(av::InputInfo &info,
-                                     av::ExtraInfo &extraInfo,
-                                     const av::Config &config, std::istream &infile, av::frameStatus &fs, std::ostream &outfile, bool isFirst);
+std::pair<avi::xyzFileStatus, avi::ErrorStatus> processTimeFile(avi::InputInfo &info,
+                                     avi::ExtraInfo &extraInfo,
+                                     const avi::Config &config, std::istream &infile, avi::frameStatus &fs, std::ostream &outfile, bool isFirst);
 
-std::pair<av::ErrorStatus,int> processFileTimeCmd(std::string xyzfileName,
+std::pair<avi::ErrorStatus,int> processFileTimeCmd(std::string xyzfileName,
                                             std::ostream &outfile,
-                                            const Config &config, int id, const av::InputInfo&, const av::ExtraInfo&, bool);
+                                            const Config &config, int id, const avi::InputInfo&, const avi::ExtraInfo&, bool);
  
 }
 #endif

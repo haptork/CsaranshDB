@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-using namespace av;
+using namespace avi;
 SCENARIO("FCC- Find nearest lattice site for a coordinate given lattice structure - "
          "Addoffset",
          "[defectsTestFcc]") {
@@ -177,8 +177,8 @@ SCENARIO("Fcc- Enumerate all lattice sites for a bcc in ascending order given mi
          "[defectsTestFcc]") {
   SECTION("Normal Case - 1") {
     // case 1
-    auto origin = av::Coords{{0., 0., 0.}};
-    auto max = av::Coords{{2.5, 2.5, 2.5}};
+    auto origin = avi::Coords{{0., 0., 0.}};
+    auto max = avi::Coords{{2.5, 2.5, 2.5}};
     auto maxInitial = getInitialMaxFcc(origin, max);
     NextExpected ne{
         origin, max,
@@ -302,8 +302,8 @@ SCENARIO("Fcc- Enumerate all lattice sites for a bcc in ascending order given mi
   }
   SECTION("Normal Case - 2") {
     // case 2
-    auto origin = av::Coords{{0.25, 0.25, 0.25}};
-    auto max = av::Coords{{2.75, 2.75, 2.75}};
+    auto origin = avi::Coords{{0.25, 0.25, 0.25}};
+    auto max = avi::Coords{{2.75, 2.75, 2.75}};
     auto maxInitial = getInitialMaxFcc(origin, max);
     NextExpected ne{
         origin, max,
@@ -427,8 +427,8 @@ CHECK(ne.incrementFcc() == Coords{{2.75, 2.75, 2.25}});
   SECTION("Edge Cases - 1") {
     // case 2
     /*
-    auto origin = av::Coords{{0.5, 0.5, 0.5}};
-    auto max = av::Coords{{2.00, 2.00, 2.00}};
+    auto origin = avi::Coords{{0.5, 0.5, 0.5}};
+    auto max = avi::Coords{{2.00, 2.00, 2.00}};
     auto maxInitial = getInitialMax(origin, max);
     NextExpected ne{origin, max, maxInitial};
     REQUIRE_FALSE(ne.allMax());
@@ -458,8 +458,8 @@ CHECK(ne.incrementFcc() == Coords{{2.75, 2.75, 2.25}});
   SECTION("Edge Cases - Almost invalid input - 1") {
     // case 1
     /*
-    auto origin = av::Coords{{0.0, 0.0, 0.0}};
-    auto max = av::Coords{
+    auto origin = avi::Coords{{0.0, 0.0, 0.0}};
+    auto max = avi::Coords{
         {2.00, 2.00, 2.00}}; // a valid max should have been 2.5, orign 0.0
     auto maxInitial = getInitialMax(origin, max);
     NextExpected ne{origin, max, maxInitial};
@@ -525,9 +525,9 @@ CHECK(ne.incrementFcc() == Coords{{2.75, 2.75, 2.25}});
    SECTION("Normal cases") {
      SECTION("Single Dumbbell") {
        std::vector<std::tuple<Coords, double, Coords>> atoms;
-       auto origin = av::Coords{{0.25, 0.25, 0.25}};
-       //auto max = av::Coords{{10.75, 10.75, 10.75}};
-       auto max = av::Coords{{3.75, 3.75, 3.75}};
+       auto origin = avi::Coords{{0.25, 0.25, 0.25}};
+       //auto max = avi::Coords{{10.75, 10.75, 10.75}};
+       auto max = avi::Coords{{3.75, 3.75, 3.75}};
        auto maxInitial = getInitialMaxFcc(origin, max);
        NextExpected ne{
            origin, max,
@@ -571,7 +571,7 @@ CHECK(ne.incrementFcc() == Coords{{2.75, 2.75, 2.25}});
        info.originY = origin[1];
        info.originZ = origin[2];
        ExtraInfo extraInfo;
-       auto fsAtoms = std::make_pair(av::xyzFileStatus::reading, atoms);
+       auto fsAtoms = std::make_pair(avi::xyzFileStatus::reading, atoms);
        auto ungroupedDefectsDumbbellPair = atoms2defectsFcc(fsAtoms, info, extraInfo, config);
        auto ungroupedDefects = std::get<2>(ungroupedDefectsDumbbellPair);
        REQUIRE(ungroupedDefects.size() == 4); // 2 interstitials, 2 vacancies
@@ -584,24 +584,24 @@ CHECK(ne.incrementFcc() == Coords{{2.75, 2.75, 2.25}});
                  2); // one cluster of three and other of one
          SECTION("Check ndefects and cluster sizes") {
            std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-               av::getNDefectsAndClusterFractions(defects);
+               avi::getNDefectsAndClusterFractions(defects);
            REQUIRE(nDefects == 1);
            REQUIRE(inClusterFractionI == Approx(100.0));
            REQUIRE(inClusterFractionV == Approx(100.0));
            ignoreSmallClusters(defects, clusterSizeMap);
            std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-               av::getNDefectsAndClusterFractions(defects);
+               avi::getNDefectsAndClusterFractions(defects);
            REQUIRE(nDefects == 1);
            REQUIRE(inClusterFractionI == Approx(0.0));
            REQUIRE(inClusterFractionV == Approx(0.0)); // changed
-           auto clusterIdMap = av::clusterMapping(defects);
+           auto clusterIdMap = avi::clusterMapping(defects);
            REQUIRE(clusterIdMap.size() == 0); // 1 dumbbell
            auto clusterIVMap =
-               av::clusterIVType(clusterIdMap, clusterSizeMap);
+               avi::clusterIVType(clusterIdMap, clusterSizeMap);
            REQUIRE(clusterIVMap.size() == 0);
            int maxClusterSizeI, maxClusterSizeV;
            std::tie(maxClusterSizeI, maxClusterSizeV) =
-               av::getMaxClusterSizes(clusterSizeMap, clusterIdMap);
+               avi::getMaxClusterSizes(clusterSizeMap, clusterIdMap);
            REQUIRE(maxClusterSizeI == 0);
            REQUIRE(maxClusterSizeV == 0);
            /*
@@ -612,7 +612,7 @@ CHECK(ne.incrementFcc() == Coords{{2.75, 2.75, 2.25}});
            }
          */
            SECTION("Check cluster features") {
-             auto feats = av::clusterFeatures(
+             auto feats = avi::clusterFeatures(
                  defects, clusterIdMap, clusterSizeMap, latticeConst);
              REQUIRE(feats.size() == 0);
              /*
@@ -637,8 +637,8 @@ CHECK(ne.incrementFcc() == Coords{{2.75, 2.75, 2.25}});
      }       // End of Single Dumbbell test
     SECTION("big interstitial cluster") {
       std::vector<std::tuple<Coords, double, Coords>> atoms;
-      auto origin = av::Coords{{0.5, 0.5, 0.5}};
-      auto max = av::Coords{{6.0, 6.0, 6.0}};
+      auto origin = avi::Coords{{0.5, 0.5, 0.5}};
+      auto max = avi::Coords{{6.0, 6.0, 6.0}};
       auto maxInitial = getInitialMaxFcc(origin, max);
       NextExpected ne{
           origin, max,
@@ -683,40 +683,40 @@ CHECK(ne.incrementFcc() == Coords{{2.75, 2.75, 2.25}});
       info.originY = origin[1];
       info.originZ = origin[2];
       ExtraInfo extraInfo;
-      auto fsAtoms = std::make_pair(av::xyzFileStatus::reading, atoms);
+      auto fsAtoms = std::make_pair(avi::xyzFileStatus::reading, atoms);
       auto ungroupedDefectsDumbbellPair = atoms2defectsFcc(fsAtoms, info, extraInfo, config);
       auto ungroupedDefects = std::get<2>(ungroupedDefectsDumbbellPair);
       REQUIRE(ungroupedDefects.size() == 16);
       int nDefects;
       double inClusterFractionI, inClusterFractionV;
       std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-          av::getNDefectsAndClusterFractions(ungroupedDefects);
+          avi::getNDefectsAndClusterFractions(ungroupedDefects);
       SECTION("Check cluster grouping") {
         auto defects = groupDefects(ungroupedDefects, latticeConst);
         auto clusterSizeMap = clusterSizes(defects);
         REQUIRE(clusterSizeMap.size() == 7);
         SECTION("Check ndefects and cluster sizes") {
           std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-              av::getNDefectsAndClusterFractions(defects);
+              avi::getNDefectsAndClusterFractions(defects);
           REQUIRE(nDefects == 8);
           REQUIRE(inClusterFractionI == Approx(100.0));
           REQUIRE(inClusterFractionV == Approx(75.0));
           ignoreSmallClusters(defects, clusterSizeMap);
           std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-              av::getNDefectsAndClusterFractions(defects);
+              avi::getNDefectsAndClusterFractions(defects);
           REQUIRE(nDefects == 8);
           REQUIRE(inClusterFractionI == Approx(100.0));
           REQUIRE(inClusterFractionV == Approx(0.0)); // changed
-          auto clusterIdMap = av::clusterMapping(defects);
+          auto clusterIdMap = avi::clusterMapping(defects);
           REQUIRE(clusterIdMap.size() == 1); // 1 interstitial cluster
           REQUIRE(std::begin(clusterIdMap)->second.size() == 10);
           auto clusterIVMap =
-              av::clusterIVType(clusterIdMap, clusterSizeMap);
+              avi::clusterIVType(clusterIdMap, clusterSizeMap);
           REQUIRE(clusterIVMap.size() == 1);
           REQUIRE(std::begin(clusterIVMap)->second == 8); // surviving
           int maxClusterSizeI, maxClusterSizeV;
           std::tie(maxClusterSizeI, maxClusterSizeV) =
-              av::getMaxClusterSizes(clusterSizeMap, clusterIdMap);
+              avi::getMaxClusterSizes(clusterSizeMap, clusterIdMap);
           REQUIRE(maxClusterSizeI == 8);
           REQUIRE(maxClusterSizeV == 0);
         } // ndefects and cluster sizes
@@ -728,8 +728,8 @@ CHECK(ne.incrementFcc() == Coords{{2.75, 2.75, 2.25}});
         "One atom kicked out of the box : unwrapped coordinates are invalid") {
       std::vector<std::tuple<Coords, double, Coords>> atoms;
 
-      auto origin = av::Coords{{0.25, 0.25, 0.25}};
-      auto max = av::Coords{{10.75, 10.75, 10.75}};
+      auto origin = avi::Coords{{0.25, 0.25, 0.25}};
+      auto max = avi::Coords{{10.75, 10.75, 10.75}};
       auto maxInitial = getInitialMaxFcc(origin, max);
       NextExpected ne{
           origin, max,
@@ -764,7 +764,7 @@ CHECK(ne.incrementFcc() == Coords{{2.75, 2.75, 2.25}});
       info.originY = origin[1];
       info.originZ = origin[2];
       ExtraInfo extraInfo;
-      auto fsAtoms = std::make_pair(av::xyzFileStatus::reading, atoms);
+      auto fsAtoms = std::make_pair(avi::xyzFileStatus::reading, atoms);
       auto ungroupedDefectsDumbbellPair = atoms2defectsFcc(fsAtoms, info, extraInfo, config);
       auto ungroupedDefects = std::get<2>(ungroupedDefectsDumbbellPair);
       // it should have been 4 but now alot more defects are counted as the
@@ -789,8 +789,8 @@ CHECK(ne.incrementFcc() == Coords{{2.75, 2.75, 2.25}});
   SECTION("Edge cases") {
     SECTION("Perfect lattice") {
       std::vector<std::tuple<Coords, double, Coords>> atoms;
-      auto origin = av::Coords{{0.0, 0.0, 0.0}};
-      auto max = av::Coords{{1.5, 1.5, 1.5}};
+      auto origin = avi::Coords{{0.0, 0.0, 0.0}};
+      auto max = avi::Coords{{1.5, 1.5, 1.5}};
       auto maxInitial = getInitialMaxFcc(origin, max);
       NextExpected ne{
           origin, max,
@@ -809,14 +809,14 @@ CHECK(ne.incrementFcc() == Coords{{2.75, 2.75, 2.25}});
       info.originY = origin[1];
       info.originZ = origin[2];
       ExtraInfo extraInfo;
-      auto fsAtoms = std::make_pair(av::xyzFileStatus::reading, atoms);
+      auto fsAtoms = std::make_pair(avi::xyzFileStatus::reading, atoms);
       auto ungroupedDefectsDumbbellPair = atoms2defectsFcc(fsAtoms, info, extraInfo, config);
       REQUIRE(std::get<2>(ungroupedDefectsDumbbellPair).empty());
     }
     SECTION("slightly shaken lattice") {
       std::vector<std::tuple<Coords, double, Coords>> atoms;
-      auto origin = av::Coords{{0.0, 0.0, 0.0}};
-      auto max = av::Coords{{1.5, 1.5, 1.5}};
+      auto origin = avi::Coords{{0.0, 0.0, 0.0}};
+      auto max = avi::Coords{{1.5, 1.5, 1.5}};
       auto maxInitial = getInitialMaxFcc(origin, max);
       NextExpected ne{
           origin, max,
@@ -840,7 +840,7 @@ CHECK(ne.incrementFcc() == Coords{{2.75, 2.75, 2.25}});
       info.originX = origin[0];
       info.originY = origin[1];
       info.originZ = origin[2];
-      auto fsAtoms = std::make_pair(av::xyzFileStatus::reading, atoms);
+      auto fsAtoms = std::make_pair(avi::xyzFileStatus::reading, atoms);
       auto ungroupedDefectsDumbbellPair = atoms2defectsFcc(fsAtoms, info, extraInfo, config);
       REQUIRE(std::get<2>(ungroupedDefectsDumbbellPair).empty());
     }

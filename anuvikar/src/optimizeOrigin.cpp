@@ -5,13 +5,13 @@
 
 // removes the overall offset not more than latConst / 4 from each coordinate of
 // the origin
-av::Coords
-av::correctOrigin(const std::vector<av::Coords> &atoms,
-                        av::Coords origin, double latConst) {
+avi::Coords
+avi::correctOrigin(const std::vector<avi::Coords> &atoms,
+                        avi::Coords origin, double latConst) {
   std::vector<double> allOffsets;
   allOffsets.resize(atoms.size());
   const int topOffsetsToIgnore = atoms.size() > 2000 ? 1000 : atoms.size() / 10;
-  av::Coords res;
+  avi::Coords res;
   for (int i = 0; i < 3; i++) {
     auto offsets = 0.0;
     for (size_t j = 0; j < atoms.size(); j++) {
@@ -32,12 +32,12 @@ av::correctOrigin(const std::vector<av::Coords> &atoms,
   return res;
 }
 
-av::Coords
-av::estimateOrigin(const std::vector<av::Coords> &atoms,
+avi::Coords
+avi::estimateOrigin(const std::vector<avi::Coords> &atoms,
                          const double &latConst) {
   auto res = std::min_element(
       begin(atoms), end(atoms),
-      [](const av::Coords &a, const av::Coords &b) {
+      [](const avi::Coords &a, const avi::Coords &b) {
         return (a[0] + a[1] + a[2]) < (b[0] + b[1] + b[2]);
       });
   auto originEstimated = *res;
@@ -45,25 +45,25 @@ av::estimateOrigin(const std::vector<av::Coords> &atoms,
     originEstimated[i] /= latConst;
   // we can return at this point but being extra careful with following
   // superflous steps
-  auto obj2 = av::AddOffset{latConst, "bcc", originEstimated};
+  auto obj2 = avi::AddOffset{latConst, "bcc", originEstimated};
   return correctOrigin(atoms, std::get<0>(obj2(*res)),
                        latConst); // rounded off and brought to first unit cell
 }
 
 /*
-av::Coords av::estimateOrigin(const std::vector<av::Coords>&
-atoms, const av::InputInfo& info) { auto res =
-std::min_element(begin(atoms), end(atoms), [](const av::Coords& a, const
-av::Coords& b) { return (a[0] + a[1] + a[2]) < (b[0] + b[1] + b[2]);
+avi::Coords avi::estimateOrigin(const std::vector<avi::Coords>&
+atoms, const avi::InputInfo& info) { auto res =
+std::min_element(begin(atoms), end(atoms), [](const avi::Coords& a, const
+avi::Coords& b) { return (a[0] + a[1] + a[2]) < (b[0] + b[1] + b[2]);
   });
   auto originEstimated = *res;
   for (size_t i = 0; i < originEstimated.size(); i++) originEstimated[i] /=
 info.latticeConst;
   // we can return at this point but being extra careful with following
-superflous steps auto obj2 = av::AddOffset{info.latticeConst, "bcc",
+superflous steps auto obj2 = avi::AddOffset{info.latticeConst, "bcc",
 originEstimated}; auto correct = correctOrigin(atoms,
 std::get<0>(obj2(originEstimated)), info.latticeConst); // rounded off and
-brought to first unit cell auto obj3 = av::AddOffset{info.latticeConst,
+brought to first unit cell auto obj3 = avi::AddOffset{info.latticeConst,
 "bcc", correct}; return std::get<0>(obj3(correct));
 }
 */

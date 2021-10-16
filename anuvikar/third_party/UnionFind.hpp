@@ -28,7 +28,7 @@ using std::transform;
 using std::initializer_list;
 using std::max_element;
 
-namespace av {
+namespace avi {
 
 template <size_t Index, class Tobj> class UnionFind {
 public:

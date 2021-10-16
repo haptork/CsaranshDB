@@ -12,15 +12,15 @@
 #include <iostream>
 
 // group defects into clusters
-av::DefectVecT av::groupDefects(const av::DefectVecT &defects,
+avi::DefectVecT avi::groupDefects(const avi::DefectVecT &defects,
                                             const double &latticeConst) {
   // std::cout << "Grouping defects " << defects.size() << '\n' << std::flush;
-  using UF = av::UnionFind<2, av::DefectT>;
-  auto nn = (std::sqrt(3) * latticeConst) / 2 + av::invars::epsilon;
-  auto nn2sqr = (latticeConst * latticeConst) + av::invars::epsilon; // std::sqrt(3) * info.latticeConst + 0.01;
+  using UF = avi::UnionFind<2, avi::DefectT>;
+  auto nn = (std::sqrt(3) * latticeConst) / 2 + avi::invars::epsilon;
+  auto nn2sqr = (latticeConst * latticeConst) + avi::invars::epsilon; // std::sqrt(3) * info.latticeConst + 0.01;
   auto nn4sqr = (nn * nn) * 4;
-  auto pred = [nn2sqr, nn4sqr](const av::DefectT &a,
-                         const av::DefectT &b) {
+  auto pred = [nn2sqr, nn4sqr](const avi::DefectT &a,
+                         const avi::DefectT &b) {
     using namespace DefectTWrap;
     if ((isVacancy(a) && isVacancy(b) && (isSurviving(a) && isSurviving(b))) || 
         (isInterstitial(a) && isInterstitial(b) && (isSurviving(a) && isSurviving(b)))) { // both vacancies and surviving
@@ -38,10 +38,10 @@ av::DefectVecT av::groupDefects(const av::DefectVecT &defects,
 }
 
 // cluster id and their sizes
-av::ClusterSizeMapT
-av::clusterSizes(const av::DefectVecT &defects) {
-  av::ClusterSizeMapT clusterSize;
-  using namespace av::DefectTWrap;
+avi::ClusterSizeMapT
+avi::clusterSizes(const avi::DefectVecT &defects) {
+  avi::ClusterSizeMapT clusterSize;
+  using namespace avii::DefectTWrap;
   for (const auto &it : defects) {
     clusterSize[clusterId(it)].all++;
     if (!isSurviving(it)) continue;
@@ -53,21 +53,21 @@ av::clusterSizes(const av::DefectVecT &defects) {
   return clusterSize;
 }
 
-av::ClusterIVMapT
-av::clusterIVType(const av::ClusterIdMapT &a,
-                        av::ClusterSizeMapT &b) {
-  av::ClusterIVMapT res;
+avi::ClusterIVMapT
+avi::clusterIVType(const avi::ClusterIdMapT &a,
+                        avi::ClusterSizeMapT &b) {
+  avi::ClusterIVMapT res;
   for (const auto &it : a)
     res[it.first] = b[it.first].surviving;
   return res;
 }
 
 // ignore dumbbells or similar defects group from cluster list
-void av::ignoreSmallClusters(av::DefectVecT &defects,
-                                   av::ClusterSizeMapT &clusterSize) {
-  using namespace av::DefectTWrap;
-  using av::invars::minClusterPoints;
-  using av::invars::minClusterSize;
+void avi::ignoreSmallClusters(avi::DefectVecT &defects,
+                                   avi::ClusterSizeMapT &clusterSize) {
+  using namespace avii::DefectTWrap;
+  using avi::invars::minClusterPoints;
+  using avi::invars::minClusterSize;
   for (auto &it : defects) {
 
     if (abs(clusterSize[clusterId(it)].surviving) < minClusterSize
@@ -83,10 +83,10 @@ void av::ignoreSmallClusters(av::DefectVecT &defects,
 }
 
 // cluster ids mapped to defect ids that the clusters have
-av::ClusterIdMapT
-av::clusterMapping(const av::DefectVecT &defects) {
-  using namespace av::DefectTWrap;
-  av::ClusterIdMapT clusterIds;
+avi::ClusterIdMapT
+avi::clusterMapping(const avi::DefectVecT &defects) {
+  using namespace avii::DefectTWrap;
+  avi::ClusterIdMapT clusterIds;
   int i = 0;
   for (const auto &it : defects) {
     if (clusterId(it) > 0) {
@@ -100,8 +100,8 @@ av::clusterMapping(const av::DefectVecT &defects) {
 
 // fraction of defects in cluster
 std::tuple<int, double, double>
-av::getNDefectsAndClusterFractions(const av::DefectVecT &defects) {
-  using namespace av::DefectTWrap;
+avi::getNDefectsAndClusterFractions(const avi::DefectVecT &defects) {
+  using namespace avii::DefectTWrap;
   auto inClusterI = 0;
   auto inClusterV = 0;
   auto singlesI = 0;
@@ -130,34 +130,34 @@ av::getNDefectsAndClusterFractions(const av::DefectVecT &defects) {
 }
 
 // cluster to cluster features mapping
-av::ClusterFeatMapT
-av::clusterFeatures(const av::DefectVecT &defects,
-                          const av::ClusterIdMapT &clusters,
-                          av::ClusterSizeMapT &clusterCounts,
+avi::ClusterFeatMapT
+avi::clusterFeatures(const avi::DefectVecT &defects,
+                          const avi::ClusterIdMapT &clusters,
+                          avi::ClusterSizeMapT &clusterCounts,
                           double latticeConst) {
-  using namespace av::DefectTWrap;
-  av::ClusterFeatMapT clusterFeats;
-  using av::invars::minClusterPoints;
-  using av::invars::minClusterSize;
+  using namespace avii::DefectTWrap;
+  avi::ClusterFeatMapT clusterFeats;
+  using avi::invars::minClusterPoints;
+  using avi::invars::minClusterSize;
   for (const auto &it : clusters) {
     if (abs(clusterCounts[it.first].surviving) < minClusterSize && clusterCounts[it.first].all < minClusterPoints) continue;
-    std::vector<av::Coords> clusterCoords;
+    std::vector<avi::Coords> clusterCoords;
     std::vector<bool> isI;
     for (const auto &jt : it.second) {
       auto x = coords(defects[jt]);
-      clusterCoords.push_back(av::Coords{{x[0], x[1], x[2]}});
+      clusterCoords.push_back(avi::Coords{{x[0], x[1], x[2]}});
       isI.push_back(isInterstitial(defects[jt]));
     }
     clusterFeats[it.first] =
-        av::pairHists(clusterCoords, isI, latticeConst);
+        avi::pairHists(clusterCoords, isI, latticeConst);
   }
   return clusterFeats;
 }
 
 // maximum size of the interstitial and vacancy clusters
 std::tuple<int, int>
-av::getMaxClusterSizes(av::ClusterSizeMapT &clusterCounts,
-                             const av::ClusterIdMapT &clusters) {
+avi::getMaxClusterSizes(avi::ClusterSizeMapT &clusterCounts,
+                             const avi::ClusterIdMapT &clusters) {
   auto maxClusterSizeV = 0;
   auto maxClusterSizeI = 0;
   for (const auto &it : clusters) {

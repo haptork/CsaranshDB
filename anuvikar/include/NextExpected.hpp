@@ -8,7 +8,7 @@
 
 #include <helper.hpp>
 
-namespace av {
+namespace avi {
 struct NextExpected {
 private:
   Coords _min, _max, _minCur, _maxCur, _maxFinal;
@@ -38,5 +38,5 @@ public:
   const Coords &incrementFcc();
   int mode{0};
 };
-} // namespace av
+} // namespace avi
 #endif

@@ -15,7 +15,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace av {
+namespace avi {
 namespace invars {
   // static constexpr double kB = 8.6173303e-5;
   static constexpr double epsilon = 1e-6;
@@ -104,8 +104,8 @@ struct Config {
   bool safeRunChecks{true};
   double thresholdFactor{0.345};
   double extraDefectsSafetyFactor{50.0};
-  int logMode{av::LogMode::warning | av::LogMode::error};
-  std::string logFilePath{"log-av-cpp.txt"};
+  int logMode{avi::LogMode::warning | avi::LogMode::error};
+  std::string logFilePath{"log-avi-cpp.txt"};
   std::string outputJSONFilePath{"cascades-data.json"};
 };
 
@@ -119,7 +119,7 @@ static inline double calcDistSqr(Coords a, Coords b) {
   return dist;
 }
 
-static inline double calcDist(av::Coords a, av::Coords b) {
+static inline double calcDist(avi::Coords a, avi::Coords b) {
   return std::sqrt(calcDistSqr(a, b));
 }
 
@@ -192,5 +192,5 @@ template <typename T, size_t s> auto strAr(std::array<T, s> ar) {
   return res;
 }
 
-} // namespace av
+} // namespace avi
 #endif

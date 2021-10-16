@@ -303,7 +303,7 @@ export class DashboardSimple extends React.Component {
           <GridItem id="mainTable" xs={12}>
 <Accordion id="mainTablePanel" expanded={this.state.mobileOpen} onChange={this.handleToggleDrawer}>
           <AccordionSummary /*onMouseEnter={this.handleShowDrawer}*/ expandIcon={<ExpandMoreIcon />}>
-            <Typography className={classes.heading}>Cascades List - {this.state.curRows.length} cascades {(this.state.curRows.length < data.length) ? " filtered out of total " + data.length : " - Filter, View and Plot Cascades"} 
+            <Typography className={classes.heading}>Cascades List - {this.state.curRows.length} cascades {(this.state.curRows.length < data.length) ? " filtered out of total " + data.length : " - Click here to filter, View and Plot Cascades"} 
            </Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -311,7 +311,7 @@ export class DashboardSimple extends React.Component {
               <Select
                 defaultValue={this.state.showCol}
                 name="Table columns"
-                closeMenuOnSelect={false}
+                closeMenuOnSelect={true}
                 isMulti
                 isClearable={false}
                 options={this.allCols}

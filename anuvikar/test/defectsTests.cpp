@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-using namespace av;
+using namespace avi;
 SCENARIO("Find nearest lattice site for a coordinate given lattice structure - "
          "Addoffset",
          "[defectsTest]") {
@@ -165,8 +165,8 @@ SCENARIO("Enumerate all lattice sites for a bcc in ascending order given min "
          "[defectsTest]") {
   SECTION("Normal Case - 1") {
     // case 1
-    auto origin = av::Coords{{0., 0., 0.}};
-    auto max = av::Coords{{2.5, 2.5, 2.5}};
+    auto origin = avi::Coords{{0., 0., 0.}};
+    auto max = avi::Coords{{2.5, 2.5, 2.5}};
     auto maxInitial = getInitialMax(origin, max);
     NextExpected ne{
         origin, max,
@@ -244,8 +244,8 @@ SCENARIO("Enumerate all lattice sites for a bcc in ascending order given min "
   }
   SECTION("Normal Case - 2") {
     // case 2
-    auto origin = av::Coords{{0.25, 0.25, 0.25}};
-    auto max = av::Coords{{2.75, 2.75, 2.75}};
+    auto origin = avi::Coords{{0.25, 0.25, 0.25}};
+    auto max = avi::Coords{{2.75, 2.75, 2.75}};
     auto maxInitial = getInitialMax(origin, max);
     NextExpected ne{
         origin, max,
@@ -323,8 +323,8 @@ SCENARIO("Enumerate all lattice sites for a bcc in ascending order given min "
   }
   SECTION("Edge Cases - 1") {
     // case 2
-    auto origin = av::Coords{{0.5, 0.5, 0.5}};
-    auto max = av::Coords{{2.00, 2.00, 2.00}};
+    auto origin = avi::Coords{{0.5, 0.5, 0.5}};
+    auto max = avi::Coords{{2.00, 2.00, 2.00}};
     auto maxInitial = getInitialMax(origin, max);
     NextExpected ne{origin, max, maxInitial};
     REQUIRE_FALSE(ne.allMax());
@@ -352,8 +352,8 @@ SCENARIO("Enumerate all lattice sites for a bcc in ascending order given min "
   }
   SECTION("Edge Cases - Almost invalid input - 1") {
     // case 1
-    auto origin = av::Coords{{0.0, 0.0, 0.0}};
-    auto max = av::Coords{
+    auto origin = avi::Coords{{0.0, 0.0, 0.0}};
+    auto max = avi::Coords{
         {2.00, 2.00, 2.00}}; // a valid max should have been 2.5, orign 0.0
     auto maxInitial = getInitialMax(origin, max);
     NextExpected ne{origin, max, maxInitial};
@@ -415,55 +415,55 @@ TEST_CASE("Read atom coordinates from a parcas xyz file line",
           "[defectsTest]") {
   SECTION("Normal cases") {
     Coords c;
-    av::lineStatus ls;
+    avi::lineStatus ls;
     // coords
-    std::tie(ls, c) = av::getCoordParcas("Fe   -76.770403   +7.2e2   .7",
-                                               av::frameStatus::inFrame, 0);
-    CHECK(ls == av::lineStatus::coords);
+    std::tie(ls, c) = avi::getCoordParcas("Fe   -76.770403   +7.2e2   .7",
+                                               avi::frameStatus::inFrame, 0);
+    CHECK(ls == avi::lineStatus::coords);
     CHECK(c == Coords{{-76.770403, 720, 0.7}});
     std::tie(ls, c) =
-        av::getCoordParcas("what   +76.770403   -7.2e2   0.700 Frame",
-                                 av::frameStatus::inFrame, 2);
-    CHECK(ls == av::lineStatus::coords);
+        avi::getCoordParcas("what   +76.770403   -7.2e2   0.700 Frame",
+                                 avi::frameStatus::inFrame, 2);
+    CHECK(ls == avi::lineStatus::coords);
     CHECK(c == Coords{{76.770403, -720, 0.7}});
-    std::tie(ls, c) = av::getCoordParcas(
-        "  what 0.000000 +7.2e2 3f whatever  ", av::frameStatus::inFrame, 2);
-    CHECK(ls == av::lineStatus::coords);
+    std::tie(ls, c) = avi::getCoordParcas(
+        "  what 0.000000 +7.2e2 3f whatever  ", avi::frameStatus::inFrame, 2);
+    CHECK(ls == avi::lineStatus::coords);
     CHECK(c == Coords{{0.0, 720, 3.0}});
     // garbage
     std::tie(ls, c) =
-        av::getCoordParcas("53   +76.770403   -7.2e2   0.700 Frame",
-                                 av::frameStatus::inFrame, 2);
-    CHECK(ls == av::lineStatus::garbage);
+        avi::getCoordParcas("53   +76.770403   -7.2e2   0.700 Frame",
+                                 avi::frameStatus::inFrame, 2);
+    CHECK(ls == avi::lineStatus::garbage);
     std::tie(ls, c) =
-        av::getCoordParcas("garbage", av::frameStatus::inFrame, 0);
-    CHECK(ls == av::lineStatus::garbage);
-    std::tie(ls, c) = av::getCoordParcas("-76.770403   +7.2e2   .7",
-                                               av::frameStatus::inFrame, 1);
-    CHECK(ls == av::lineStatus::coords);
+        avi::getCoordParcas("garbage", avi::frameStatus::inFrame, 0);
+    CHECK(ls == avi::lineStatus::garbage);
+    std::tie(ls, c) = avi::getCoordParcas("-76.770403   +7.2e2   .7",
+                                               avi::frameStatus::inFrame, 1);
+    CHECK(ls == avi::lineStatus::coords);
     CHECK(c == Coords{{-76.770403, +7.2e2, .7}});
     std::tie(ls, c) =
-        av::getCoordParcas("what 34 2.5", av::frameStatus::inFrame, 0);
-    CHECK(ls == av::lineStatus::garbage);
-    std::tie(ls, c) = av::getCoordParcas(
-        "-76.770403   +7.2e2   .7 garbage", av::frameStatus::inFrame, 0);
-    CHECK(ls == av::lineStatus::garbage);
-    std::tie(ls, c) = av::getCoordParcas("what 34 2.5 garbage",
-                                               av::frameStatus::inFrame, 0);
-    CHECK(ls == av::lineStatus::garbage);
-    std::tie(ls, c) = av::getCoordParcas("what Frame 2.5 garbage",
-                                               av::frameStatus::inFrame, 0);
-    CHECK(ls == av::lineStatus::garbage);
+        avi::getCoordParcas("what 34 2.5", avi::frameStatus::inFrame, 0);
+    CHECK(ls == avi::lineStatus::garbage);
+    std::tie(ls, c) = avi::getCoordParcas(
+        "-76.770403   +7.2e2   .7 garbage", avi::frameStatus::inFrame, 0);
+    CHECK(ls == avi::lineStatus::garbage);
+    std::tie(ls, c) = avi::getCoordParcas("what 34 2.5 garbage",
+                                               avi::frameStatus::inFrame, 0);
+    CHECK(ls == avi::lineStatus::garbage);
+    std::tie(ls, c) = avi::getCoordParcas("what Frame 2.5 garbage",
+                                               avi::frameStatus::inFrame, 0);
+    CHECK(ls == avi::lineStatus::garbage);
     // border
-    std::tie(ls, c) = av::getCoordParcas("Frame 2.5 garbage",
-                                               av::frameStatus::inFrame, 0);
-    CHECK(ls == av::lineStatus::frameBorder);
+    std::tie(ls, c) = avi::getCoordParcas("Frame 2.5 garbage",
+                                               avi::frameStatus::inFrame, 0);
+    CHECK(ls == avi::lineStatus::frameBorder);
     std::tie(ls, c) =
-        av::getCoordParcas("Frame", av::frameStatus::inFrame, 0);
-    CHECK(ls == av::lineStatus::frameBorder);
-    std::tie(ls, c) = av::getCoordParcas("  Frame 0.000000 +7.2e2 3f",
-                                               av::frameStatus::inFrame, 0);
-    CHECK(ls == av::lineStatus::frameBorder);
+        avi::getCoordParcas("Frame", avi::frameStatus::inFrame, 0);
+    CHECK(ls == avi::lineStatus::frameBorder);
+    std::tie(ls, c) = avi::getCoordParcas("  Frame 0.000000 +7.2e2 3f",
+                                               avi::frameStatus::inFrame, 0);
+    CHECK(ls == avi::lineStatus::frameBorder);
   }
 }
 
@@ -471,57 +471,57 @@ TEST_CASE("Read atom coordinates from a line from lammps xyz file",
           "[defectsTest]") {
   SECTION("Normal cases") {
     Coords c;
-    av::lineStatus ls;
+    avi::lineStatus ls;
     // coords
-    std::tie(ls, c) = av::getCoordLammps("Fe   -76.770403   +7.2e2   .7",
-                                               av::frameStatus::inFrame, 2);
-    CHECK(ls == av::lineStatus::coords);
+    std::tie(ls, c) = avi::getCoordLammps("Fe   -76.770403   +7.2e2   .7",
+                                               avi::frameStatus::inFrame, 2);
+    CHECK(ls == avi::lineStatus::coords);
     CHECK(c == Coords{{-76.770403, 720, 0.7}});
     std::tie(ls, c) =
-        av::getCoordLammps("54   +76.770403   -7.2e2   0.700 ITEM:",
-                                 av::frameStatus::inFrame, 2);
-    CHECK(ls == av::lineStatus::coords);
+        avi::getCoordLammps("54   +76.770403   -7.2e2   0.700 ITEM:",
+                                 avi::frameStatus::inFrame, 2);
+    CHECK(ls == avi::lineStatus::coords);
     CHECK(c == Coords{{76.770403, -720, 0.7}});
-    std::tie(ls, c) = av::getCoordLammps(
-        "  what if 0.000000 +7.2e2 3f whatever  ", av::frameStatus::inFrame, 3);
-    CHECK(ls == av::lineStatus::coords);
+    std::tie(ls, c) = avi::getCoordLammps(
+        "  what if 0.000000 +7.2e2 3f whatever  ", avi::frameStatus::inFrame, 3);
+    CHECK(ls == avi::lineStatus::coords);
     CHECK(c == Coords{{0.0, 720, 3.0}});
-    std::tie(ls, c) = av::getCoordLammps(
-        "no  what if 0.000000 +7.2e2 3f 2.0 ", av::frameStatus::inFrame, 0);
-    CHECK(ls == av::lineStatus::coords);
+    std::tie(ls, c) = avi::getCoordLammps(
+        "no  what if 0.000000 +7.2e2 3f 2.0 ", avi::frameStatus::inFrame, 0);
+    CHECK(ls == avi::lineStatus::coords);
     CHECK(c == Coords{{720, 3.0, 2.0}});
     // garbage
-    std::tie(ls, c) = av::getCoordLammps(
-        "no  what if 0.000000 +7.2e2 3f 2.0 whatever  ", av::frameStatus::inFrame, 0);
-    CHECK(ls == av::lineStatus::garbage);
+    std::tie(ls, c) = avi::getCoordLammps(
+        "no  what if 0.000000 +7.2e2 3f 2.0 whatever  ", avi::frameStatus::inFrame, 0);
+    CHECK(ls == avi::lineStatus::garbage);
     std::tie(ls, c) =
-        av::getCoordLammps("garbage", av::frameStatus::inFrame, 0);
-    CHECK(ls == av::lineStatus::garbage);
-    std::tie(ls, c) = av::getCoordLammps("-76.770403   +7.2e2   .7",
-                                               av::frameStatus::inFrame, 2);
-    CHECK(ls == av::lineStatus::garbage);
+        avi::getCoordLammps("garbage", avi::frameStatus::inFrame, 0);
+    CHECK(ls == avi::lineStatus::garbage);
+    std::tie(ls, c) = avi::getCoordLammps("-76.770403   +7.2e2   .7",
+                                               avi::frameStatus::inFrame, 2);
+    CHECK(ls == avi::lineStatus::garbage);
     std::tie(ls, c) =
-        av::getCoordLammps("what 34 2.5", av::frameStatus::inFrame, 0);
-    CHECK(ls == av::lineStatus::garbage);
-    std::tie(ls, c) = av::getCoordLammps(
-        "-76.770403   +7.2e2   .7 garbage", av::frameStatus::inFrame, 0);
-    CHECK(ls == av::lineStatus::garbage);
-    std::tie(ls, c) = av::getCoordLammps("what 34 2.5 garbage",
-                                               av::frameStatus::inFrame, 0);
-    CHECK(ls == av::lineStatus::garbage);
-    std::tie(ls, c) = av::getCoordLammps("what ITEM: 2.5 garbage",
-                                               av::frameStatus::inFrame, 0);
-    CHECK(ls == av::lineStatus::garbage);
+        avi::getCoordLammps("what 34 2.5", avi::frameStatus::inFrame, 0);
+    CHECK(ls == avi::lineStatus::garbage);
+    std::tie(ls, c) = avi::getCoordLammps(
+        "-76.770403   +7.2e2   .7 garbage", avi::frameStatus::inFrame, 0);
+    CHECK(ls == avi::lineStatus::garbage);
+    std::tie(ls, c) = avi::getCoordLammps("what 34 2.5 garbage",
+                                               avi::frameStatus::inFrame, 0);
+    CHECK(ls == avi::lineStatus::garbage);
+    std::tie(ls, c) = avi::getCoordLammps("what ITEM: 2.5 garbage",
+                                               avi::frameStatus::inFrame, 0);
+    CHECK(ls == avi::lineStatus::garbage);
     // border
-    std::tie(ls, c) = av::getCoordLammps("ITEM: 2.5 garbage",
-                                               av::frameStatus::inFrame, 0);
-    CHECK(ls == av::lineStatus::frameBorder);
+    std::tie(ls, c) = avi::getCoordLammps("ITEM: 2.5 garbage",
+                                               avi::frameStatus::inFrame, 0);
+    CHECK(ls == avi::lineStatus::frameBorder);
     std::tie(ls, c) =
-        av::getCoordLammps("ITEM:", av::frameStatus::inFrame, 0);
-    CHECK(ls == av::lineStatus::frameBorder);
-    std::tie(ls, c) = av::getCoordLammps("  ITEM: 0.000000 +7.2e2 3f",
-                                               av::frameStatus::inFrame, 0);
-    CHECK(ls == av::lineStatus::frameBorder);
+        avi::getCoordLammps("ITEM:", avi::frameStatus::inFrame, 0);
+    CHECK(ls == avi::lineStatus::frameBorder);
+    std::tie(ls, c) = avi::getCoordLammps("  ITEM: 0.000000 +7.2e2 3f",
+                                               avi::frameStatus::inFrame, 0);
+    CHECK(ls == avi::lineStatus::frameBorder);
   }
 }
 
@@ -530,46 +530,46 @@ TEST_CASE(
     "[defectsTest]") {
   SECTION("Normal cases") {
     std::array<Coords, 2> c;
-    av::lineStatus ls;
+    avi::lineStatus ls;
     // coords
     std::tie(ls, c) =
-        av::getCoordDisplaced("1 -76.770403   +7.2e2   .7  +76.770403   "
+        avi::getCoordDisplaced("1 -76.770403   +7.2e2   .7  +76.770403   "
                                     "-7.2e2   0.700 6891 112087 1 ");
-    CHECK(ls == av::lineStatus::coords);
+    CHECK(ls == avi::lineStatus::coords);
     CHECK(c == std::array<Coords, 2>{{Coords{{-76.770403, 720, 0.7}},
                                       Coords{{76.770403, -720, 0.7}}}});
-    std::tie(ls, c) = av::getCoordDisplaced(
+    std::tie(ls, c) = avi::getCoordDisplaced(
         "Fe +76.770403   -7.2e2   0.700 -76.770403  +7.2e2   .7  ");
-    CHECK(ls == av::lineStatus::coords);
+    CHECK(ls == avi::lineStatus::coords);
     CHECK(c == std::array<Coords, 2>{{Coords{{76.770403, -720, 0.7}},
                                       Coords{{-76.770403, 720, 0.7}}}});
-    std::tie(ls, c) = av::getCoordDisplaced(
+    std::tie(ls, c) = avi::getCoordDisplaced(
         "  Fe +76.770403f   -7.2e2d   0.700 -76.770403  +7.2e2   .7  ITEM:");
-    CHECK(ls == av::lineStatus::coords);
+    CHECK(ls == avi::lineStatus::coords);
     CHECK(c == std::array<Coords, 2>{{Coords{{76.770403, -720, 0.7}},
                                       Coords{{-76.770403, 720, 0.7}}}});
     // garbage
-    std::tie(ls, c) = av::getCoordDisplaced("garbage");
-    CHECK(ls == av::lineStatus::garbage);
-    std::tie(ls, c) = av::getCoordDisplaced(
+    std::tie(ls, c) = avi::getCoordDisplaced("garbage");
+    CHECK(ls == avi::lineStatus::garbage);
+    std::tie(ls, c) = avi::getCoordDisplaced(
         "Fe   -76.770403   +7.2e2 -76.770403   +7.2e2   .7");
-    CHECK(ls == av::lineStatus::garbage);
-    std::tie(ls, c) = av::getCoordDisplaced(
+    CHECK(ls == avi::lineStatus::garbage);
+    std::tie(ls, c) = avi::getCoordDisplaced(
         "Fe   -76.770403   +7.2e2-76.770403   +7.2e2   .7");
-    CHECK(ls == av::lineStatus::garbage);
+    CHECK(ls == avi::lineStatus::garbage);
     std::tie(ls, c) =
-        av::getCoordDisplaced("what 34 2.5 3.5 whatever 3.0 3.5");
-    CHECK(ls == av::lineStatus::garbage);
-    std::tie(ls, c) = av::getCoordDisplaced("what ITEM: 2.5 garbage");
-    CHECK(ls == av::lineStatus::garbage);
+        avi::getCoordDisplaced("what 34 2.5 3.5 whatever 3.0 3.5");
+    CHECK(ls == avi::lineStatus::garbage);
+    std::tie(ls, c) = avi::getCoordDisplaced("what ITEM: 2.5 garbage");
+    CHECK(ls == avi::lineStatus::garbage);
     // border
-    std::tie(ls, c) = av::getCoordDisplaced("ITEM: ENTRIES 2.5 garbage");
-    CHECK(ls == av::lineStatus::frameBorder);
-    std::tie(ls, c) = av::getCoordDisplaced("ITEM: ENTRIES");
-    CHECK(ls == av::lineStatus::frameBorder);
-    std::tie(ls, c) = av::getCoordDisplaced(
+    std::tie(ls, c) = avi::getCoordDisplaced("ITEM: ENTRIES 2.5 garbage");
+    CHECK(ls == avi::lineStatus::frameBorder);
+    std::tie(ls, c) = avi::getCoordDisplaced("ITEM: ENTRIES");
+    CHECK(ls == avi::lineStatus::frameBorder);
+    std::tie(ls, c) = avi::getCoordDisplaced(
         " ITEM: +76.770403   -7.2e2   0.700 -76.770403  +7.2e2   .7");
-    CHECK(ls == av::lineStatus::garbage);
+    CHECK(ls == avi::lineStatus::garbage);
   }
 }
 
@@ -580,8 +580,8 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
   SECTION("Normal cases") {
     SECTION("Single Dumbbell") {
       std::vector<std::tuple<Coords, double, Coords>> atoms;
-      auto origin = av::Coords{{0.25, 0.25, 0.25}};
-      auto max = av::Coords{{10.75, 10.75, 10.75}};
+      auto origin = avi::Coords{{0.25, 0.25, 0.25}};
+      auto max = avi::Coords{{10.75, 10.75, 10.75}};
       auto maxInitial = getInitialMax(origin, max);
       NextExpected ne{
           origin, max,
@@ -623,7 +623,7 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
       info.originY = origin[1];
       info.originZ = origin[2];
       ExtraInfo extraInfo;
-      auto fsAtoms = std::make_pair(av::xyzFileStatus::reading, atoms);
+      auto fsAtoms = std::make_pair(avi::xyzFileStatus::reading, atoms);
       auto ungroupedDefectsDumbbellPair = atoms2defects(fsAtoms, info, extraInfo, config);
       auto ungroupedDefects = std::get<2>(ungroupedDefectsDumbbellPair);
       REQUIRE(ungroupedDefects.size() == 4); // 2 interstitials, 2 vacancies
@@ -636,24 +636,24 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
                 2); // one cluster of three and other of one
         SECTION("Check ndefects and cluster sizes") {
           std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-              av::getNDefectsAndClusterFractions(defects);
+              avi::getNDefectsAndClusterFractions(defects);
           REQUIRE(nDefects == 1);
           REQUIRE(inClusterFractionI == Approx(100.0));
           REQUIRE(inClusterFractionV == Approx(100.0));
           ignoreSmallClusters(defects, clusterSizeMap);
           std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-              av::getNDefectsAndClusterFractions(defects);
+              avi::getNDefectsAndClusterFractions(defects);
           REQUIRE(nDefects == 1);
           REQUIRE(inClusterFractionI == Approx(0.0));
           REQUIRE(inClusterFractionV == Approx(0.0)); // changed
-          auto clusterIdMap = av::clusterMapping(defects);
+          auto clusterIdMap = avi::clusterMapping(defects);
           REQUIRE(clusterIdMap.size() == 0); // 1 dumbbell
           auto clusterIVMap =
-              av::clusterIVType(clusterIdMap, clusterSizeMap);
+              avi::clusterIVType(clusterIdMap, clusterSizeMap);
           REQUIRE(clusterIVMap.size() == 0);
           int maxClusterSizeI, maxClusterSizeV;
           std::tie(maxClusterSizeI, maxClusterSizeV) =
-              av::getMaxClusterSizes(clusterSizeMap, clusterIdMap);
+              avi::getMaxClusterSizes(clusterSizeMap, clusterIdMap);
           REQUIRE(maxClusterSizeI == 0);
           REQUIRE(maxClusterSizeV == 0);
           /*
@@ -665,7 +665,7 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
         */
 
           SECTION("Check cluster features") {
-            auto feats = av::clusterFeatures(
+            auto feats = avi::clusterFeatures(
                 defects, clusterIdMap, clusterSizeMap, latticeConst);
             REQUIRE(feats.size() == 0);
             /*
@@ -690,8 +690,8 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
     }       // End of Single Dumbbell test
     SECTION("big interstitial cluster") {
       std::vector<std::tuple<Coords, double, Coords>> atoms;
-      auto origin = av::Coords{{0.5, 0.5, 0.5}};
-      auto max = av::Coords{{6.0, 6.0, 6.0}};
+      auto origin = avi::Coords{{0.5, 0.5, 0.5}};
+      auto max = avi::Coords{{6.0, 6.0, 6.0}};
       auto maxInitial = getInitialMax(origin, max);
       NextExpected ne{
           origin, max,
@@ -736,40 +736,40 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
       info.originY = origin[1];
       info.originZ = origin[2];
       ExtraInfo extraInfo;
-      auto fsAtoms = std::make_pair(av::xyzFileStatus::reading, atoms);
+      auto fsAtoms = std::make_pair(avi::xyzFileStatus::reading, atoms);
       auto ungroupedDefectsDumbbellPair = atoms2defects(fsAtoms, info, extraInfo, config);
       auto ungroupedDefects = std::get<2>(ungroupedDefectsDumbbellPair);
       REQUIRE(ungroupedDefects.size() == 10);
       int nDefects;
       double inClusterFractionI, inClusterFractionV;
       std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-          av::getNDefectsAndClusterFractions(ungroupedDefects);
+          avi::getNDefectsAndClusterFractions(ungroupedDefects);
       SECTION("Check cluster grouping") {
         auto defects = groupDefects(ungroupedDefects, latticeConst);
         auto clusterSizeMap = clusterSizes(defects);
         REQUIRE(clusterSizeMap.size() == 5);
         SECTION("Check ndefects and cluster sizes") {
           std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-              av::getNDefectsAndClusterFractions(defects);
+              avi::getNDefectsAndClusterFractions(defects);
           REQUIRE(nDefects == 4);
           REQUIRE(inClusterFractionI == Approx(100.0));
           REQUIRE(inClusterFractionV == Approx(100.0));
           ignoreSmallClusters(defects, clusterSizeMap);
           std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-              av::getNDefectsAndClusterFractions(defects);
+              avi::getNDefectsAndClusterFractions(defects);
           REQUIRE(nDefects == 4);
           REQUIRE(inClusterFractionI == Approx(100.0));
           REQUIRE(inClusterFractionV == Approx(0.0)); // changed
-          auto clusterIdMap = av::clusterMapping(defects);
+          auto clusterIdMap = avi::clusterMapping(defects);
           REQUIRE(clusterIdMap.size() == 1); // 1 interstitial cluster
           REQUIRE(std::begin(clusterIdMap)->second.size() == 6);
           auto clusterIVMap =
-              av::clusterIVType(clusterIdMap, clusterSizeMap);
+              avi::clusterIVType(clusterIdMap, clusterSizeMap);
           REQUIRE(clusterIVMap.size() == 1);
           REQUIRE(std::begin(clusterIVMap)->second == 4); // surviving
           int maxClusterSizeI, maxClusterSizeV;
           std::tie(maxClusterSizeI, maxClusterSizeV) =
-              av::getMaxClusterSizes(clusterSizeMap, clusterIdMap);
+              avi::getMaxClusterSizes(clusterSizeMap, clusterIdMap);
           REQUIRE(maxClusterSizeI == 4);
           REQUIRE(maxClusterSizeV == 0);
         } // ndefects and cluster sizes
@@ -777,8 +777,8 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
     }
     SECTION("Interstitial and Vacancy in two big clusters") {
       std::vector<std::tuple<Coords, double, Coords>> atoms;
-      auto origin = av::Coords{{0.0, 0.0, 0.0}};
-      auto max = av::Coords{{4.5, 4.5, 4.5}};
+      auto origin = avi::Coords{{0.0, 0.0, 0.0}};
+      auto max = avi::Coords{{4.5, 4.5, 4.5}};
       auto maxInitial = getInitialMax(origin, max);
       NextExpected ne{
           origin, max,
@@ -821,14 +821,14 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
       info.originY = origin[1];
       info.originZ = origin[2];
       ExtraInfo extraInfo;
-      auto fsAtoms = std::make_pair(av::xyzFileStatus::reading, atoms);
+      auto fsAtoms = std::make_pair(avi::xyzFileStatus::reading, atoms);
       auto ungroupedDefectsDumbbellPair = atoms2defects(fsAtoms, info, extraInfo, config);
       auto ungroupedDefects = std::get<2>(ungroupedDefectsDumbbellPair);
       CHECK(ungroupedDefects.size() == 200);
       int nDefects;
       double inClusterFractionI, inClusterFractionV;
       std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-          av::getNDefectsAndClusterFractions(ungroupedDefects);
+          avi::getNDefectsAndClusterFractions(ungroupedDefects);
       SECTION("Check cluster grouping") {
         auto defects = groupDefects(ungroupedDefects, latticeConst);
         /*
@@ -842,17 +842,17 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
         REQUIRE(clusterSizeMap.size() == 2);  // TODO:  unimportant! check again
         SECTION("Check ndefects and cluster sizes") {
           std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-              av::getNDefectsAndClusterFractions(defects);
+              avi::getNDefectsAndClusterFractions(defects);
           REQUIRE(nDefects == 99);
           REQUIRE(inClusterFractionI == Approx(100.0));
           REQUIRE(inClusterFractionV == Approx(100.0));
           ignoreSmallClusters(defects, clusterSizeMap);
           std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-              av::getNDefectsAndClusterFractions(defects);
+              avi::getNDefectsAndClusterFractions(defects);
           REQUIRE(nDefects == 99);
           REQUIRE(inClusterFractionI == Approx(100.0));
           REQUIRE(inClusterFractionV == Approx(100.0));
-          auto clusterIdMap = av::clusterMapping(defects);
+          auto clusterIdMap = avi::clusterMapping(defects);
           REQUIRE(clusterIdMap.size() == 2); // 1 interstitial and 1 vacancy cluster
           auto it = std::begin(clusterIdMap);
           // REQUIRE((it->second.size() == 98 || it->second.size() == 104));
@@ -860,7 +860,7 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
           it++;
           CHECK(it->second.size() == 101);
           auto clusterIVMap =
-              av::clusterIVType(clusterIdMap, clusterSizeMap);
+              avi::clusterIVType(clusterIdMap, clusterSizeMap);
           REQUIRE(clusterIVMap.size() == 2);
           auto jt = std::begin(clusterIVMap);
           REQUIRE(std::abs(jt->second) == 99); // surviving
@@ -868,7 +868,7 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
           REQUIRE(std::abs(jt->second) == 99); // surviving
           int maxClusterSizeI, maxClusterSizeV;
           std::tie(maxClusterSizeI, maxClusterSizeV) =
-              av::getMaxClusterSizes(clusterSizeMap, clusterIdMap);
+              avi::getMaxClusterSizes(clusterSizeMap, clusterIdMap);
           REQUIRE(maxClusterSizeI == 99);
           REQUIRE(maxClusterSizeV == 99);
         } // ndefects and cluster sizes
@@ -880,8 +880,8 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
         "One atom kicked out of the box : unwrapped coordinates are invalid") {
       std::vector<std::tuple<Coords, double, Coords>> atoms;
 
-      auto origin = av::Coords{{0.25, 0.25, 0.25}};
-      auto max = av::Coords{{10.75, 10.75, 10.75}};
+      auto origin = avi::Coords{{0.25, 0.25, 0.25}};
+      auto max = avi::Coords{{10.75, 10.75, 10.75}};
       auto maxInitial = getInitialMax(origin, max);
       NextExpected ne{
           origin, max,
@@ -916,7 +916,7 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
       info.originY = origin[1];
       info.originZ = origin[2];
       ExtraInfo extraInfo;
-      auto fsAtoms = std::make_pair(av::xyzFileStatus::reading, atoms);
+      auto fsAtoms = std::make_pair(avi::xyzFileStatus::reading, atoms);
       auto ungroupedDefectsDumbbellPair = atoms2defects(fsAtoms, info, extraInfo, config);
       auto ungroupedDefects = std::get<2>(ungroupedDefectsDumbbellPair);
       // it should have been 4 but now alot more defects are counted as the
@@ -940,8 +940,8 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
   SECTION("Edge cases") {
     SECTION("Perfect lattice") {
       std::vector<std::tuple<Coords, double, Coords>> atoms;
-      auto origin = av::Coords{{0.0, 0.0, 0.0}};
-      auto max = av::Coords{{1.5, 1.5, 1.5}};
+      auto origin = avi::Coords{{0.0, 0.0, 0.0}};
+      auto max = avi::Coords{{1.5, 1.5, 1.5}};
       auto maxInitial = getInitialMax(origin, max);
       NextExpected ne{
           origin, max,
@@ -960,14 +960,14 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
       info.originY = origin[1];
       info.originZ = origin[2];
       ExtraInfo extraInfo;
-      auto fsAtoms = std::make_pair(av::xyzFileStatus::reading, atoms);
+      auto fsAtoms = std::make_pair(avi::xyzFileStatus::reading, atoms);
       auto ungroupedDefectsDumbbellPair = atoms2defects(fsAtoms, info, extraInfo, config);
       REQUIRE(std::get<2>(ungroupedDefectsDumbbellPair).empty());
     }
     SECTION("slightly shaken lattice") {
       std::vector<std::tuple<Coords, double, Coords>> atoms;
-      auto origin = av::Coords{{0.0, 0.0, 0.0}};
-      auto max = av::Coords{{1.5, 1.5, 1.5}};
+      auto origin = avi::Coords{{0.0, 0.0, 0.0}};
+      auto max = avi::Coords{{1.5, 1.5, 1.5}};
       auto maxInitial = getInitialMax(origin, max);
       NextExpected ne{
           origin, max,
@@ -991,7 +991,7 @@ SCENARIO("Given xyz coordinates of all the lattice atoms, output only the "
       info.originX = origin[0];
       info.originY = origin[1];
       info.originZ = origin[2];
-      auto fsAtoms = std::make_pair(av::xyzFileStatus::reading, atoms);
+      auto fsAtoms = std::make_pair(avi::xyzFileStatus::reading, atoms);
       auto ungroupedDefectsDumbbellPair = atoms2defects(fsAtoms, info, extraInfo, config);
       REQUIRE(std::get<2>(ungroupedDefectsDumbbellPair).empty());
     }
@@ -1004,7 +1004,7 @@ SCENARIO("Given xyz coordinates of all the displaced atoms, output only the "
          "[defectsTest]") {
   SECTION("Normal cases") {
     SECTION("Ring") {
-      std::vector<std::array<av::Coords, 2>> displacedOld{
+      std::vector<std::array<avi::Coords, 2>> displacedOld{
           {{Coords{{-155.886, 2.3739, -32.4433}},
             Coords{{-155.652, 1.48622, -33.0678}}}},
           {{Coords{{-154.304, 3.9565, -30.8607}},
@@ -1031,12 +1031,12 @@ SCENARIO("Given xyz coordinates of all the displaced atoms, output only the "
             Coords{{-152.263, 1.98476, -36.8897}}}},
           {{Coords{{-163.799, -113.156, 19.7825}},
             Coords{{-151.98, 3.48003, -34.8472}}}}};
-      std::array<std::vector<av::Coords>, 2> displaced;
+      std::array<std::vector<avi::Coords>, 2> displaced;
       for (const auto &x : displacedOld) {
         displaced[0].emplace_back(std::move(x[0]));
         displaced[1].emplace_back(std::move(x[1]));
       }
-      auto fs = av::xyzFileStatus::reading;
+      auto fs = avi::xyzFileStatus::reading;
       auto fsDisplaced = std::make_pair(fs, displaced);
       auto latticeConst = 3.165;
       auto ungroupedDefectsDumbbellPair =
@@ -1046,7 +1046,7 @@ SCENARIO("Given xyz coordinates of all the displaced atoms, output only the "
       int nDefects;
       double inClusterFractionI, inClusterFractionV;
       std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-          av::getNDefectsAndClusterFractions(ungroupedDefects);
+          avi::getNDefectsAndClusterFractions(ungroupedDefects);
       /*
       std::sort(std::begin(ungroupedDefects), std::end(ungroupedDefects), [](const auto &a, const auto &b) {
         if (std::get<0>(a)[0] == std::get<0>(b)[0]) return std::get<0>(a)[1] < std::get<0>(b)[1];
@@ -1092,30 +1092,30 @@ SCENARIO("Given xyz coordinates of all the displaced atoms, output only the "
         REQUIRE(clusterSizeMap.size() == 4);
         SECTION("Check ndefects and cluster sizes") {
           std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-              av::getNDefectsAndClusterFractions(defects);
+              avi::getNDefectsAndClusterFractions(defects);
           REQUIRE(nDefects == 3);
           REQUIRE(inClusterFractionI == Approx(100.0));
           REQUIRE(inClusterFractionV == Approx(100.0));
           ignoreSmallClusters(defects, clusterSizeMap);
           std::tie(nDefects, inClusterFractionI, inClusterFractionV) =
-              av::getNDefectsAndClusterFractions(defects);
+              avi::getNDefectsAndClusterFractions(defects);
           REQUIRE(inClusterFractionI == Approx(100.0));
           REQUIRE(inClusterFractionV == Approx(0.0));
-          auto clusterIdMap = av::clusterMapping(defects);
+          auto clusterIdMap = avi::clusterMapping(defects);
           REQUIRE(clusterIdMap.size() == 1); // 1 interstitial cluster ring
           auto it = std::begin(clusterIdMap);
           REQUIRE(it->second.size() == 23);
           auto clusterIVMap =
-              av::clusterIVType(clusterIdMap, clusterSizeMap);
+              avi::clusterIVType(clusterIdMap, clusterSizeMap);
           REQUIRE(clusterIVMap.size() == 1);
           REQUIRE(std::abs(std::begin(clusterIVMap)->second) == 3); // surviving
           int maxClusterSizeI, maxClusterSizeV;
           std::tie(maxClusterSizeI, maxClusterSizeV) =
-              av::getMaxClusterSizes(clusterSizeMap, clusterIdMap);
+              avi::getMaxClusterSizes(clusterSizeMap, clusterIdMap);
           REQUIRE(maxClusterSizeI == 3);
           REQUIRE(maxClusterSizeV == 0);
           SECTION("Check cluster features") {
-            auto feats = av::clusterFeatures(
+            auto feats = avi::clusterFeatures(
                 defects, clusterIdMap, clusterSizeMap, latticeConst);
             REQUIRE(feats.size() == 1);
             const auto &distFeat = std::get<0>(std::begin(feats)->second);

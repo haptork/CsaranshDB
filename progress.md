@@ -717,4 +717,12 @@ TODO:
 
 - ~~A15-Huiqiu DENG, 289.xml, R121-1... check defects count 0 error.~~
 
-## 15th Oct
+## 16th Oct
+
+TODO:
+
+- Sort by material, energy ...
+- Do not plot very big defects in plotly comparison plot for speed.
+- R037-10 W 100 A6-Wahyu SETYAWAN P3 final.xyz 0
+- Links to Cdb.
+- Table open initially.

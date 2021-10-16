@@ -16,7 +16,7 @@
 auto getConfig(int argc, char *argv[]) {
   using clipp::option;
   using clipp::value;
-  av::Config config;
+  avi::Config config;
   std::vector<std::string> files;
   int &logMode = config.logMode;
   auto help = false;
@@ -65,22 +65,22 @@ auto getConfig(int argc, char *argv[]) {
            value("log file", config.logFilePath)
                .doc("log (default log-anuvikar-cpp.txt): file name"),
        option("-ld")
-           .set(logMode, logMode | av::LogMode::debug)
+           .set(logMode, logMode | avi::LogMode::debug)
            .doc("log: Enable logging for debug"),
        option("-li")
-           .set(logMode, logMode | av::LogMode::info)
+           .set(logMode, logMode | avi::LogMode::info)
            .doc("log: Enable logging for info"),
        option("-lw")
-           .set(logMode, logMode | av::LogMode::warning)
+           .set(logMode, logMode | avi::LogMode::warning)
            .doc("log: Enable logging for warning"),
        option("-le")
-           .set(logMode, logMode | av::LogMode::error)
+           .set(logMode, logMode | avi::LogMode::error)
            .doc("log: Enable logging for error"),
        option("-ln")
-           .set(logMode, av::LogMode::none | av::LogMode::none)
+           .set(logMode, avi::LogMode::none | avi::LogMode::none)
            .doc("log: Disable logging"),
        option("-la")
-           .set(logMode, av::LogMode::all | av::LogMode::all)
+           .set(logMode, avi::LogMode::all | avi::LogMode::all)
            .doc("log: enable all "),
        clipp::any_other(files), option("-help").set(help));
   if (clipp::parse(argc, argv, cli) && !help && !files.empty()) {
@@ -97,9 +97,9 @@ auto getConfig(int argc, char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-  using av::Logger;
-  // Logger::inst().mode(av::LogMode::warning | av::LogMode::error);
-  av::Config config;
+  using avi::Logger;
+  // Logger::inst().mode(avi::LogMode::warning | avi::LogMode::error);
+  avi::Config config;
   std::vector<std::string> files;
   bool isConfigParse;
   std::tie(config, files, isConfigParse) =
@@ -114,7 +114,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
   outfile << "{\"meta\": {\n";
-  av::configToKeyValue(outfile, config);
+  avi::configToKeyValue(outfile, config);
   outfile << "}\n, \"data\": [\n";
   std::cout << "Total files to process: " << (files.size()) << '\n'
             << std::flush;
@@ -123,20 +123,20 @@ int main(int argc, char *argv[]) {
   Logger::inst().log_info("Started writing to output file \"" + outpath + "\"");
   auto success = 0;
   int curIndex = 0;
-  av::InputInfo info;
-  av::ExtraInfo extraInfo;
+  avi::InputInfo info;
+  avi::ExtraInfo extraInfo;
   auto isInfo = false;
   for (const auto &file : files) {
     std::cout << "\rCurrently processing file " << curIndex + 1 << std::flush;
     Logger::inst().log_info("Started processing file \"" + file + "\"");
-    av::ErrorStatus ret;
+    avi::ErrorStatus ret;
     int curSuccess = 0;
     std::tie(ret, curSuccess) = processFileTimeCmd(file, outfile, config, success, info, extraInfo, isInfo);
-    if (av::ErrorStatus::inputFileMissing == ret) {
-      std::tie(info, extraInfo, isInfo) = av::infoFromStdIn();
+    if (avi::ErrorStatus::inputFileMissing == ret) {
+      std::tie(info, extraInfo, isInfo) = avi::infoFromStdIn();
       std::tie(ret, curSuccess) = processFileTimeCmd(file, outfile, config, success, info, extraInfo, isInfo);
     }
-    if (av::ErrorStatus::noError != ret) {
+    if (avi::ErrorStatus::noError != ret) {
       std::cerr << "\nError in processing file " << file << '\n';
       std::cerr << errToStr(ret) << '\n';
       Logger::inst().log_error("Error in processing file \"" + file + "\" " +

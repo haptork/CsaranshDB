@@ -10,14 +10,14 @@
 
 #include <helper.hpp>
 
-namespace av {
+namespace avi {
 
 constexpr auto atomsToIgnore = 1000LL;
 
-double optimizeForOffset(std::vector<av::Coords> &atoms,
+double optimizeForOffset(std::vector<avi::Coords> &atoms,
                          double minLatConst, double maxLatConst, double step);
 
-double optimizeLatConst(std::vector<av::Coords> &atoms, double latConst);
+double optimizeLatConst(std::vector<avi::Coords> &atoms, double latConst);
 
-} // namespace av
+} // namespace avi
 #endif

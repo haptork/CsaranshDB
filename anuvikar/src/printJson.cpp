@@ -9,7 +9,7 @@ void printClusterIds(const std::unordered_map<int, std::vector<int>> clusters,
   for (const auto &it : clusters) {
     outfile << '"' << it.first << "\":";
     outfile << "[";
-    av::writeVector(it.second, outfile);
+    avi::writeVector(it.second, outfile);
     outfile << "]";
     if (i != clusters.size() - 1) outfile << ", ";
     outfile << "\n";
@@ -29,24 +29,24 @@ void printClusterIVs(const std::unordered_map<int, int> clusters,
   }
 }
 
-void printSingleFeat(const av::featT &feats, std::ostream &outfile) {
+void printSingleFeat(const avi::featT &feats, std::ostream &outfile) {
   outfile << "\"dist\": ";
   outfile << "[";
-  av::writeStdAr(std::get<0>(feats), outfile);
+  avi::writeStdAr(std::get<0>(feats), outfile);
   outfile << "],\n";
   outfile << "\"angle\": ";
   outfile << "[";
-  av::writeStdAr(std::get<1>(feats), outfile);
+  avi::writeStdAr(std::get<1>(feats), outfile);
   /*
   outfile << "],\n";
   outfile << "\"adjNn2\": ";
   outfile << "[";
-  av::writeStdAr(std::get<2>(feats), outfile);
+  avi::writeStdAr(std::get<2>(feats), outfile);
   */
   outfile << "]\n";
 }
 
-void printFeats(const std::unordered_map<int, av::featT> &feats,
+void printFeats(const std::unordered_map<int, avi::featT> &feats,
                 std::ostream &outfile) {
   size_t count = 0;
   for (const auto &it : feats) {
@@ -59,37 +59,37 @@ void printFeats(const std::unordered_map<int, av::featT> &feats,
   }
 }
 
-auto strSimulationCode(av::XyzFileType code) {
-  return (code == av::XyzFileType::cascadesDbLikeCols)
+auto strSimulationCode(avi::XyzFileType code) {
+  return (code == avi::XyzFileType::cascadesDbLikeCols)
              ? "cascadesDbLikeCols"
-             : (code == av::XyzFileType::lammpsWithStdHeader)
+             : (code == avi::XyzFileType::lammpsWithStdHeader)
                    ? "lammpsWithStdHeader"
-                   : (code == av::XyzFileType::parcasWithStdHeader)
+                   : (code == avi::XyzFileType::parcasWithStdHeader)
                       ? "parcasWithStdHeader"
-                      : (code == av::XyzFileType::lammpsDisplacedCompute)
+                      : (code == avi::XyzFileType::lammpsDisplacedCompute)
                         ? "lammpsDisp"
                         : "generic-XYZ";
 }
 
-std::string errorStr(av::ErrorStatus err) {
-  if (err == av::ErrorStatus::inputFileMissing) {
+std::string errorStr(avi::ErrorStatus err) {
+  if (err == avi::ErrorStatus::inputFileMissing) {
     return "Could not read input file";
-  } else if (err == av::ErrorStatus::inputFileMissing) {
+  } else if (err == avi::ErrorStatus::inputFileMissing) {
     return "Could not read input file";
-  } else if (err == av::ErrorStatus::InputFileincomplete) {
+  } else if (err == avi::ErrorStatus::InputFileincomplete) {
     return "Input file doesn't have all the info";
-  } else if (err == av::ErrorStatus::unknownSimulator) {
+  } else if (err == avi::ErrorStatus::unknownSimulator) {
     return "Input file doesn't have LAMMPS/PARCAS/DISPLACED simulation input "
            "type";
-  } else if (err == av::ErrorStatus::xyzFileDefectsProcessingError) {
+  } else if (err == avi::ErrorStatus::xyzFileDefectsProcessingError) {
     return "XYZ file has too many defects or zero atoms";
   }
   return "";
 }
 
-void av::resToKeyValue(std::ostream &outfile,
-                             const av::resultsT &res) {
-  auto printDefects = [&outfile](const av::DefectVecT &d) {
+void avi::resToKeyValue(std::ostream &outfile,
+                             const avi::resultsT &res) {
+  auto printDefects = [&outfile](const avi::DefectVecT &d) {
     size_t count = 0;
     for (const auto &x : d) {
       outfile << "[" << std::get<0>(x)[0] << ", " << std::get<0>(x)[1] << ", "
@@ -128,13 +128,13 @@ void av::resToKeyValue(std::ostream &outfile,
   outfile << "}";
   outfile << ",\n";
   outfile << "\"coDefects\": [";
-  av::writeVector(res.coDefects, outfile);
+  avi::writeVector(res.coDefects, outfile);
   outfile << "]\n";
 }
 
-void av::infoToKeyValue(std::ostream &outfile,
-                              const av::InputInfo &i,
-                              const av::ExtraInfo &ei) {
+void avi::infoToKeyValue(std::ostream &outfile,
+                              const avi::InputInfo &i,
+                              const avi::ExtraInfo &ei) {
   outfile << "\"xyzFilePath\": \"" << i.xyzFilePath << "\",\n"
           << "\"id\": \"" << ei.id << "\",\n"
           << "\"substrate\": \"" << ei.substrate << "\",\n"
@@ -162,8 +162,8 @@ void av::infoToKeyValue(std::ostream &outfile,
           << "\"originType\":" << i.originType; // << ",\n";
 }
 
-void av::configToKeyValue(std::ostream &outfile,
-                                const av::Config &c) {
+void avi::configToKeyValue(std::ostream &outfile,
+                                const avi::Config &c) {
   outfile << "\"version\": \"" << "0.4" << "\",\n"
           << "\"onlyDefects\": \"" << c.onlyDefects << "\",\n"
           << "\"isFindDistribution\": \"" << c.isFindDistribAroundPKA << "\",\n"
@@ -178,13 +178,13 @@ void av::configToKeyValue(std::ostream &outfile,
           << "\"outputJSONFilePath\": \"" << c.outputJSONFilePath << "\""; // << ",\n";
 }
 
-void av::printJson(std::ostream &outfile, const av::InputInfo &i,
-                         const av::ExtraInfo &ei,
-                         const av::resultsT &res) {
+void avi::printJson(std::ostream &outfile, const avi::InputInfo &i,
+                         const avi::ExtraInfo &ei,
+                         const avi::resultsT &res) {
   outfile << "{";
-  av::infoToKeyValue(outfile, i, ei);
+  avi::infoToKeyValue(outfile, i, ei);
   outfile << ",\n";
-  av::resToKeyValue(outfile, res);
+  avi::resToKeyValue(outfile, res);
   outfile << "}\n";
 }
 // const char * c = outfile.str().c_str();

@@ -12,7 +12,7 @@
 
 #include <helper.hpp>
 
-namespace av {
+namespace avi {
 
 constexpr auto maxColumnsTry = 50;
 
@@ -20,18 +20,18 @@ enum class frameStatus : bool { prelude, inFrame };
 
 enum class lineStatus : int { garbage, coords, inFrameCoords, frameBorder };
 
-std::pair<av::lineStatus, av::Coords>
-getCoord(const std::string &line, const av::frameStatus &fs,
-         const av::InputInfo &info, const av::ExtraInfo &ei);
+std::pair<avi::lineStatus, avi::Coords>
+getCoord(const std::string &line, const avi::frameStatus &fs,
+         const avi::InputInfo &info, const avi::ExtraInfo &ei);
 
-std::pair<av::lineStatus, av::Coords>
-getCoordLammps(const std::string &line, const av::frameStatus &fs, int);
+std::pair<avi::lineStatus, avi::Coords>
+getCoordLammps(const std::string &line, const avi::frameStatus &fs, int);
 
-std::pair<av::lineStatus, av::Coords>
-getCoordParcas(const std::string &line, const av::frameStatus &fs, int);
+std::pair<avi::lineStatus, avi::Coords>
+getCoordParcas(const std::string &line, const avi::frameStatus &fs, int);
 
-std::pair<av::lineStatus, std::array<av::Coords, 2>>
+std::pair<avi::lineStatus, std::array<avi::Coords, 2>>
 getCoordDisplaced(const std::string &line);
 
-} // namespace av
+} // namespace avi
 #endif

@@ -14,14 +14,14 @@
 #include <helper.hpp>
 #include <results.hpp>
 
-namespace av {
+namespace avi {
 void printJson(std::ostream &outfile, const InputInfo &i, const ExtraInfo &ei,
                const resultsT &res);
 
 void resToKeyValue(std::ostream &outfile, const resultsT &res);
 void infoToKeyValue(std::ostream &outfile, const InputInfo &i,
                     const ExtraInfo &ei);
-void configToKeyValue(std::ostream &outfile, const av::Config &c);
-} // namespace av
+void configToKeyValue(std::ostream &outfile, const avi::Config &c);
+} // namespace avi
 
 #endif

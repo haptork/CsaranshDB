@@ -1,8 +1,8 @@
 #include <NextExpected.hpp>
 #include <iostream>
 
-const av::Coords &av::NextExpected::increment() {
-  av::Coords &c = _cur;
+const avi::Coords &avi::NextExpected::increment() {
+  avi::Coords &c = _cur;
   constexpr auto epsilon = 1e-4;
   for (auto i : {2, 1, 0}) {
     //std::cout << "i is " << i << '\n';
@@ -53,8 +53,8 @@ const av::Coords &av::NextExpected::increment() {
   return c;
 }
 
-const av::Coords &av::NextExpected::incrementFcc() {
-  av::Coords &c = _cur;
+const avi::Coords &avi::NextExpected::incrementFcc() {
+  avi::Coords &c = _cur;
   constexpr auto epsilon = 1e-4;
   //for (auto i : {2, 1, 0}) {
     if (c[2] < (_maxCur[2] - epsilon)) {
