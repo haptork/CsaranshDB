@@ -13,7 +13,7 @@ export const accessorsAndParseFns = {
   "noParse" : x => x,
   "boolParse" : x => (x.toLowerCase() === "true" || x.toLowerCase() === "yes"),
   "parseVol" : x => parseInt(x / 1000),
-  "parseFileName" : x => x.split('\\').pop().split('/').pop()
+  "parseFileName" : x => x.split('\\').pop().split('/').pop(),
 };
 
 const ac = accessorsAndParseFns;
@@ -28,9 +28,12 @@ export const getAllCol = () => {
     { value: 'potentialused', label: 'Potential Used', isShow: true, filterType: "select", type: "input" , parseFn: ac.noParse},
     { value: 'es', label: 'Electronic Stopping', isShow: false, filterType: "select", type: "input" , parseFn: ac.noParse},
     { value: 'structure', label: 'Structure', isShow: false, filterType: "select", type: "input", parseFn: ac.noParse},
+    { value: 'tags', label: 'Archive', isShow: false, isFilter: true, filterType: "text" , type: "input", parseFn: ac.noParse},
+    { value: 'infile', label: 'Meta Info', isShow: false, isFilter: true, filterType: "text" , type: "input", parseFn: ac.noParse},
+    { value: 'xyzfilepath', label: 'Xyz file', isShow: false, filterType: "text" , type: "input", parseFn: ac.noParse},
+    /*
     { value: 'xyzfilename', label: 'Xyz file name', isShow: false, filterType: "text" , type: "input", accessor: ac.accessorDefault("xyzfilepath"), parseFn: ac.parseFileName},
     { value: 'infilename', label: 'Input File Name', isShow: false, filterType: "text" , type: "input", accessor: ac.accessorDefault("infile"), parseFn: ac.parseFileName},
-    /*
     { value: 'xyzfilepath', label: 'Xyz file path', isShow: false, filterType: "text" , type: "input", parseFn: ac.noParse},
     { value: 'xyzfilename', label: 'Xyz file name', isShow: false, filterType: "text" , type: "input", accessor: ac.accessorDefault("xyzFilePath"), parseFn: ac.parseFileName},
     { value: 'infilename', label: 'Input File Name', isShow: false, filterType: "text" , type: "input", accessor: ac.accessorDefault("infile"), parseFn: ac.parseFileName},
@@ -71,6 +74,9 @@ export const getAllCol = () => {
   const both = (f, g) => x => f(g(x));
   for (const x of res) {
    const key = x.value;
+   if (!x.hasOwnProperty("isFilter")) {
+     x.isFilter = true;
+   }
    if (!x.hasOwnProperty("type")) {
      x.type = defaultType;
    }

@@ -142,6 +142,7 @@ extern "C" char *pyProcessFile(InfoPyInput pyInfo, InfoPyExtraInput pyExtraInfo,
   Logger::inst().file(config.logFilePath);
   std::stringstream outfile;
   auto res = avi::resultsT{};
+  auto lastErr = avi::ErrorStatus::noError;
   auto success = 0;
   if (!isSuccess) {
     res.err = avi::ErrorStatus::unknownSimulator;
@@ -163,6 +164,7 @@ extern "C" char *pyProcessFile(InfoPyInput pyInfo, InfoPyExtraInput pyExtraInfo,
       frameCount++;
       if (res.second != avi::ErrorStatus::noError) {
         Logger::inst().log_info("Error processing" + std::to_string(frameCount) +" frame in file \"" + info.xyzFilePath + "\"");
+        lastErr = res.second;
       } else {
         ++success;
         if (config.allFrames) Logger::inst().log_info("Finished processing" + std::to_string(success) +" frame in file \"" + info.xyzFilePath + "\"");
@@ -172,7 +174,10 @@ extern "C" char *pyProcessFile(InfoPyInput pyInfo, InfoPyExtraInput pyExtraInfo,
     xyzfile.close();
     Logger::inst().log_info("Finished Processing");
   }
-  if (success == 0) avi::printJson(outfile, info, extraInfo, res);
+  if (success == 0) {
+    res.err = lastErr;
+    avi::printJson(outfile, info, extraInfo, res);
+  }
   std::string str = outfile.str();
   char *writable = (char *)malloc(sizeof(char) * (str.size() + 1));
   std::copy(str.begin(), str.end(), writable);

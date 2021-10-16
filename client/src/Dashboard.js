@@ -166,7 +166,8 @@ export class DashboardSimple extends React.Component {
               cidCmp : cidCmp,
               cmpData : cmpData,
               showCol : this.allCols.filter(x => x['isShow']),
-              dataOutline: dataOutline
+              dataOutline: dataOutline,
+              mobileOpen: true
             });
           });
         });

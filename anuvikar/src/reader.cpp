@@ -16,7 +16,7 @@
 
 auto filterZeroClusters(avi::DefectVecT &defects,
                         avi::ClusterSizeMapT &clusterSize, bool isFilter) {
-  using namespace avii::DefectTWrap;
+  using namespace avi::DefectTWrap;
   if (avi::Logger::inst().mode() & avi::LogMode::debug) {
     for (auto it : clusterSize) {
       if (it.second.surviving == 0) {

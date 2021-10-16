@@ -41,7 +41,7 @@ avi::DefectVecT avi::groupDefects(const avi::DefectVecT &defects,
 avi::ClusterSizeMapT
 avi::clusterSizes(const avi::DefectVecT &defects) {
   avi::ClusterSizeMapT clusterSize;
-  using namespace avii::DefectTWrap;
+  using namespace avi::DefectTWrap;
   for (const auto &it : defects) {
     clusterSize[clusterId(it)].all++;
     if (!isSurviving(it)) continue;
@@ -65,7 +65,7 @@ avi::clusterIVType(const avi::ClusterIdMapT &a,
 // ignore dumbbells or similar defects group from cluster list
 void avi::ignoreSmallClusters(avi::DefectVecT &defects,
                                    avi::ClusterSizeMapT &clusterSize) {
-  using namespace avii::DefectTWrap;
+  using namespace avi::DefectTWrap;
   using avi::invars::minClusterPoints;
   using avi::invars::minClusterSize;
   for (auto &it : defects) {
@@ -85,7 +85,7 @@ void avi::ignoreSmallClusters(avi::DefectVecT &defects,
 // cluster ids mapped to defect ids that the clusters have
 avi::ClusterIdMapT
 avi::clusterMapping(const avi::DefectVecT &defects) {
-  using namespace avii::DefectTWrap;
+  using namespace avi::DefectTWrap;
   avi::ClusterIdMapT clusterIds;
   int i = 0;
   for (const auto &it : defects) {
@@ -101,7 +101,7 @@ avi::clusterMapping(const avi::DefectVecT &defects) {
 // fraction of defects in cluster
 std::tuple<int, double, double>
 avi::getNDefectsAndClusterFractions(const avi::DefectVecT &defects) {
-  using namespace avii::DefectTWrap;
+  using namespace avi::DefectTWrap;
   auto inClusterI = 0;
   auto inClusterV = 0;
   auto singlesI = 0;
@@ -135,7 +135,7 @@ avi::clusterFeatures(const avi::DefectVecT &defects,
                           const avi::ClusterIdMapT &clusters,
                           avi::ClusterSizeMapT &clusterCounts,
                           double latticeConst) {
-  using namespace avii::DefectTWrap;
+  using namespace avi::DefectTWrap;
   avi::ClusterFeatMapT clusterFeats;
   using avi::invars::minClusterPoints;
   using avi::invars::minClusterSize;

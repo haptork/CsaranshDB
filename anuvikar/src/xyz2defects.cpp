@@ -147,6 +147,7 @@ getDisplacedAtomsTime(avi::InputInfo &info, avi::ExtraInfo &extraInfo,
         }
         atoms[0].clear();
         atoms[1].clear();
+        avi::Logger::inst().log_warning(info.xyzFilePath + ", " + extraInfo.infile + ": " + " Multiple frames in file. Reading last one.");
       }
       fs = avi::frameStatus::inFrame;
     }
@@ -197,6 +198,7 @@ getAtomsTime(avi::InputInfo &info, avi::ExtraInfo &extraInfo,
         //atoms.clear(); // Ignoring the frame before this one
     }
   }
+  //std::cout <<"atoms here: " << atoms.size() << '\n';
   if (atoms.empty()) return res;
   // assuming bcc /fcc structure and perfect initial. TODO: for imperfect skip
   if (info.structure[0] == 'b') info.ncell = std::round(std::cbrt(atoms.size() / 2.0));
@@ -264,11 +266,11 @@ getAtomsTime(avi::InputInfo &info, avi::ExtraInfo &extraInfo,
         if (leastIndex == 0) {
           avi::Logger::inst().log_warning(info.xyzFilePath + ", " + extraInfo.infile + ": " + msgPre + "Difference in given lattice constant & box-size based lattice constant caused difference in"
                "displaced atom values: " + std::to_string(std::get<3>(combos[0])) + ", " + std::to_string(std::get<3>(combos[1])) +
-               "lattice constants: " + std::to_string(info.latticeConst) + ", " + std::to_string(secLatConst)));
+               "lattice constants (given, calc): " + std::to_string(info.latticeConst) + ", " + std::to_string(secLatConst));
         } else {
           avi::Logger::inst().log_warning(info.xyzFilePath + ", " + extraInfo.infile + ": reverse " + msgPre + "Difference in given lattice constant & box-size based lattice constant caused difference in"
                "displaced atom values: " + std::to_string(std::get<3>(combos[0])) + ", " + std::to_string(std::get<3>(combos[1])) +
-               "lattice constants: " + std::to_string(info.latticeConst) + ", " + std::to_string(secLatConst)));
+               "lattice constants (given, calc): " + std::to_string(info.latticeConst) + ", " + std::to_string(secLatConst));
         }
       }
     }
@@ -298,11 +300,14 @@ avi::xyz2defectsTime(avi::InputInfo &mainInfo,
     infile.seekg(0);
     auto temp = mainInfo.xyzFileType;
     mainInfo.xyzFileType = avi::XyzFileType::generic;
+    mainInfo.xyzColumnStart = 0;
     atoms = getAtomsTime(mainInfo, extraInfo, config, infile, fs);
     if (!atoms.second.empty()) {
       Logger::inst().log_warning(extraInfo.infile +": " + mainInfo.xyzFilePath + ": Default file format " + strSimulationCodeD(temp) + " is not correct. Fallback to generic reading works.");
     }
   }
+  //std::cout << "\natoms: " << atoms.second.size() << '\n';
+  //std::cout << "\nxyzCol: " << mainInfo.xyzColumnStart << '\n';
   if (atoms.second.empty())
     return std::make_tuple(atoms.first, ErrorStatus::xyzFileReadError, avi::DefectVecT{}, std::vector<int>{});
   return (mainInfo.structure == "bcc") ? avi::atoms2defects(atoms, mainInfo, extraInfo, config) : avi::atoms2defectsFcc(atoms, mainInfo, extraInfo, config);
@@ -544,7 +549,7 @@ avi::DefectRes avi::atoms2defects(
     }
     if (interThresh.size() > extraFactor * interstitials.size()) {
       Logger::inst().log_error(errMsg + 
-          "not processing since number of theshold based displaced atoms are excessive, this may be due to "
+          "not processing since number of threshold based displaced atoms are excessive, this may be due to "
           "inputs like latticeConst, boxDim or corrupt xyz file.  (i, v, "
           "interThresh): " +
           std::to_string(interstitials.size()) + ", " +

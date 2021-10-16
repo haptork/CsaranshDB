@@ -370,6 +370,7 @@ def processXyzFileGivenInfo(info, extraInfo, config):
 
     if not _validateConfig(config) or not _validateInfo(info, extraInfo):
         return False, ""
+    isSuccess = True
     lib = cdll.LoadLibrary(config["anuvikarLib"])
     lib.pyProcessFile.restype = c_void_p
     resStr = ''
@@ -379,10 +380,13 @@ def processXyzFileGivenInfo(info, extraInfo, config):
       resStr = _sanitizeCppRes(cast(res, c_char_p).value)
     except:
       resStr = "Error while cpp processing"
+      isSuccess = False
+      return isSuccess, resStr
     finally:
       lib.dalloc.argtypes = [c_void_p]
       lib.dalloc(res)
-    return True, resStr
+    if len(resStr['error']) > 0: return False, resStr['error']
+    return isSuccess, resStr
 
 
 def processXyzFilesInDirGivenInfo(xyzDir, info, extraInfoOrig, config, idStartIndex=0, onlyProcessTop = 0, prefix=[], suffix=["xyz"], excludePrefix=["init", "."], excludeSuffix=[]):
@@ -579,7 +583,7 @@ def processXyzFilesInDirWithInputFiles(xyzDir, config, idStartIndex=0, onlyProce
 # -------------------------------------------------
 
 
-def processXyzFilesInDirGivenMetaFile(metaFilePath, xyzDir, config, idStartIndex=0, onlyProcessTop = 0, prefix=[], suffix=["xyz"], excludePrefix=["init", "."], excludeSuffix=[]):
+def processXyzFilesInDirGivenMetaFile(metaFilePath, xyzDir, config, idStartIndex=0, onlyProcessTop = 0, prefix=[], suffix=["xyz"], excludePrefix=["init", "."], excludeSuffix=[], isRemoveDirectoryFromNames = -1):
     """queries, downloads and processes cascades from cascadesDB.
 
     Returns
@@ -623,6 +627,9 @@ def processXyzFilesInDirGivenMetaFile(metaFilePath, xyzDir, config, idStartIndex
         extraInfo['id'] += "-" + str(idStartIndex + i + 1)
         isSuccess, curRes = processXyzFileGivenInfo(info, extraInfo, config)
         if (isSuccess):
+            if isRemoveDirectoryFromNames > 0:
+              curRes['infile'] = curRes['infile'][isRemoveDirectoryFromNames:-4]
+              curRes['xyzFilePath'] = curRes['xyzFilePath'][isRemoveDirectoryFromNames:]
             res.append(curRes)
         else:
             print(curRes)
@@ -867,7 +874,7 @@ def getInfoFromMeta(metaInfo, metaFilePath, xyzFilePath):
     extraInfo["es"] = metaInfo['electronic_stopping'].lower() == "true"
     extraInfo["isPKAGiven"] = False
     extraInfo["infile"] = metaFilePath
-    extraInfo["tags"] = "cdb: " + metaInfo['data']['archive_name']
+    extraInfo["tags"] = metaInfo['data']['archive_name']
     extraInfo["author"] = metaInfo['attribution']['@id'] + "-" + metaInfo['attribution']['name']
     extraInfo["id"] = metaInfo['@id']
     info["latticeConst"] = float(

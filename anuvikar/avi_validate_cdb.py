@@ -43,8 +43,8 @@ from pysrc.anuvikar_cdb_helper import processXyzFilesInDirGivenMetaFile, _unzipF
 from pysrc.anuvikar_ml import validateForCdb
 import logging
 
-def stageEkaCpp(metaFilePath, xyzDir, config):
-    isSuccess, cascades = processXyzFilesInDirGivenMetaFile(metaFilePath, xyzDir, config)
+def stageEkaCpp(metaFilePath, xyzDir, config, prefixLen):
+    isSuccess, cascades = processXyzFilesInDirGivenMetaFile(metaFilePath, xyzDir, config, isRemoveDirectoryFromNames=prefixLen)
     msg = ''
     if not isSuccess: msg = cascades
     return [isSuccess, msg, cascades]
@@ -178,13 +178,13 @@ def cookCascadesDbTuple(cascades):
       row.append(res)
     row.append(json.dumps({
       'coords': cascade['coords'],
-      'savi': cascade['savi'],
+      'savi': cascade['savi'] if 'savi' in cascade else {},
       'clusters': cascade['clusters'],
       'clustersizes': cascade['clusterSizes'],
       'clusterclasses': cascade['clusterClasses'] if 'clusterClasses' in cascade else {"savi":{}}, # TODO insert anyway
       'eigencoords': cascade['eigen_coords'],
       'dclustcoords': cascade['dclust_coords'],
-      'siavenu': cascade['siavenu'],
+      'siavenu': cascade['siavenu'] if 'siavenu' in cascade else [],
       'simboxfoc': cascade['pka'],
       'boxsize': cascade['boxSize']
     }))
@@ -365,7 +365,7 @@ def validateArchive(srcDir, extractionDir, metaFiles, overwriteJson, overwriteDb
         print("Error in unzipping the file: " + archivePath)
         continue
       print("processing: ", archiveName)
-      isSuccess, msg, curCascades = stageEkaCpp(metaFilePath, xyzDir, config)
+      isSuccess, msg, curCascades = stageEkaCpp(metaFilePath, xyzDir, config, len(extractionDir))
       if not isSuccess: 
         logging.error("Error in cpp processing files in : " + xyzDir + " for " + metaFilePath + ": " + msg)
         print("Error in cpp processing of file: " + metaFilePath + ": " + msg)

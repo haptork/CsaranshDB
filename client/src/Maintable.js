@@ -5,6 +5,8 @@ import Select from 'react-select';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import Visibility from '@material-ui/icons/Visibility';
+import MetaIcon from '@material-ui/icons/Description';
+import ArchiveIcon from '@material-ui/icons/Archive';
 import HighlightOff from '@material-ui/icons/HighlightOff';
 
 import Gpsoff from '@material-ui/icons/GpsOff';
@@ -23,7 +25,7 @@ const ActionButton = (props) => {
     return (
      <div>
 
-      <Tooltip title="View this cascade" placement="left" id="tooltipLook">
+      <Tooltip title="View this cascade" placement="left" name="tooltipLook">
       <IconButton className="tableButton" size="small" color={lookButColor} onClick={() => {
         return props.onLookCur(props.cellInfo);
       }
@@ -33,6 +35,18 @@ const ActionButton = (props) => {
       </IconButton>
       </Tooltip>
       {props.cellInfo.id}
+      <div style={{float:"right"}}>
+      <Tooltip title="View meta file" placement="left">
+      <IconButton size="small" component="a" href={"https://cascadesdb.iaea.org/cdbmeta/cdbrecord/" + props.cellInfo.infile}>
+        <MetaIcon fontSize="small"/>
+      </IconButton>
+      </Tooltip>
+      <Tooltip title="Download xyz archive" placement="left">
+      <IconButton size="small" component="a" href={"https://cascadesdb.iaea.org/data/cdb/" + props.cellInfo.tags}>
+        <ArchiveIcon fontSize="small"/>
+      </IconButton>
+      </Tooltip>
+      </div>
      </div>
     );
 }
@@ -350,17 +364,17 @@ export class MainTable extends React.Component {
     let inputCols = [];
     for (const field of this.fields) {
       const key = field.value;
-      let isFilterable = true;
+      let isFilterable = field.isFilter;
       let filter = undefined;
       let filterMethod = undefined;
       let filterAll = true;
       if (field.filterType === "range") {
-        isFilterable = true;
+        isFilterable = field.isFilter;
         filterAll = true;
         filter = this.filterRange(key); 
         filterMethod = this.defaultRangeFilterAllFn(); 
       } else if (field.filterType === 'select') {
-        isFilterable = true;
+        isFilterable = field.isFilter;
         filterAll = true;
         filter = this.filterSelect(key); 
         filterMethod = this.filterMethodSelect(); 

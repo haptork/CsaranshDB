@@ -80,6 +80,8 @@ module.exports = () => {
       } else {
           rows.orderBy(sortColumn, 'asc');
       }
+    } else {
+      rows.orderBy(['substrate', 'energy', 'temperature', 'potentialused', 'es', 'author'])
     }
 
     const filters = req.query;
@@ -126,12 +128,10 @@ module.exports = () => {
         outline[label].push(row[label])
       }
     }
-    rows.select("id", "ndefects", "substrate", "energy", "infile", "xyzfilepath", "temperature", "simulationtime", "structure", "maxclustersize", "maxclustersizei", "maxclustersizev", "nclusters", "incluster", "inclusteri", "inclusterv", "hullvol", "hulldensity", "ndclustv", "dclustsecimpact", "potentialused", "es", "author");
+    rows.select("id", "ndefects", "substrate", "energy", "infile", "xyzfilepath", "temperature", "simulationtime", "structure", "maxclustersize", "maxclustersizei", "maxclustersizev", "nclusters", "incluster", "inclusteri", "inclusterv", "hullvol", "hulldensity", "ndclustv", "dclustsecimpact", "potentialused", "es", "author", "tags");
     const cascades =  await rows;
     //console.log(cascades[0])
     res.send({'data':cascades, 'outline':outline});
-
-
   });
   
   api.get(['/cascade/:id', '/csaransh/cascade/:id'], async (req, res) => {
@@ -157,12 +157,26 @@ module.exports = () => {
       const curClusterCoords = await dbhandle.select("coordtype", "coords", "savimorph", "size")
                             .where({cascadeid:cmpCluster[0], name:cmpCluster[1]}).first().from("clusters");
       curClusterCoords.coords = JSON.parse(curClusterCoords.coords);
+    const lenC = (curClusterCoords.coordtype == 1) ? 
+                    curClusterCoords.coords.lines.length + curClusterCoords.coords.linesT.length: 
+                    curClusterCoords.coords.length;
+      if (lenC > 3000) {
+        curClusterCoords.coords = [[], [], []];
+        curClusterCoords.coordtype = -1;
+      }
       if (curClusterCoords) cmpCoords[cmpClusterStr] = {...curClusterCoords, ...pairs[cmpClusterStr]};
     }
     cluster.cmppairs = cmpCoords;
     cluster.cmp = JSON.parse(cluster.cmp);
     cluster.cmpsize = JSON.parse(cluster.cmpsize);
     cluster.coords = JSON.parse(cluster.coords);
+    const lenC = (cluster.coordtype == 1) ? 
+                    cluster.coords.lines.length + cluster.coords.linesT.length: 
+                    cluster.coords.length;
+    if (lenC > 3000) {
+      cluster.coords = [[], [], []];
+      cluster.coordtype = -1;
+    } // TODO check at top and return error and handle on client side.
     res.send(cluster);
   });
 

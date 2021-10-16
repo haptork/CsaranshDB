@@ -726,3 +726,5 @@ TODO:
 - R037-10 W 100 A6-Wahyu SETYAWAN P3 final.xyz 0
 - Links to Cdb.
 - Table open initially.
+- rm cascadesdb/all/*json cascadesdb/all/*log cascadesdb/all/*db && time python avi_validate_cdb.py cascadesdb/all/ cascadesdb/all/ cascadesdb/all/*.xml && time python avi_add_cdb.py cascadesdb/all/ cascadesdb/all/csaransh.db && tar czfv cascadesdb/all/cascadesall16oct.tar.gz cascadesdb/all/*json cascadesdb/all/*db cascadesdb/all/*pickle cascadesdb/all/*log && scp -i ../idcdb_rsa cascadesdb/all/cascadesall16oct.tar.gz root@csaransh.xyz:~/
+- rm csaranshtest/testbugs/*json csaranshtest/testbugs/*log && time python avi_validate_cdb.py cascadesdb/all/ csaranshtest/testbugs/ cascadesdb/all/55.xml
