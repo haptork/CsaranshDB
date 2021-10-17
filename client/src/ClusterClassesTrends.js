@@ -231,6 +231,7 @@ export class ClusterClassesTrends extends React.Component {
       { value: 'potentialused', label: 'Potential' },
       { value: 'es', label: 'Electronic stopping' },
       { value: 'author', label: 'Author' },
+      { value: 'structure', label: 'Structure' },
     ];
     this.defaultGroupingLabels = this.options.slice(0, 1);
     this.state = {

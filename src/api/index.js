@@ -330,7 +330,7 @@ module.exports = () => {
     //console.log(groupStr);
     const groupColumns = (groupStr) ? groupStr.split(",") : [];
     //console.log(groupColumns);
-    const validColumns = new Set(["energy", "substrate", "potentialused", "author", "temperature", "es"]);
+    const validColumns = new Set(["energy", "substrate", "potentialused", "author", "temperature", "es", "structure"]);
     rows.groupBy("savimorph");
     for (let column of groupColumns) {
       //console.log(column, (validColumns.has(column)));
