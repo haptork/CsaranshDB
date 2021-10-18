@@ -153,8 +153,8 @@ def addEigenAndSubcascades(data):
             if x in dclustNamesV and (not doLimit or len(subsv[x]) > 4):
                 fdata['dclust_coords'][x] = subsv[x]
         fdata['dclustI_count'] = len(subsi)
-        fdata['dclustV_count'] = len(subsv)
-        if fdata['dclustV_count'] == 0 and fdata['n_defects'] > 0: fdata['clustV_count'] = 1
+        fdata['dclustV_count'] = len(fdata['dclust_coords'])
+        if fdata['dclustV_count'] == 0 and fdata['n_defects'] > 0: fdata['dclustV_count'] = 1
         dclust_len = [0, 0]
         if (len(lenV) > 0):
             dclust_len[0] = lenV[0][0]

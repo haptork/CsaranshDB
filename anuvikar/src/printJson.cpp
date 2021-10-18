@@ -74,17 +74,33 @@ auto strSimulationCode(avi::XyzFileType code) {
 std::string errorStr(avi::ErrorStatus err) {
   if (err == avi::ErrorStatus::inputFileMissing) {
     return "Could not read input file";
-  } else if (err == avi::ErrorStatus::inputFileMissing) {
-    return "Could not read input file";
   } else if (err == avi::ErrorStatus::InputFileincomplete) {
     return "Input file doesn't have all the info";
+  } else if (err == avi::ErrorStatus::inputFileReadError) {
+    return "Input file read error.";
+  } else if (err == avi::ErrorStatus::xyzFileMissing) {
+    return "Xyz file missing.";
+  } else if (err == avi::ErrorStatus::xyzFileReadError) {
+    return "Xyz file read err";
   } else if (err == avi::ErrorStatus::unknownSimulator) {
     return "Input file doesn't have LAMMPS/PARCAS/DISPLACED simulation input "
            "type";
   } else if (err == avi::ErrorStatus::xyzFileDefectsProcessingError) {
     return "XYZ file has too many defects or zero atoms";
+  } else if (err == avi::ErrorStatus::vacOverflow) {
+    return "Too many vacancies";
+  } else if (err == avi::ErrorStatus::siaOverflow) {
+    return "Too many Sias";
+  } else if (err == avi::ErrorStatus::defectOverflow) {
+    return "Too many defects";
+  } else if (err == avi::ErrorStatus::threshOverflow) {
+    return "Too many threshold based defects";
+  } else if (err == avi::ErrorStatus::siaVacDiffOverflow) {
+    return "Too big difference in sia & vacancy.";
+  } else if (err == avi::ErrorStatus::noError) {
+    return "";
   }
-  return "";
+  return "Unknown error!";
 }
 
 void avi::resToKeyValue(std::ostream &outfile,
