@@ -304,45 +304,70 @@ module.exports = () => {
     res.send({ditraces, traces});
   });
 
+  const columnsToIgnore = new Set(['name', 'ncascades', 'npoints', 'nclusters', 'sizeLi']);
+  const makekey = (row) => {
+    let res = '';
+    for (const col in row) {
+      if (columnsToIgnore.has(col)) continue;
+      res += row[col];
+    }
+    return res;
+  }
+
   api.get(['/morphstats', '/csaransh/morphstats'], async (req, res) => {
     let rows = dbhandle.from("clusters");
-    rows.join('cascades', 'clusters.cascadeid', '=', 'cascades.id')
-
-
+    let qncascades = dbhandle.from("cascades");
     const filters = req.query;
     for (let column in filters) {
       if (!column in dbColumns) continue;
       if (dbColumns[column] === 'text') {
         if (filters[column].length == 0) continue;
         if (column == "id") column = "cascades.id";
-        if (Array.isArray(filters[column])) rows.whereIn(column, filters[column]);
-        else rows.where(column, "like", '%'+filters[column]+'%');
+        if (Array.isArray(filters[column])) {
+          rows.whereIn(column, filters[column]);
+          qncascades.whereIn(column, filters[column]);
+        }
+        else {
+          rows.where(column, "like", '%'+filters[column]+'%');
+          qncascades.where(column, "like", '%'+filters[column]+'%');
+        }
       } else if (dbColumns[column] === 'range') {
         const ar = filters[column].split(",");
         if (ar.length == 0) continue;
         rows.where(column, ">=", ar[0]);
+        qncascades.where(column, ">=", ar[0]);
         if (ar.length < 2) continue;
         rows.where(column, "<=", ar[1]);
+        qncascades.where(column, "<=", ar[1]);
       } 
     }
-    rows.where("savimorph", "!=", "7-?")
     const groupStr = req.query.groupby;
     //console.log(groupStr);
     const groupColumns = (groupStr) ? groupStr.split(",") : [];
     //console.log(groupColumns);
     const validColumns = new Set(["energy", "substrate", "potentialused", "author", "temperature", "es", "structure"]);
-    rows.groupBy("savimorph");
     for (let column of groupColumns) {
       //console.log(column, (validColumns.has(column)));
       if (!(validColumns.has(column))) continue;
       //console.log(column);
       rows.groupBy(column);
       rows.select(column);
+      qncascades.groupBy(column);
+      qncascades.select(column);
     }
-    rows.select("savimorph as name", dbhandle.raw("COUNT(DISTINCT(clusters.cascadeid)) as ncascades"), dbhandle.raw("TOTAL(size) as npoints"), dbhandle.raw("COUNT(*) as nclusters"), dbhandle.raw("GROUP_CONCAT(size) as sizeLi"))
+    qncascades.select(dbhandle.raw("COUNT(id) as ncascades"))
+    let query1res = await qncascades;
+    let query1map = {}
+    for (const item of query1res) query1map[makekey(item)] = item.ncascades;
+    //console.log(query1map);
+    rows.join('cascades', 'clusters.cascadeid', '=', 'cascades.id')
+    rows.groupBy("savimorph");
+    rows.where("savimorph", "!=", "7-?")
+    rows.select("savimorph as name", dbhandle.raw("TOTAL(size) as npoints"), dbhandle.raw("COUNT(*) as nclusters"), dbhandle.raw("GROUP_CONCAT(size) as sizeLi"))
     let rowsres =  await rows;
     for (let row of rowsres) {
       row.sizeLi= row.sizeLi.split(",");
+      row.ncascades = query1map[makekey(row)]
       if (row.name === "v") {
         row.npoints = -row.npoints;
         for (let j = 0; j < row.sizeLi.length; j++) { //} in row.sizeLi) {
@@ -350,6 +375,7 @@ module.exports = () => {
         }
       }
     }
+    //console.log(rowsres);
     res.send(rowsres);
   });
   return api;
